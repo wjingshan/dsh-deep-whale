@@ -29,6 +29,15 @@ RULES: list[tuple[str, str]] = [
 SKIP_DIR_PARTS = {'.git', 'node_modules', 'dist', '.test-env'}
 SKIP_FILE_NAMES = {'LICENSE', 'NOTICE', 'LICENSE-ARTWORK'}
 
+# 这几个文件描述“上游是谁”以及改名规则本身，绝不能被自己的规则改写：
+# sync-upstream.sh 的 UPSTREAM_URL 一旦变成 fork，同步就退化为自己合并自己；
+# 而改写正在被 bash 执行的脚本还会造成读取错位（CI 曾因此报 `-A: command not found`）。
+SKIP_PATHS = {
+    'scripts/apply-fork-rename.py',
+    'scripts/sync-upstream.sh',
+    '.github/workflows/sync-upstream.yml',
+}
+
 
 def tracked_files() -> list[Path]:
     out = subprocess.run(
@@ -43,6 +52,8 @@ def main() -> int:
         if any(part in SKIP_DIR_PARTS for part in path.parts):
             continue
         if path.name in SKIP_FILE_NAMES:
+            continue
+        if str(path.relative_to(ROOT)) in SKIP_PATHS:
             continue
         try:
             text = path.read_text(encoding='utf-8')
