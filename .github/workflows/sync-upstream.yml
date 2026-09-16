@@ -1,0 +1,59 @@
+name: sync-upstream
+
+# 把上游 Small-tailqwq/dsh-deep-whale 的更新吸收进本 fork 的默认分支，
+# 重新套用 @wjingshan 改名，构建并测试；只有全部测试通过才会推送。
+#
+# 说明：GitHub 的 schedule 事件只在仓库默认分支上查找本文件，
+# 因此本 workflow 必须位于 main 分支（也正因如此，fork 的 main 就是发布分支）。
+
+on:
+  schedule:
+    # 每天 UTC 20:00（北京时间 04:00）
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Merge upstream and reapply fork rename
+        run: bash scripts/sync-upstream.sh
+
+      - name: Build and test every package
+        # 任一步失败即中断，因此后面的 push 不会执行
+        run: |
+          set -euo pipefail
+          for pkg in maid-atelier orca-link skin-manager; do
+            echo "::group::build+test $pkg"
+            ( cd "$pkg" && npm install --no-audit --no-fund && npm run build && npm test )
+            echo "::endgroup::"
+          done
+
+      - name: Commit rebuilt artifacts
+        run: |
+          set -euo pipefail
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit --no-verify -m "chore(sync): rebuild skins after upstream merge"
+          fi
+
+      - name: Push
+        # 只有上面全部成功才会到达这里
+        run: git push
