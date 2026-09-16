@@ -15,6 +15,15 @@ UPSTREAM_URL="${UPSTREAM_URL:-https://github.com/Small-tailqwq/dsh-deep-whale}"
 
 cd "$(dirname "$0")/.."
 
+# CI 里没有全局 git 身份，而提交还发生在 workflow 的后续步骤（提交构建产物），
+# 所以在合并/改名阶段就设好仓库级身份，让整个 job 内的 git commit 都能用。
+if [ -z "$(git config user.name || true)" ]; then
+  git config user.name "github-actions[bot]"
+fi
+if [ -z "$(git config user.email || true)" ]; then
+  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+fi
+
 # 本 fork 独有、必须保留的功能文件
 PROTECTED_FILES=(
   "maid-atelier/src/client/session-artwork.ts"
