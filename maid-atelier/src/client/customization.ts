@@ -111,12 +111,13 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
    * Install or retract the session-state portrait swap. Idempotent, so
    * `apply()` can drive it on every settings change without bookkeeping.
    */
-  const synchronizeSessionArtwork = (enabled: boolean): void => {
-    if (enabled && disposeSessionArtwork === undefined) {
-      disposeSessionArtwork = installSessionArtwork()
-    } else if (!enabled && disposeSessionArtwork !== undefined) {
+  const synchronizeSessionArtwork = (enabled: boolean, variant: unknown): void => {
+    if (disposeSessionArtwork !== undefined) {
       disposeSessionArtwork()
       disposeSessionArtwork = undefined
+    }
+    if (enabled || (typeof variant === 'string' && variant !== 'default')) {
+      disposeSessionArtwork = installSessionArtwork({ stateEnabled: enabled, variant })
     }
   }
 
@@ -141,7 +142,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     projector.set(ATTR_COMPOSER_MODE, typeof state.values.composerMode === 'string' ? state.values.composerMode : 'persistent')
     const navMode = state.values.mobileNav
     projector.set(ATTR_NAV_MODE, typeof navMode === 'string' && NAV_MODES.has(navMode) ? navMode : 'corner')
-    synchronizeSessionArtwork(state.values.stateArtwork === true)
+    synchronizeSessionArtwork(state.values.stateArtwork === true, state.values.artworkVariant)
   }
 
   return exposeSkinCustomization({
@@ -211,6 +212,22 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
             { key: 'mobileModelExit', values: [true] },
           ],
         },
+      },
+      {
+        key: 'artworkVariant',
+        type: 'select',
+        label: '右女仆立绘造型',
+        labelEn: 'Right maid artwork variant',
+        description: '空闲状态下右女仆使用的造型；状态联动开启时，工作中与轮次结束时仍会临时换成对应立绘。',
+        descriptionEn: 'Artwork the right maid wears while idle. With the session-state switch on, she still switches to the matching portrait while working and when a turn ends.',
+        defaultValue: 'default',
+        options: [
+          { value: 'default', label: '默认', labelEn: 'Default' },
+          { value: 'thinking', label: '思考中', labelEn: 'Thinking' },
+          { value: 'done', label: '完成 / 开心', labelEn: 'Delighted' },
+          { value: 'failed', label: '出错 / 泄气', labelEn: 'Dejected' },
+          { value: 'winter', label: '冬日洋装', labelEn: 'Winter dress' },
+        ],
       },
       {
         key: 'stateArtwork',

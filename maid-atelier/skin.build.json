@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "fingerprint": "32661ca6f9f4af31b9b20425975b2f807ed03037b4b317ef138f204e6b3b7ed7",
-  "sourceCommit": "fd3da9114d7ecc0117dfca6394719df9fbdd1076",
+  "fingerprint": "d61d2653d8eeaa458b0eef9dcb457494162d052c1c313713f0c02de138f8da03",
+  "sourceCommit": "185ff895dea00ccdb0f72d5af51809d9e299f95b",
   "repository": "wjingshan/dsh-deep-whale",
   "path": "maid-atelier"
 }
