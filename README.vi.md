@@ -34,7 +34,7 @@ Nhấp vào ảnh để xem kích thước đầy đủ.
 
 ### Cài đặt một dòng (khuyến nghị)
 
-> **Trước tiên hãy kiểm tra bản phân phối:** các lệnh dưới đây chỉ dành cho môi trường standalone chạy DSH trực tiếp. Nếu bạn đã cài `@linxin666/dsh-web-all` (dsh-web), hãy cài các bản `maid-atelier-wj` và `orca-link-wj` tương thích từ trung tâm giao diện/trình cài đặt của chính dsh-web. Không cài chồng các package standalone của kho này vào cùng profile vì hợp đồng component và style khác nhau, có thể làm giao diện hiển thị sai.
+> **Trước tiên hãy kiểm tra bản phân phối:** các lệnh dưới đây chỉ dành cho môi trường standalone chạy DSH trực tiếp. Nếu bạn đã cài `@linxin666/dsh-web-all` (dsh-web), hãy cài các bản `maid-atelier` và `orca-link` tương thích từ trung tâm giao diện/trình cài đặt của chính dsh-web. Không cài chồng các package standalone của kho này vào cùng profile vì hợp đồng component và style khác nhau, có thể làm giao diện hiển thị sai.
 
 Kho này phát hành **hai giao diện** (`@wjingshan/dsh-client-ui-skin-maid-atelier` / `-orca-link`); chúng **chưa được phát hành trên npm**, nên lệnh một dòng bên dưới cài trực tiếp từ nhánh `main` của kho này theo thư mục con — **không cần clone** (yêu cầu pnpm ≥ 9). **Hãy cài trình quản lý giao diện từ package đã phát hành của bản gốc `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`** — kho này không còn phát hành trình quản lý riêng.
 
@@ -137,7 +137,7 @@ Dán đoạn sau vào bất kỳ AI nào (hoặc chính dsh). [INSTALL.md](INSTA
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone ở bất kỳ đâu (shallow là đủ, bỏ qua lịch sử)
 node <đường dẫn tuyệt đối clone>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier-wj
-dsh plugin --profile web add <đường dẫn tuyệt đối clone>/skin-manager   # bảng quản lý giao diện thường trực (khuyến nghị)
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'   # bảng quản lý giao diện thường trực (package đã phát hành của bản gốc)
 dsh plugin --profile web add <đường dẫn tuyệt đối clone>/maid-atelier   # Xưởng hầu biển sâu
 dsh plugin --profile web add <đường dẫn tuyệt đối clone>/orca-link      # ORCA LINK
 ```
@@ -162,7 +162,7 @@ dsh plugin --profile web add <đường dẫn tuyệt đối clone>/orca-link   
 
 Ví dụ Windows (dấu gẩy chéo và gẩy chéo ngược đều được; pnpm sẽ chuẩn hóa):
 ```powershell
-dsh plugin --profile web add C:/Users/<bạn>/code/dsh-deep-whale/skin-manager
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
 dsh plugin --profile web add C:/Users/<bạn>/code/dsh-deep-whale/maid-atelier
 ```
 
@@ -183,7 +183,7 @@ Triệu chứng: nút cài đặt biến mất, thanh bị trang trí che hoặc
 ### Xác minh sau cài đặt
 
 ```sh
-dsh plugin --profile web list          # phải thấy ba dependency @wjingshan/dsh-client-ui-skin-*
+dsh plugin --profile web list          # phải thấy hai dependency @wjingshan/dsh-client-ui-skin-* (cộng package manager của bản gốc)
 dsh --profile web --dump-config        # dòng manager disabled: false; hai giao diện xung đột: đúng một cái false
 ```
 

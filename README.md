@@ -34,7 +34,7 @@ DeepSeek Harness Web GUI 的鲸鱼娘主题皮肤系列(独立分发仓库)。
 
 ### 一行安装（推荐）
 
-> **先确认发行版：**下面的命令只用于直接运行 DSH 的 standalone 环境。若已安装 `@linxin666/dsh-web-all`（dsh-web），请改从 dsh-web 自带的皮肤中心/安装入口安装其 `maid-atelier-wj` 与 `orca-link-wj` 适配版；不要在同一 profile 中再叠装本仓库的 standalone 包，否则组件与样式契约不一致，界面可能显示异常。
+> **先确认发行版：**下面的命令只用于直接运行 DSH 的 standalone 环境。若已安装 `@linxin666/dsh-web-all`（dsh-web），请改从 dsh-web 自带的皮肤中心/安装入口安装其 `maid-atelier` 与 `orca-link` 适配版；不要在同一 profile 中再叠装本仓库的 standalone 包，否则组件与样式契约不一致，界面可能显示异常。
 
 本仓库发行**两套皮肤**（`@wjingshan/dsh-client-ui-skin-maid-atelier` / `-orca-link`）——它们**尚未发布到 npm**，用下面的 GitHub 一行安装按子目录直接从本仓库 `main` 拉取，**无需 clone**（要求 pnpm ≥ 9）。**皮肤管理器请安装上游已发布的 `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`**；本仓库不再发行自己的 manager。
 
@@ -134,7 +134,7 @@ dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-deep-whale-man
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone 到任意位置（浅克隆足够，跳过历史）
 node <clone 的绝对路径>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier-wj
-dsh plugin --profile web add <clone 的绝对路径>/skin-manager   # 常驻皮肤管理面板（推荐）
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'   # 常驻皮肤管理面板（用上游已发布的包）
 dsh plugin --profile web add <clone 的绝对路径>/maid-atelier   # 深海女仆工坊
 dsh plugin --profile web add <clone 的绝对路径>/orca-link      # 虎鲸链路
 ```
@@ -159,7 +159,7 @@ dsh plugin --profile web add <clone 的绝对路径>/orca-link      # 虎鲸链�
 
 Windows 示例（正斜杠与反斜杠均可，pnpm 会自动规范化）：
 ```powershell
-dsh plugin --profile web add C:/Users/<你>/code/dsh-deep-whale/skin-manager
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
 dsh plugin --profile web add C:/Users/<你>/code/dsh-deep-whale/maid-atelier
 ```
 
@@ -180,7 +180,7 @@ dsh plugin --profile web add C:/Users/<你>/code/dsh-deep-whale/maid-atelier
 ### 安装后验证
 
 ```sh
-dsh plugin --profile web list          # 应看到三个 @wjingshan/dsh-client-ui-skin-* 依赖
+dsh plugin --profile web list          # 应看到两个 @wjingshan/dsh-client-ui-skin-* 依赖（另加一个上游 manager 包）
 dsh --profile web --dump-config        # manager 行 disabled: false；两套皮肤互斥：skins 恰一套 false
 ```
 

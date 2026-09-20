@@ -34,7 +34,7 @@ Click an image for the full size.
 
 ### One-line install (recommended)
 
-> **Check your distribution first:** the commands below are only for standalone environments that run DSH directly. If you installed `@linxin666/dsh-web-all` (dsh-web), install its adapted `maid-atelier-wj` and `orca-link-wj` through dsh-web's own skin center/installer instead. Do not add this repository's standalone packages to the same profile; the component and styling contracts differ and the resulting UI may be broken.
+> **Check your distribution first:** the commands below are only for standalone environments that run DSH directly. If you installed `@linxin666/dsh-web-all` (dsh-web), install its adapted `maid-atelier` and `orca-link` through dsh-web's own skin center/installer instead. Do not add this repository's standalone packages to the same profile; the component and styling contracts differ and the resulting UI may be broken.
 
 This repository ships **both skins** (`@wjingshan/dsh-client-ui-skin-maid-atelier` / `-orca-link`); they are **not published on npm yet**, so the one-line install below pulls them straight from this repository's `main` by subdirectory — **no clone required**, pnpm ≥ 9. **Install the skin manager from the upstream published package `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`** — this fork no longer ships its own manager.
 
@@ -137,7 +137,7 @@ Read https://github.com/wjingshan/dsh-deep-whale/INSTALL.md and install the skin
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone anywhere (shallow is enough, skips history)
 node <abs path to clone>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier-wj
-dsh plugin --profile web add <abs path to clone>/skin-manager   # persistent skin manager panel (recommended)
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'   # persistent skin manager panel (upstream published package)
 dsh plugin --profile web add <abs path to clone>/maid-atelier   # Abyssal Maid Atelier
 dsh plugin --profile web add <abs path to clone>/orca-link      # ORCA LINK
 ```
@@ -162,7 +162,7 @@ dsh plugin --profile web add <abs path to clone>/orca-link      # ORCA LINK
 
 Windows example (forward or back slashes both work; pnpm normalizes them):
 ```powershell
-dsh plugin --profile web add C:/Users/<you>/code/dsh-deep-whale/skin-manager
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
 dsh plugin --profile web add C:/Users/<you>/code/dsh-deep-whale/maid-atelier
 ```
 
@@ -183,7 +183,7 @@ Symptoms: the settings button disappears, the sidebar is covered by decoration o
 ### Post-install verification
 
 ```sh
-dsh plugin --profile web list          # should list all three @wjingshan/dsh-client-ui-skin-* packages
+dsh plugin --profile web list          # should list both @wjingshan/dsh-client-ui-skin-* packages (plus the upstream manager)
 dsh --profile web --dump-config        # manager row disabled: false; skins mutually exclusive — exactly one false
 ```
 
