@@ -3,5 +3,5 @@
 # `dsh plugin --profile <name> add <path-or-git-url>`; mutual exclusion between
 # skins is managed by scripts/dsh-skin (home-layer disabled rows).
 - insert:
-    - id: ui-skin-orca-link
+    - id: ui-skin-orca-link-wj
       name: '@wjingshan/dsh-client-ui-skin-orca-link'

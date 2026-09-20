@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 把上游 Small-tailqwq/dsh-deep-whale 的 main 合并进当前分支，
+# 把上游 wjingshan/dsh-deep-whale 的 main 合并进当前分支，
 # 然后重新套用本 fork 的 @wjingshan 改名。
 #
 # 设计要点：
@@ -11,7 +11,7 @@ set -euo pipefail
 
 UPSTREAM_REMOTE="${UPSTREAM_REMOTE:-upstream}"
 UPSTREAM_BRANCH="${UPSTREAM_BRANCH:-main}"
-UPSTREAM_URL="${UPSTREAM_URL:-https://github.com/Small-tailqwq/dsh-deep-whale}"
+UPSTREAM_URL="${UPSTREAM_URL:-https://github.com/wjingshan/dsh-deep-whale}"
 
 cd "$(dirname "$0")/.."
 
@@ -29,6 +29,9 @@ PROTECTED_FILES=(
   "maid-atelier/src/client/session-artwork.ts"
   "maid-atelier/tests/session-artwork.spec.ts"
   "maid-atelier/src/client/customization.ts"
+  # 本 fork 改过这个上游脚本：path 必须取真实目录名（身份分离后 id 带 -wj 后缀）。
+  # 若上游同时修改了它，保留本 fork 版本并人工确认。
+  "scripts/write-skin-build.mjs"
 )
 
 if ! git remote get-url "$UPSTREAM_REMOTE" >/dev/null 2>&1; then

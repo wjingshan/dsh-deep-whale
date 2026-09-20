@@ -5,7 +5,7 @@
   },
   "consumers": [
     {
-      "id": "maid-atelier",
+      "id": "maid-atelier-wj",
       "host": {
         "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
         "version": "0.1.5-rc.1",
@@ -14,7 +14,7 @@
       }
     },
     {
-      "id": "orca-link",
+      "id": "orca-link-wj",
       "host": {
         "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
         "version": "0.1.5-rc.1",

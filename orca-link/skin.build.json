@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "fingerprint": "cb66b5a606ef9294645b693adc1c655c7778d075b5757974f917b455d887788a",
-  "sourceCommit": "23724e3fd2f3c2668ad67e54e12c07d6f832ece5",
+  "fingerprint": "a8a55d0baea2babd4f08c2f34d4aa6738766277122332c36ee2695254c404ba8",
+  "sourceCommit": "2f01921f280fed930ea835fa346646e422b1d10c",
   "repository": "wjingshan/dsh-deep-whale",
   "path": "orca-link"
 }

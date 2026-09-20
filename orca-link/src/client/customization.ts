@@ -37,7 +37,7 @@ export function installOrcaCustomization(root: HTMLElement = document.documentEl
 
   return exposeSkinCustomization({
     protocol: SKIN_CUSTOMIZATION_PROTOCOL,
-    skinId: 'orca-link',
+    skinId: 'orca-link-wj',
     title: 'ORCA LINK',
     settings: [
       {

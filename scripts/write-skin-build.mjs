@@ -15,7 +15,9 @@ if (!skinRootArg || !repository || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(re
   if (typeof manifest.dshCompatibility !== 'string' || !/^\d+\.\d+\.\d+rc\d+$/.test(manifest.dshCompatibility)) {
     throw new Error('skin.json.dshCompatibility must use x.y.zrcN form (for example 0.1.1rc2)')
   }
-  const relPath = typeof manifest.id === 'string' && manifest.id !== '' ? manifest.id : basename(skinRoot)
+  // 仓库相对路径必须是真实目录名：身份分离后本 fork 的 skin.json 的 id 带 `-wj` 后缀
+  // （maid-atelier-wj），若沿用 id，path 会指向不存在的目录，管理器据此查上游提交会查错。
+  const relPath = basename(skinRoot)
   let sourceCommit
   try {
     const candidate = execFileSync('git', ['rev-parse', 'HEAD'], {

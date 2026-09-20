@@ -2,7 +2,7 @@
 
 The one-line install pulls the skin manager and both Deep Whale skins straight from this repository's `main` (per-subdirectory GitHub specs; pnpm ≥ 9) — no clone and no AI assistance required. **The packages are not published on npm yet**; `@wjingshan/*` are their intended npm names.
 
-> **Distribution boundary:** these instructions are only for standalone environments that run DSH directly. If `@linxin666/dsh-web-all` (dsh-web) is installed, stop here and install dsh-web's adapted `maid-atelier` and `orca-link` through its own skin center/installer. Do not add this repository's standalone packages to the same profile.
+> **Distribution boundary:** these instructions are only for standalone environments that run DSH directly. If `@linxin666/dsh-web-all` (dsh-web) is installed, stop here and install dsh-web's adapted `maid-atelier-wj` and `orca-link-wj` through its own skin center/installer. Do not add this repository's standalone packages to the same profile.
 
 > AI assistants: follow this file as the installation guide. A plain install is just the one-liner below; use the bundled `.agents/skills/dsh-skin-install` skill only for legacy migration, local development builds, specified-commit testing, or diagnosis.
 
@@ -40,8 +40,21 @@ dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-maid-atelier'
 dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-deep-whale-manager'
 ```
 
-Then run the one-line install above and restart DSH once. Existing skin preferences remain keyed by skin id (`maid-atelier` / `orca-link`) and are not renamed.
+Then run the one-line install above and restart DSH once. Existing skin preferences remain keyed by skin id (`maid-atelier-wj` / `orca-link-wj`) and are not renamed.
 
 See [README.md](README.md) ([README.en.md](README.en.md)) for the mutual-exclusion explanation, standalone/local-development install path, verification and troubleshooting.
 
 The bundled `.agents/skills/dsh-skin-install` skill is for legacy-package migration, local development builds, specified-commit testing, or diagnosis — not for a regular first install.
+
+
+## Coexisting with the upstream packages
+
+This fork's plugin identity is deliberately separated from upstream: the npm package name (`@wjingshan/*`),
+`skin.json.id` (`maid-atelier-wj` / `orca-link-wj`), `wiring.id` and `bodyAttr` all differ, so both
+distributions can be installed into one profile without either skin shadowing the other. The separation is
+reapplied after every upstream sync by `scripts/apply-fork-rename.py`.
+
+The skin manager is generic and discovers skins through their `skin.json`, so the manager package published by
+the upstream project (same `…-deep-whale-manager` suffix, different npm scope) manages this fork's skins as well.
+Do not install two managers (that one and this repository's `…-manager-wj`): each registers its own settings page.
+See the coexistence section in [README.md](README.md) for the identity table.

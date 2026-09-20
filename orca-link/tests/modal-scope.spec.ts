@@ -8,8 +8,8 @@ const css = readFileSync(
 
 describe('ORCA modal style boundaries', () => {
   it('limits settings layout and animation to the settings host', () => {
-    const settingsHost = "body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation']"
-    const unscopedDialogHost = /body\[data-dsh-orca-link\](?:\[[^\n]+\])?\s+(?!\[data-slot='sidebar\.settings'\])\[role='presentation'\]:has\(> \[role='dialog'\]\)/
+    const settingsHost = "body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation']"
+    const unscopedDialogHost = /body\[data-dsh-orca-link-wj\](?:\[[^\n]+\])?\s+(?!\[data-slot='sidebar\.settings'\])\[role='presentation'\]:has\(> \[role='dialog'\]\)/
 
     expect(css).toContain(settingsHost)
     expect(css).not.toMatch(unscopedDialogHost)
@@ -31,15 +31,15 @@ describe('ORCA modal style boundaries', () => {
   })
 
   it('keeps non-settings animations disabled for reduced-motion users', () => {
-    expect(css).toContain("body[data-dsh-orca-link] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge'])::after")
-    expect(css).toContain("body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-entering]")
+    expect(css).toContain("body[data-dsh-orca-link-wj] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge'])::after")
+    expect(css).toContain("body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-entering]")
     expect(css).not.toContain("[data-orca-settings-open] [data-phase='hero']")
     expect(css).not.toContain("[data-orca-settings-open] [data-composer-seat]")
   })
 
   it('keeps the settings provider picker out of generic dialogs', () => {
     expect(css).toContain("[data-slot='sidebar.settings'] [role='dialog'] select")
-    expect(css).not.toContain("body[data-dsh-orca-link] [role='dialog'] select")
+    expect(css).not.toContain("body[data-dsh-orca-link-wj] [role='dialog'] select")
   })
 
   it('releases the tooltip carrier so fixed bubbles clear the conversation header', () => {

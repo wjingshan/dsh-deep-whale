@@ -69,9 +69,9 @@ describe('Orca Link skin apply', () => {
 
   it('sets the body attribute and retracts it on dispose', async () => {
     fiber = await mount()
-    expect(document.body.hasAttribute('data-dsh-orca-link')).toBe(true)
+    expect(document.body.hasAttribute('data-dsh-orca-link-wj')).toBe(true)
     await fiber.dispose()
-    expect(document.body.hasAttribute('data-dsh-orca-link')).toBe(false)
+    expect(document.body.hasAttribute('data-dsh-orca-link-wj')).toBe(false)
   })
 
   it('injects chrome and retracts every element on dispose', async () => {

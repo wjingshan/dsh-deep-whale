@@ -34,7 +34,7 @@ Nhấp vào ảnh để xem kích thước đầy đủ.
 
 ### Cài đặt một dòng (khuyến nghị)
 
-> **Trước tiên hãy kiểm tra bản phân phối:** các lệnh dưới đây chỉ dành cho môi trường standalone chạy DSH trực tiếp. Nếu bạn đã cài `@linxin666/dsh-web-all` (dsh-web), hãy cài các bản `maid-atelier` và `orca-link` tương thích từ trung tâm giao diện/trình cài đặt của chính dsh-web. Không cài chồng các package standalone của kho này vào cùng profile vì hợp đồng component và style khác nhau, có thể làm giao diện hiển thị sai.
+> **Trước tiên hãy kiểm tra bản phân phối:** các lệnh dưới đây chỉ dành cho môi trường standalone chạy DSH trực tiếp. Nếu bạn đã cài `@linxin666/dsh-web-all` (dsh-web), hãy cài các bản `maid-atelier-wj` và `orca-link-wj` tương thích từ trung tâm giao diện/trình cài đặt của chính dsh-web. Không cài chồng các package standalone của kho này vào cùng profile vì hợp đồng component và style khác nhau, có thể làm giao diện hiển thị sai.
 
 Ba package phân phối (trình quản lý + hai giao diện) **chưa được phát hành trên npm** (`@wjingshan/*` là tên package dự kiến trên npm). Trước khi phát hành, lệnh một dòng bên dưới cài trực tiếp từ nhánh `main` của kho này theo thư mục con — **không cần clone**, yêu cầu pnpm ≥ 9.
 
@@ -55,6 +55,30 @@ Chỉ muốn dùng một giao diện thì xóa dòng không cần (khuyến ngh�
 Lần đầu cài đặt là thêm package mới, cần khởi động lại DSH một lần. Khi khởi động lại, skin-manager sẽ phát hiện "hai giao diện cùng bật" và **tự động hoàn nguyên về mặc định chính thức**, nên lần đầu cài sẽ không bị chồng giao diện; sau đó mở «Cài đặt → Quản lý giao diện» nhấn «Chuyển» trên giao diện mong muốn — tải lại nóng sẽ áp dụng ngay. Các lần chuyển sau không cần khởi động lại hay AI hỗ trợ.
 
 > Trước khi package npm được phát hành, các spec GitHub `#path:` ở trên là nguồn cài đặt duy nhất không cần clone (pnpm ≥ 9). Ghim commit và phát triển cục bộ xem [Cài đặt package con độc lập](#cài-đặt-package-con-độc-lập-phát-triển-và-dự-phòng-mạng-yếu). npm (sau khi phát hành), GitHub và link cục bộ là các nguồn khác nhau cho cùng tên package; lần `add` cuối cùng sẽ thắng.
+
+### Cùng tồn tại với các package gốc (tách danh tính)
+
+**Danh tính plugin** của bản fork này được tách hoàn toàn khỏi bản gốc, nên hai bên có thể cùng nằm trong một
+profile mà không giao diện nào che khuất giao diện kia:
+
+| Danh tính | Bản gốc | Bản fork này |
+|---|---|---|
+| Tên package npm | scope của bản gốc + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
+| `id` trong `skin.json` | `maid-atelier` | `maid-atelier-wj` |
+| `wiring.id` (id dòng patch) | `ui-skin-maid-atelier` | `ui-skin-maid-atelier-wj` |
+| `bodyAttr` | `data-dsh-maid-atelier` | `data-dsh-maid-atelier-wj` |
+
+(hậu tố `-wj` áp dụng tương tự cho `orca-link`. Scope npm của bản gốc được cố ý không viết ra ở đây, vì quy tắc
+đổi tên của kho này sẽ viết lại chính chuỗi đó.) Quy tắc tách danh tính được `scripts/apply-fork-rename.py`
+chạy lại tự động sau mỗi lần đồng bộ bản gốc; phần chú thích trong tệp đó giải thích vì sao `id` / `wiring.id` /
+`bodyAttr` phải cùng duy nhất — trình quản lý khử trùng theo `id` và `wiringId` (mục trùng bị bỏ) và xác định
+giao diện đang bật qua `bodyAttr`.
+
+Trình quản lý giao diện là **dùng chung**: nó phát hiện giao diện qua `skin.json` hợp lệ trong dependency của
+profile, nên package manager do bản gốc phát hành (cùng hậu tố `…-deep-whale-manager`, khác scope) cũng quản lý
+được giao diện của bản fork này. **Không** cài đồng thời nó với `…-manager-wj` của kho này: mỗi bên sẽ đăng ký
+một trang cài đặt "Quản lý giao diện" riêng.
+
 
 ### Cập nhật
 
@@ -82,7 +106,7 @@ dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-maid-atelier'
 dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-deep-whale-manager'
 ```
 
-Sau khi thêm package mới, khởi động lại DSH một lần. Tùy chọn giao diện vẫn được lưu theo skin id `maid-atelier` / `orca-link` và không bị đổi tên theo npm scope.
+Sau khi thêm package mới, khởi động lại DSH một lần. Tùy chọn giao diện vẫn được lưu theo skin id `maid-atelier-wj` / `orca-link-wj` và không bị đổi tên theo npm scope.
 
 ### Lười gõ lệnh? Để AI cài
 
@@ -107,13 +131,13 @@ Dán đoạn sau vào bất kỳ AI nào (hoặc chính dsh). [INSTALL.md](INSTA
 
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone ở bất kỳ đâu (shallow là đủ, bỏ qua lịch sử)
-node <đường dẫn tuyệt đối clone>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier
+node <đường dẫn tuyệt đối clone>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier-wj
 dsh plugin --profile web add <đường dẫn tuyệt đối clone>/skin-manager   # bảng quản lý giao diện thường trực (khuyến nghị)
 dsh plugin --profile web add <đường dẫn tuyệt đối clone>/maid-atelier   # Xưởng hầu biển sâu
 dsh plugin --profile web add <đường dẫn tuyệt đối clone>/orca-link      # ORCA LINK
 ```
 
-> Lệnh `node` đầu tiên là **tối ưu tùy chọn**: dàn đặt trước mọi `plugin add`, đặt giao diện mục tiêu là giao diện duy nhất được bật để lần khởi động đầu tiên đã là giao diện đó; giữ nguyên YAML không phải giao diện, không ghi đè toàn bộ patch. Bỏ qua cũng an toàn — skin-manager sẽ hoàn nguyên về mặc định khi khởi động lạnh, sau đó chuyển trong Cài đặt → Quản lý giao diện. Dùng `--target orca-link` cho ORCA LINK hoặc `--target official` cho giao diện gốc.
+> Lệnh `node` đầu tiên là **tối ưu tùy chọn**: dàn đặt trước mọi `plugin add`, đặt giao diện mục tiêu là giao diện duy nhất được bật để lần khởi động đầu tiên đã là giao diện đó; giữ nguyên YAML không phải giao diện, không ghi đè toàn bộ patch. Bỏ qua cũng an toàn — skin-manager sẽ hoàn nguyên về mặc định khi khởi động lạnh, sau đó chuyển trong Cài đặt → Quản lý giao diện. Dùng `--target orca-link-wj` cho ORCA LINK hoặc `--target official` cho giao diện gốc.
 
 **Cách A (khuyến nghị): Cài đặt → Quản lý giao diện → nhấn «Chuyển» trên giao diện muốn dùng.** Trình quản lý tự động ghi dòng `disabled` xung đột vào cả hai lớp patch và tải lại nóng; chỉ cần tải lại trang.
 
@@ -121,11 +145,11 @@ dsh plugin --profile web add <đường dẫn tuyệt đối clone>/orca-link   
 
 ```yaml
 # Ví dụ: chỉ bật maid-atelier; đổi sang orca-link thì chuyển false sang dòng đó, chỉ một trong hai giao diện được false
-- id: ui-skin-maid-atelier
+- id: ui-skin-maid-atelier-wj
   disabled: false
-- id: ui-skin-orca-link
+- id: ui-skin-orca-link-wj
   disabled: true
-- id: ui-skin-deep-whale-manager
+- id: ui-skin-deep-whale-manager-wj
   disabled: false
 ```
 

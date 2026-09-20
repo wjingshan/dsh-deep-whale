@@ -1,4 +1,4 @@
-body[data-dsh-orca-link] {
+body[data-dsh-orca-link-wj] {
   --orca-sidebar-width: clamp(258px, 20.2vw, 326px);
   /* Sidebar art stage height, measured from the pane top; the browsing
      region's frosted panel starts exactly at this seam (120px of controls). */
@@ -90,8 +90,8 @@ body[data-dsh-orca-link] {
    without matching every generated DOM node. The former universal descendant
    and pseudo-element rules made xterm's high-churn row renderer repeatedly
    resolve ORCA styles for thousands of terminal spans. */
-body[data-dsh-orca-link],
-body[data-dsh-orca-link] :where(
+body[data-dsh-orca-link-wj],
+body[data-dsh-orca-link-wj] :where(
   button,
   input,
   textarea,
@@ -119,7 +119,7 @@ body[data-dsh-orca-link] :where(
   [data-slot='sidebar.footer.action'] *,
   [data-slot='settings.section'] *
 ),
-body[data-dsh-orca-link] :where(
+body[data-dsh-orca-link-wj] :where(
   button,
   [role='button'],
   [role='dialog'],
@@ -135,7 +135,7 @@ body[data-dsh-orca-link] :where(
   [data-slot='sidebar.footer.action'] *,
   [data-slot='settings.section'] *
 )::before,
-body[data-dsh-orca-link] :where(
+body[data-dsh-orca-link-wj] :where(
   button,
   [role='button'],
   [role='dialog'],
@@ -156,16 +156,16 @@ body[data-dsh-orca-link] :where(
 
 /* Keep chat bubbles rectilinear in every theme, matching the ORCA shape
    contract even when the host ships rounded user-message bubbles. */
-body[data-dsh-orca-link] [data-chat-flow] *,
-body[data-dsh-orca-link] [data-chat-flow] *::before,
-body[data-dsh-orca-link] [data-chat-flow] *::after {
+body[data-dsh-orca-link-wj] [data-chat-flow] *,
+body[data-dsh-orca-link-wj] [data-chat-flow] *::before,
+body[data-dsh-orca-link-wj] [data-chat-flow] *::after {
   border-radius: 0 !important;
 }
 
 /* Command shells own their rounded frame outside the listbox. Keep the
    popupSelect relation local to the composer overlay, including empty lists. */
-body[data-dsh-orca-link] [data-trigger-menu],
-body[data-dsh-orca-link] [data-slot='conversation.input.overlay']
+body[data-dsh-orca-link-wj] [data-trigger-menu],
+body[data-dsh-orca-link-wj] [data-slot='conversation.input.overlay']
   div[aria-label]:has(> input):has(> [role='listbox']) {
   box-sizing: border-box;
   border: 1px solid var(--orca-line);
@@ -175,14 +175,14 @@ body[data-dsh-orca-link] [data-slot='conversation.input.overlay']
   color: var(--orca-ink);
 }
 
-body[data-dsh-orca-link] [data-slot='conversation.input.overlay']
+body[data-dsh-orca-link-wj] [data-slot='conversation.input.overlay']
   [role='option'][aria-selected='true'] {
   box-shadow: inset 2px 0 var(--orca-blue);
 }
 
 /* The open-in-app split frame is a div; its two native buttons retain their
    launch/menu behavior, separator, disabled state and error feedback. */
-body[data-dsh-orca-link] [data-slot='conversation.session.header.utilities']
+body[data-dsh-orca-link-wj] [data-slot='conversation.session.header.utilities']
   div[class$='_split']:has(> button[aria-haspopup='menu']) {
   border-radius: 0 !important;
   border-color: var(--orca-line);
@@ -191,30 +191,30 @@ body[data-dsh-orca-link] [data-slot='conversation.session.header.utilities']
 
 /* Reading panes need their own opaque floor: the page's translucent base
    intentionally reveals the scene and is unsuitable for fullscreen content. */
-body[data-dsh-orca-link] [data-sidebar-right-panel],
-body[data-dsh-orca-link] [data-sidebar-right-float-host] [data-dockkit-float] {
+body[data-dsh-orca-link-wj] [data-sidebar-right-panel],
+body[data-dsh-orca-link-wj] [data-sidebar-right-float-host] [data-dockkit-float] {
   background: var(--dsw-input-solid);
   color: var(--orca-ink);
   border-color: var(--orca-line);
   border-radius: 0 !important;
 }
 
-body[data-dsh-orca-link] [data-sidebar-right-float-host] [data-dockkit-float] {
+body[data-dsh-orca-link-wj] [data-sidebar-right-float-host] [data-dockkit-float] {
   box-shadow: var(--orca-shadow);
 }
 
-body[data-dsh-orca-link] [data-sidebar-right-panel] [data-dockkit-strip],
-body[data-dsh-orca-link] [data-sidebar-right-float-host] [data-dockkit-float-grip] {
+body[data-dsh-orca-link-wj] [data-sidebar-right-panel] [data-dockkit-strip],
+body[data-dsh-orca-link-wj] [data-sidebar-right-float-host] [data-dockkit-float-grip] {
   background: color-mix(in srgb, var(--orca-blue) 5%, var(--dsw-input-solid));
   border-bottom-color: var(--orca-line);
 }
 
-body[data-dsh-orca-link] [data-sidebar-right-panel]
+body[data-dsh-orca-link-wj] [data-sidebar-right-panel]
   [data-dockkit-tab][aria-selected='true'] {
   box-shadow: inset 0 -2px var(--orca-blue);
 }
 
-body[data-dsh-orca-link] [data-dockkit-tab-menu] {
+body[data-dsh-orca-link-wj] [data-dockkit-tab-menu] {
   background: var(--dsw-input-solid);
   border-color: var(--orca-line);
   box-shadow: var(--orca-shadow);
@@ -222,19 +222,19 @@ body[data-dsh-orca-link] [data-dockkit-tab-menu] {
 
 /* Stats include noninteractive span pills as well as buttons. Their own
    reading surface keeps small figures distinct from the scene behind them. */
-body[data-dsh-orca-link] [data-composer-stats] [class$='_pill'] {
+body[data-dsh-orca-link-wj] [data-composer-stats] [class$='_pill'] {
   border-radius: 0 !important;
   background: var(--dsw-input-solid);
   color: var(--orca-graphite);
 }
 
-body[data-dsh-orca-link] [data-composer-stats] button[class$='_pill']:is(:hover, [aria-expanded='true']) {
+body[data-dsh-orca-link-wj] [data-composer-stats] button[class$='_pill']:is(:hover, [aria-expanded='true']) {
   background: color-mix(in srgb, var(--orca-blue) 10%, var(--dsw-input-solid));
   color: var(--orca-ink);
 }
 
-body[data-dsh-orca-link] [role='dialog']:has(> [data-session-stats-details]),
-body[data-dsh-orca-link] [role='dialog']:has(> [data-session-stats-usage]) {
+body[data-dsh-orca-link-wj] [role='dialog']:has(> [data-session-stats-details]),
+body[data-dsh-orca-link-wj] [role='dialog']:has(> [data-session-stats-usage]) {
   background: var(--dsw-input-solid);
   border-color: var(--orca-line);
   box-shadow: var(--orca-shadow);
@@ -244,7 +244,7 @@ body[data-dsh-orca-link] [role='dialog']:has(> [data-session-stats-usage]) {
    the reserved scrollbar gutter on hover/focus even when a wide-table
    candidate does not overflow, moving the hit-test edge into a layout loop.
    Remove this after the host stops changing the wrapper's box geometry. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-chat-flow-kind='assistant-step'] :global(.md-table-wide) {
   padding-bottom: var(--dsh-scrollbar-width, 8px);
 }
@@ -252,13 +252,13 @@ body[data-dsh-orca-link]
 /* Keep the plugin terminal's forced measurements and intermediate redraws
    inside the terminal boundary. Paint containment prevents a resize frame
    from spilling underneath the adjacent Explorer panel. */
-body[data-dsh-orca-link] [data-dsh-better-sidebar] :global(.xterm) {
+body[data-dsh-orca-link-wj] [data-dsh-better-sidebar] :global(.xterm) {
   contain: layout paint style;
 }
 
-body[data-dsh-orca-link] [data-dsh-better-sidebar] [class*='_bottomPanel'],
-body[data-dsh-orca-link] [data-dsh-better-sidebar] [class*='_terminalWrap'],
-body[data-dsh-orca-link] [data-dsh-better-sidebar] [class$='_terminal'] {
+body[data-dsh-orca-link-wj] [data-dsh-better-sidebar] [class*='_bottomPanel'],
+body[data-dsh-orca-link-wj] [data-dsh-better-sidebar] [class*='_terminalWrap'],
+body[data-dsh-orca-link-wj] [data-dsh-better-sidebar] [class$='_terminal'] {
   overflow: clip;
 }
 
@@ -266,7 +266,7 @@ body[data-dsh-orca-link] [data-dsh-better-sidebar] [class$='_terminal'] {
    Freeze each row at its own current width during AppFrame track motion; keep
    the custom property on the row so invalidation cannot fan out from a shared
    ancestor into the entire conversation subtree. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-produced-files-row][data-orca-responsive-width-locked] {
   box-sizing: border-box;
   flex: 0 0 var(--orca-responsive-locked-width) !important;
@@ -275,7 +275,7 @@ body[data-dsh-orca-link]
   max-width: var(--orca-responsive-locked-width) !important;
 }
 
-body[data-dsh-orca-link] [data-orca-terminal-width-locked] {
+body[data-dsh-orca-link-wj] [data-orca-terminal-width-locked] {
   box-sizing: border-box;
   width: var(--orca-terminal-locked-width) !important;
   min-width: var(--orca-terminal-locked-width) !important;
@@ -288,7 +288,7 @@ body[data-dsh-orca-link] [data-orca-terminal-width-locked] {
    Freeze each row at its own current width during AppFrame track motion; keep
    the custom property on the row so invalidation cannot fan out from a shared
    ancestor into the entire conversation subtree. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-produced-files-row][data-orca-responsive-width-locked] {
   box-sizing: border-box;
   flex: 0 0 var(--orca-responsive-locked-width) !important;
@@ -297,7 +297,7 @@ body[data-dsh-orca-link]
   max-width: var(--orca-responsive-locked-width) !important;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] {
   --orca-blue: #4d91ff;
   --orca-cyan: #45d9f4;
   --orca-ink: #eef4ff;
@@ -356,7 +356,7 @@ body[data-dsh-orca-link][data-ds-dark-theme] {
   --dsw-input-solid: #0e141e !important;
 }
 
-body[data-dsh-orca-link] [id='root'] {
+body[data-dsh-orca-link-wj] [id='root'] {
   position: relative;
   z-index: 1;
   background: transparent;
@@ -365,7 +365,7 @@ body[data-dsh-orca-link] [id='root'] {
 /* Light mode mirrors the dark narrative with one continuous observation
    studio: the relaxed wink welcomes a new session, then the same character,
    chair and console crossfade into the working pose when the task begins. */
-body[data-dsh-orca-link] .lightScene {
+body[data-dsh-orca-link-wj] .lightScene {
   position: fixed;
   z-index: 0;
   inset: 0;
@@ -375,11 +375,11 @@ body[data-dsh-orca-link] .lightScene {
   background: #f6f1e7;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] .lightScene {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] .lightScene {
   display: none;
 }
 
-body[data-dsh-orca-link] .lightScene::after {
+body[data-dsh-orca-link-wj] .lightScene::after {
   content: '';
   position: absolute;
   z-index: 2;
@@ -389,7 +389,7 @@ body[data-dsh-orca-link] .lightScene::after {
     linear-gradient(180deg, rgba(248, 250, 253, 0.03), transparent 68%, rgba(239, 243, 248, 0.16));
 }
 
-body[data-dsh-orca-link] .lightSceneLayer {
+body[data-dsh-orca-link-wj] .lightSceneLayer {
   position: absolute;
   z-index: 1;
   inset: 0;
@@ -406,27 +406,27 @@ body[data-dsh-orca-link] .lightSceneLayer {
     filter 640ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-body[data-dsh-orca-link] .lightSceneHero {
+body[data-dsh-orca-link-wj] .lightSceneHero {
   opacity: 0.94;
   transform: scale(1) translateY(0);
   filter: saturate(0.9) contrast(0.98) blur(0);
   background-image: var(--orca-link-light-hero-art);
 }
 
-body[data-dsh-orca-link] .lightSceneActive {
+body[data-dsh-orca-link-wj] .lightSceneActive {
   opacity: 0;
   transform: scale(1.015) translateY(6px);
   filter: saturate(0.9) contrast(0.98) blur(2px);
   background-image: var(--orca-link-light-active-art);
 }
 
-body[data-dsh-orca-link]:not([data-ds-dark-theme])[data-orca-scene='active'] .lightSceneHero {
+body[data-dsh-orca-link-wj]:not([data-ds-dark-theme])[data-orca-scene='active'] .lightSceneHero {
   opacity: 0;
   transform: scale(1.02) translateY(-8px);
   filter: saturate(0.9) contrast(0.98) blur(2px);
 }
 
-body[data-dsh-orca-link]:not([data-ds-dark-theme])[data-orca-scene='active'] .lightSceneActive {
+body[data-dsh-orca-link-wj]:not([data-ds-dark-theme])[data-orca-scene='active'] .lightSceneActive {
   opacity: 0.94;
   transform: scale(1) translateY(0);
   filter: saturate(0.9) contrast(0.98) blur(0);
@@ -436,7 +436,7 @@ body[data-dsh-orca-link]:not([data-ds-dark-theme])[data-orca-scene='active'] .li
    the mug scene welcomes the user in hero/empty states, while the reading
    scene takes over once a task begins. Both use the same crop, grade and
    veil so the crossfade feels like one room changing posture. */
-body[data-dsh-orca-link] .darkScene {
+body[data-dsh-orca-link-wj] .darkScene {
   position: fixed;
   z-index: 0;
   inset: 0;
@@ -446,11 +446,11 @@ body[data-dsh-orca-link] .darkScene {
   background: #090d14;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] .darkScene {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] .darkScene {
   display: block;
 }
 
-body[data-dsh-orca-link] .darkScene::after {
+body[data-dsh-orca-link-wj] .darkScene::after {
   content: '';
   position: absolute;
   z-index: 2;
@@ -460,7 +460,7 @@ body[data-dsh-orca-link] .darkScene::after {
     linear-gradient(180deg, rgba(5, 9, 15, 0.08), rgba(7, 11, 18, 0.12) 58%, rgba(5, 9, 15, 0.34));
 }
 
-body[data-dsh-orca-link] .darkSceneLayer {
+body[data-dsh-orca-link-wj] .darkSceneLayer {
   position: absolute;
   z-index: 1;
   inset: 0;
@@ -477,27 +477,27 @@ body[data-dsh-orca-link] .darkSceneLayer {
     filter 640ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-body[data-dsh-orca-link] .darkSceneHero {
+body[data-dsh-orca-link-wj] .darkSceneHero {
   opacity: 0.94;
   transform: scale(1) translateY(0);
   filter: brightness(0.88) saturate(0.74) contrast(1.05) blur(0);
   background-image: var(--orca-link-dark-hero-art);
 }
 
-body[data-dsh-orca-link] .darkSceneActive {
+body[data-dsh-orca-link-wj] .darkSceneActive {
   opacity: 0;
   transform: scale(1.015) translateY(6px);
   filter: brightness(0.88) saturate(0.74) contrast(1.05) blur(2px);
   background-image: var(--orca-link-dark-active-art);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme][data-orca-scene='active'] .darkSceneHero {
+body[data-dsh-orca-link-wj][data-ds-dark-theme][data-orca-scene='active'] .darkSceneHero {
   opacity: 0;
   transform: scale(1.02) translateY(-8px);
   filter: brightness(0.88) saturate(0.74) contrast(1.05) blur(2px);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme][data-orca-scene='active'] .darkSceneActive {
+body[data-dsh-orca-link-wj][data-ds-dark-theme][data-orca-scene='active'] .darkSceneActive {
   opacity: 0.94;
   transform: scale(1) translateY(0);
   filter: brightness(0.88) saturate(0.74) contrast(1.05) blur(0);
@@ -506,33 +506,33 @@ body[data-dsh-orca-link][data-ds-dark-theme][data-orca-scene='active'] .darkScen
 /* Skin-manager preferences are document attributes, so this stylesheet owns
    only presentation while the shared manager owns persistence and timers. */
 html[data-dsh-whale-orca-background='hidden']
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
   :is(.lightScene, .darkScene) {
   display: none !important;
 }
 
 html[data-dsh-whale-orca-art='hidden']
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
   :is(.lightSceneLayer, .darkSceneLayer) {
   opacity: 0 !important;
   visibility: hidden;
 }
 
 html[data-dsh-whale-orca-character='hidden']
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
   [data-skin-chrome='status-character'],
 html[data-dsh-whale-orca-pricing='hidden']
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
   [data-skin-chrome='pricing-light'] {
   display: none !important;
 }
 
 /* Both the manual switch and the schedule project the same character state. */
-html[data-dsh-whale-orca-character='hidden'] body[data-dsh-orca-link] {
+html[data-dsh-whale-orca-character='hidden'] body[data-dsh-orca-link-wj] {
   --orca-stage: 120px;
 }
 
-html[data-dsh-whale-orca-character='hidden'] body[data-dsh-orca-link][data-orca-sidebar-wide]
+html[data-dsh-whale-orca-character='hidden'] body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
   :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::after {
   content: none;
 }
@@ -564,13 +564,13 @@ html[data-dsh-whale-orca-character='hidden'] body[data-dsh-orca-link][data-orca-
    Blink — and it is also what holds other plugins' body-level panels below
    the dialog. Everything the panel has to cover lives inside #root, so
    keeping this one context costs the fix nothing. */
-body[data-dsh-orca-link][data-orca-settings-open] [id='root'] {
+body[data-dsh-orca-link-wj][data-orca-settings-open] [id='root'] {
   z-index: var(--orca-settings-overlay-z) !important;
 }
 /* Cordis is also mounted below #root while the seam ruler is body-owned.
    Promote the app root to the Cordis rung so the escaped fixed panel can
    outrank every skin decoration without crossing the official Modal ceiling. */
-body[data-dsh-orca-link][data-orca-cordis-panel-open] [id='root'] {
+body[data-dsh-orca-link-wj][data-orca-cordis-panel-open] [id='root'] {
   z-index: var(--orca-z-cordis) !important;
 }
 
@@ -580,7 +580,7 @@ body[data-dsh-orca-link][data-orca-cordis-panel-open] [id='root'] {
    z-index says. Release the isolation together with the promotion while the
    dialog is open; the `position: relative` from that block stays, and
    relative + z-index auto is not a stacking context. */
-body[data-dsh-orca-link][data-orca-settings-open] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) {
+body[data-dsh-orca-link-wj][data-orca-settings-open] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) {
   z-index: auto;
   isolation: auto;
 }
@@ -595,7 +595,7 @@ body[data-dsh-orca-link][data-orca-settings-open] :is([data-pane='sidebar'], [da
    Chromium into compositing a filtered layer over the mask's backdrop-filter
    (4d3e346). `overflow: visible` still carries its own weight: the column
    clips at its own box regardless of stacking. */
-body[data-dsh-orca-link][data-orca-settings-open]
+body[data-dsh-orca-link-wj][data-orca-settings-open]
   [class*='sidebarCol'] {
   position: relative;
   z-index: auto;
@@ -605,8 +605,8 @@ body[data-dsh-orca-link][data-orca-settings-open]
 /* Full-screen settings owns the complete viewport. Host window toggles and
    ORCA's body-level telemetry are unrelated chrome, so remove them from both
    painting and hit testing until the dialog closes. */
-body[data-dsh-orca-link][data-orca-settings-open] [class*='toggleCluster'],
-body[data-dsh-orca-link][data-orca-settings-open] :is(.spine, .signalChip, .standby, .statusCharacter, .pricingLight) {
+body[data-dsh-orca-link-wj][data-orca-settings-open] [class*='toggleCluster'],
+body[data-dsh-orca-link-wj][data-orca-settings-open] :is(.spine, .signalChip, .standby, .statusCharacter, .pricingLight) {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -623,7 +623,7 @@ body[data-dsh-orca-link][data-orca-settings-open] :is(.spine, .signalChip, .stan
    auto-collapse, then runs a delayed rail-in animation on this footer. Keep
    the dialog carrier opaque and animation-free while it owns the viewport,
    otherwise resizing across that breakpoint briefly fades the whole panel. */
-body[data-dsh-orca-link][data-orca-settings-open]
+body[data-dsh-orca-link-wj][data-orca-settings-open]
   [data-slot='sidebar'] > :first-child > :has([role='dialog']) {
   position: relative;
   z-index: auto;
@@ -632,12 +632,12 @@ body[data-dsh-orca-link][data-orca-settings-open]
   animation: none !important;
 }
 
-body[data-dsh-orca-link] [role='dialog'] {
+body[data-dsh-orca-link-wj] [role='dialog'] {
   --orca-dialog-bg: #fbf7ef;
   background: var(--orca-dialog-bg);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [role='dialog'] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [role='dialog'] {
   --orca-dialog-bg: #0f151f;
 }
 
@@ -645,7 +645,7 @@ body[data-dsh-orca-link][data-ds-dark-theme] [role='dialog'] {
    settings slots remain intact; ORCA only changes its spatial behavior.
    Large screens dock beside the settings trigger; every constrained viewport
    becomes a full workspace instead of squeezing an intermediate modal. */
-body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] {
+body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] {
   position: fixed;
   z-index: var(--orca-settings-overlay-z);
   isolation: isolate;
@@ -655,12 +655,12 @@ body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings']
   pointer-events: auto;
 }
 
-body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > :first-child {
+body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > :first-child {
   z-index: 0;
   animation: orcaSettingsMaskIn 170ms ease-out both;
 }
 
-body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
+body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
   width: min(800px, calc(100vw - 48px));
   max-width: none;
   height: min(760px, calc(100vh - 48px));
@@ -681,13 +681,13 @@ body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings']
    panel is open, exactly like the settings block above does for its dialog.
    The host's real z=1 carrier is the direct foot-area child containing the
    panel, not the nested sidebar.footer.action slot. */
-body[data-dsh-orca-link][data-orca-cordis-panel-open]
+body[data-dsh-orca-link-wj][data-orca-cordis-panel-open]
   :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) {
   z-index: auto;
   isolation: auto;
 }
 
-body[data-dsh-orca-link][data-orca-cordis-panel-open]
+body[data-dsh-orca-link-wj][data-orca-cordis-panel-open]
   [data-slot='sidebar'] > :first-child > :has([data-cordis-panel]) {
   position: relative;
   z-index: auto;
@@ -695,7 +695,7 @@ body[data-dsh-orca-link][data-orca-cordis-panel-open]
 
 /* Once both ancestor contexts are released, give the host's fixed panel the
    top rung inside the promoted root. */
-body[data-dsh-orca-link][data-orca-cordis-panel-open] [data-cordis-panel] {
+body[data-dsh-orca-link-wj][data-orca-cordis-panel-open] [data-cordis-panel] {
   z-index: var(--orca-z-cordis);
 }
 
@@ -706,9 +706,9 @@ body[data-dsh-orca-link][data-orca-cordis-panel-open] [data-cordis-panel] {
    flow. The dialog's own mask and decorations live outside this subtree, and
    scrollbar pseudo-elements are not matched by `*` — the global square
    scrollbar styling keeps governing them. */
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] *,
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] *::before,
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] *::after {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] *,
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] *::before,
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] *::after {
   border-radius: 0 !important;
 }
 
@@ -733,18 +733,18 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] *::after
 
 /* The title and signal chevron stay outside the scrolling category list.
    The footer reserves enough space for the chevron to clear every button. */
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav {
   position: relative;
   min-height: 0;
   padding-bottom: 24px;
   overflow: hidden;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :first-child {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :first-child {
   flex-shrink: 0;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child {
   /* Short docked lists keep the group's bottom alignment. */
   flex: 0 1 auto;
   min-height: 0;
@@ -753,15 +753,15 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] 
   scrollbar-width: none;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child > button {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child > button {
   flex-shrink: 0;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child::-webkit-scrollbar {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child::-webkit-scrollbar {
   display: none;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav[data-orca-settings-more]::after {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav[data-orca-settings-more]::after {
   content: '';
   position: absolute;
   bottom: 9px;
@@ -778,28 +778,28 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] 
 /* Large desktop: the panel opens immediately beside the sidebar trigger and
    grows from its lower-left corner. Navigation stays near the pointer. */
 @media (min-width: 1100px) and (min-height: 681px) {
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] {
     justify-content: flex-start;
     align-items: flex-end;
     padding: 18px 18px 18px 72px;
   }
 
-  body[data-dsh-orca-link][data-orca-sidebar-wide]
+  body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
     [data-slot='sidebar.settings'] > [role='presentation'] {
     padding-left: calc(var(--orca-sidebar-width) + 16px);
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
     width: min(760px, calc(100vw - 108px));
     height: min(680px, calc(100vh - 36px));
   }
 
-  body[data-dsh-orca-link][data-orca-sidebar-wide]
+  body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
     width: min(760px, calc(100vw - var(--orca-sidebar-width) - 34px));
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav {
     /* Keep short navigation bottom-aligned; overflow starts at the first item. */
     justify-content: safe flex-end;
     padding-bottom: 24px;
@@ -809,14 +809,14 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] 
   /* Keep the status character visible when the docked settings panel leaves
      the upper-left stage free on large screens. The full-screen settings
      modal on smaller viewports still hides it so it cannot cover content. */
-  body[data-dsh-orca-link][data-orca-settings-open] .statusCharacter {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] .statusCharacter {
     opacity: 1;
     visibility: visible;
     pointer-events: none;
   }
 
   html[data-dsh-whale-orca-settings-layout='centered']
-    body[data-dsh-orca-link][data-orca-settings-open]
+    body[data-dsh-orca-link-wj][data-orca-settings-open]
     [data-slot='sidebar.settings'] > [role='presentation'] {
     justify-content: center;
     align-items: center;
@@ -824,16 +824,16 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] 
   }
 
   html[data-dsh-whale-orca-settings-layout='centered']
-    body[data-dsh-orca-link][data-orca-sidebar-wide]
+    body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
     [data-slot='sidebar.settings'] > [role='presentation'] {
     padding-left: 24px;
   }
 
   html[data-dsh-whale-orca-settings-layout='centered']
-    body[data-dsh-orca-link][data-orca-settings-open]
+    body[data-dsh-orca-link-wj][data-orca-settings-open]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'],
   html[data-dsh-whale-orca-settings-layout='centered']
-    body[data-dsh-orca-link][data-orca-sidebar-wide]
+    body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
     width: min(800px, calc(100vw - 48px));
     height: min(760px, calc(100vh - 48px));
@@ -841,7 +841,7 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] 
   }
 
   html[data-dsh-whale-orca-settings-layout='centered']
-    body[data-dsh-orca-link][data-orca-settings-open]
+    body[data-dsh-orca-link-wj][data-orca-settings-open]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav {
     justify-content: flex-start;
     padding-bottom: 24px;
@@ -850,12 +850,12 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] > [role='presentation'] 
 
 /* Settings nav: active section uses a slightly deeper brown emphasis, and
    adjacent section cells are separated by a same-color hairline. */
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] > nav button[aria-current='true'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] > nav button[aria-current='true'] {
   background: color-mix(in srgb, var(--orca-blue) 18%, transparent);
   color: var(--orca-ink);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] > nav button + button {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] > nav button + button {
   border-top: 2px solid color-mix(in srgb, var(--orca-blue) 28%, transparent);
   border-radius: 0;
 }
@@ -863,11 +863,11 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] > nav bu
 /* Any viewport below the desktop dock threshold becomes a full workspace: no
    centering tax, crushed columns or clipped lower controls. */
 @media (max-width: 1099px), (max-height: 680px) {
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] {
     padding: 0;
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
     width: 100vw;
     max-width: none;
     height: 100vh;
@@ -880,11 +880,11 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] > nav bu
 
 /* Phones and narrow panes move the category rail above the content. */
 @media (max-width: 640px) {
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] {
     flex-direction: column;
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav {
     box-sizing: border-box;
     width: 100%;
     gap: 8px;
@@ -893,40 +893,40 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] > nav bu
     border-bottom: 1px solid var(--orca-line);
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-content: start;
     gap: 4px;
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :first-child {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :first-child {
     padding: 0 4px;
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav button {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav button {
     min-width: 0;
     height: 36px;
     padding: 7px 8px;
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div {
     min-height: 0;
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :first-child {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :first-child {
     min-height: 46px;
     height: auto;
     padding: 8px 10px;
   }
 
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :last-child {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :last-child {
     padding: 0 14px 16px;
   }
 }
 
 @media (max-width: 420px) {
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child {
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav > :last-child {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -935,24 +935,24 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] > nav bu
    content panes, stack copy above its control and release the 48px text gutter
    so descriptions remain normal sentences instead of vertical fragments. */
 @media (max-width: 520px) {
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :last-child
     [class$='_row']:has(> [class$='_rowText']) {
     align-items: stretch;
     flex-direction: column;
   }
 
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :last-child
     [class$='_rowText'] {
     width: 100%;
     padding-right: 0;
   }
 
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :last-child
     [class$='_row']:has(> [class$='_rowText']) > :last-child,
-  body[data-dsh-orca-link][data-orca-settings-open]
+  body[data-dsh-orca-link-wj][data-orca-settings-open]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :last-child
     [class$='_row']:has(> [class$='_rowText']) [class$='_selector'] {
     box-sizing: border-box;
@@ -960,60 +960,60 @@ body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] > nav bu
     max-width: none;
   }
 
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'] > nav + div > :last-child
     [class$='_selector'] {
     justify-content: space-between;
   }
 }
 
-body[data-dsh-orca-link] [role='menu'] {
+body[data-dsh-orca-link-wj] [role='menu'] {
   background: #fbf7ef;
   pointer-events: auto;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [role='menu'] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [role='menu'] {
   background: #0f151f;
 }
 
 /* Permission modes use three independent equipment glyphs and risk colors.
    The selector keys off ORCA's semantic icon marker, not localized labels or
    generated CSS-module class names, so the hero and active composer agree. */
-body[data-dsh-orca-link] {
+body[data-dsh-orca-link-wj] {
   --orca-permission-read: #168aa6;
   --orca-permission-write: #b8780c;
   --orca-permission-full: #c74440;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] {
   --orca-permission-read: #45c7df;
   --orca-permission-write: #e5ad45;
   --orca-permission-full: #ff7771;
 }
 
-body[data-dsh-orca-link] :is([data-composer-seat] button, [role='menuitem'])[data-orca-permission='read'] {
+body[data-dsh-orca-link-wj] :is([data-composer-seat] button, [role='menuitem'])[data-orca-permission='read'] {
   color: var(--orca-permission-read);
 }
 
-body[data-dsh-orca-link] :is([data-composer-seat] button, [role='menuitem'])[data-orca-permission='write'] {
+body[data-dsh-orca-link-wj] :is([data-composer-seat] button, [role='menuitem'])[data-orca-permission='write'] {
   color: var(--orca-permission-write);
 }
 
-body[data-dsh-orca-link] :is([data-composer-seat] button, [role='menuitem'])[data-orca-permission='full'] {
+body[data-dsh-orca-link-wj] :is([data-composer-seat] button, [role='menuitem'])[data-orca-permission='full'] {
   color: var(--orca-permission-full);
 }
 
-body[data-dsh-orca-link] [data-composer-seat] button:not([role='menuitem'])[data-orca-permission] {
+body[data-dsh-orca-link-wj] [data-composer-seat] button:not([role='menuitem'])[data-orca-permission] {
   border-left: 1px solid color-mix(in srgb, currentColor 34%, transparent);
   background: color-mix(in srgb, currentColor 5%, transparent);
 }
 
-body[data-dsh-orca-link] [role='menuitem'][data-orca-permission] {
+body[data-dsh-orca-link-wj] [role='menuitem'][data-orca-permission] {
   border-left: 2px solid transparent;
 }
 
-body[data-dsh-orca-link] [role='menuitem'][data-orca-permission]:hover,
-body[data-dsh-orca-link] [role='menuitem'][data-orca-permission]:has(> svg[data-orca-link-icon='check']) {
+body[data-dsh-orca-link-wj] [role='menuitem'][data-orca-permission]:hover,
+body[data-dsh-orca-link-wj] [role='menuitem'][data-orca-permission]:has(> svg[data-orca-link-icon='check']) {
   border-left-color: color-mix(in srgb, currentColor 64%, transparent);
   background: color-mix(in srgb, currentColor 7%, transparent);
 }
@@ -1021,7 +1021,7 @@ body[data-dsh-orca-link] [role='menuitem'][data-orca-permission]:has(> svg[data-
 /* Appearance choices use the same compact equipment-marker language as the
    provider picker. Keep the glyph and label on one centered axis so missing
    or narrow icon artwork cannot leave the copy sitting low in the tile. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-slot='sidebar.settings'] [role='dialog']
   [class$='_cubeRow'] > button[class*='_themeCube'] {
   position: relative;
@@ -1034,13 +1034,13 @@ body[data-dsh-orca-link]
   line-height: 22px;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-slot='sidebar.settings'] [role='dialog']
   [class$='_cubeRow'] > button[class*='_themeCube'] > svg {
   flex: none;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-slot='sidebar.settings'] [role='dialog']
   [class$='_cubeRow'] > button[class*='_themeCube'][aria-pressed='true']::after {
   position: absolute;
@@ -1059,7 +1059,7 @@ body[data-dsh-orca-link]
    system's saturated blue popup. The fallback remains the host's normal
    select on engines without base-select support. */
 @supports (appearance: base-select) {
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select {
     appearance: base-select;
     min-height: 34px;
     border: 1px solid var(--orca-line);
@@ -1076,7 +1076,7 @@ body[data-dsh-orca-link]
     text-overflow: ellipsis;
   }
 
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-slot='sidebar.settings'] [role='dialog']
     select[class$='_selectInput'] {
     box-sizing: border-box;
@@ -1089,12 +1089,12 @@ body[data-dsh-orca-link]
     text-align: left;
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select:hover {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select:hover {
     border-color: color-mix(in srgb, var(--orca-blue) 42%, var(--orca-line));
     box-shadow: inset 3px 0 0 color-mix(in srgb, var(--orca-blue) 58%, transparent);
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select::picker-icon {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select::picker-icon {
     width: 8px;
     height: 6px;
     margin-left: 10px;
@@ -1105,18 +1105,18 @@ body[data-dsh-orca-link]
     transition: transform 140ms ease;
   }
 
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-slot='sidebar.settings'] [role='dialog']
     select[class$='_selectInput']::picker-icon {
     flex: none;
     margin-left: auto;
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select:open::picker-icon {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select:open::picker-icon {
     transform: rotate(180deg);
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select::picker(select) {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select::picker(select) {
     appearance: base-select;
     max-height: min(420px, 62vh);
     margin-block: 4px;
@@ -1130,7 +1130,7 @@ body[data-dsh-orca-link]
     scrollbar-color: color-mix(in srgb, var(--orca-graphite) 42%, transparent) transparent;
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select option {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select option {
     align-items: center;
     min-height: 30px;
     padding: 7px 30px 7px 10px;
@@ -1145,14 +1145,14 @@ body[data-dsh-orca-link]
     text-overflow: ellipsis;
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select option:hover,
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select option:focus-visible {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select option:hover,
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select option:focus-visible {
     border-left-color: color-mix(in srgb, var(--orca-blue) 48%, transparent);
     background: color-mix(in srgb, var(--orca-blue) 7%, transparent);
     color: var(--orca-ink);
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select option:checked {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select option:checked {
     border-left-color: var(--orca-blue);
     background:
       linear-gradient(90deg, color-mix(in srgb, var(--orca-blue) 16%, transparent), transparent 74%);
@@ -1160,7 +1160,7 @@ body[data-dsh-orca-link]
     font-weight: 700;
   }
 
-  body[data-dsh-orca-link] [data-slot='sidebar.settings'] [role='dialog'] select option::checkmark {
+  body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [role='dialog'] select option::checkmark {
     content: '';
     width: 7px;
     height: 7px;
@@ -1174,7 +1174,7 @@ body[data-dsh-orca-link]
 /* Promote the provider picker's equipment-list language to the composer's
    model and effort picker. The official menu keeps ownership of focus,
    keyboard navigation and selection; ORCA only redraws its existing states. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([class$='_cell'], [class$='_groupTitle'], [role='menuitemradio'] [class$='_modelName']) {
   width: min(276px, calc(100vw - 32px));
   padding: 4px;
@@ -1186,14 +1186,14 @@ body[data-dsh-orca-link]
   box-shadow: 8px 10px 0 rgba(27, 39, 58, 0.08), 0 18px 42px rgba(27, 39, 58, 0.16);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme]
+body[data-dsh-orca-link-wj][data-ds-dark-theme]
   [role='menu'][class$='_menu']:has([class$='_cell'], [class$='_groupTitle'], [role='menuitemradio'] [class$='_modelName']) {
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--orca-blue) 10%, transparent), transparent 42%),
     #0f151f;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([class$='_groupTitle']) [class$='_groupTitle'] {
   display: flex;
   align-items: center;
@@ -1206,12 +1206,12 @@ body[data-dsh-orca-link]
   letter-spacing: 0.08em;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme]
+body[data-dsh-orca-link-wj][data-ds-dark-theme]
   [role='menu'][class$='_menu']:has([class$='_groupTitle']) [class$='_groupTitle'] {
   background: #0f151f;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([class$='_groupTitle']) [class$='_groupTitle']::before {
   width: 4px;
   height: 4px;
@@ -1219,7 +1219,7 @@ body[data-dsh-orca-link]
   border: 1px solid currentColor;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([role='menuitemradio'] [class$='_modelName']) [role='menuitemradio'] {
   min-height: 38px;
   padding: 6px 8px;
@@ -1229,14 +1229,14 @@ body[data-dsh-orca-link]
   background: transparent;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([role='menuitemradio'] [class$='_modelName'])
   [role='menuitemradio']:is(:hover, :focus-visible) {
   border-left-color: color-mix(in srgb, var(--orca-blue) 48%, transparent);
   background: color-mix(in srgb, var(--orca-blue) 7%, transparent);
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([role='menuitemradio'] [class$='_modelName'])
   [role='menuitemradio'][aria-checked='true'] {
   border-left-color: var(--orca-blue);
@@ -1244,27 +1244,27 @@ body[data-dsh-orca-link]
   color: var(--orca-blue);
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([role='menuitemradio'] [class$='_modelName'])
   [role='menuitemradio'] [class$='_modelName'] {
   font: 600 12px/1.4 ui-monospace, "SFMono-Regular", Consolas, monospace;
   letter-spacing: 0.01em;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([role='menuitemradio'] [class$='_modelName'])
   [role='menuitemradio'] [class$='_description'] {
   margin-top: 2px;
   font-size: 11px;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([role='menuitemradio'] [class$='_modelName'])
   [role='menuitemradio'][aria-checked='true'] [class$='_check'] > svg {
   display: none;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([role='menuitemradio'] [class$='_modelName'])
   [role='menuitemradio'][aria-checked='true'] [class$='_check']::before {
   width: 7px;
@@ -1275,18 +1275,18 @@ body[data-dsh-orca-link]
   clip-path: polygon(0 0, 100% 0, 100% 100%, 58% 100%, 58% 42%, 0 42%);
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([class$='_cell']) [role='menuitem'] {
   border-radius: 0;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([class$='_cell']) [class$='_cell'] {
   min-height: 40px;
   border-left: 2px solid transparent;
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [role='menu'][class$='_menu']:has([class$='_cell']) [class$='_cell']:hover {
   border-left-color: color-mix(in srgb, var(--orca-blue) 48%, transparent);
   background: color-mix(in srgb, var(--orca-blue) 7%, transparent);
@@ -1295,21 +1295,21 @@ body[data-dsh-orca-link]
 /* Replace the production shell wordmark while preserving its new-session button.
    rc8 nests the official mark and name inside slot divs below the brand button,
    so the hide rules match both the flat rc7 shape and the nested rc8 shape. */
-body[data-dsh-orca-link] [data-orca-link-brand] > svg,
-body[data-dsh-orca-link] [data-orca-link-brand] [data-slot='sidebar.brand.mark'] svg {
+body[data-dsh-orca-link-wj] [data-orca-link-brand] > svg,
+body[data-dsh-orca-link-wj] [data-orca-link-brand] [data-slot='sidebar.brand.mark'] svg {
   display: none;
 }
-body[data-dsh-orca-link] [data-orca-link-brand] [data-slot='sidebar.brand.name'] {
+body[data-dsh-orca-link-wj] [data-orca-link-brand] [data-slot='sidebar.brand.name'] {
   display: none !important;
 }
-body[data-dsh-orca-link] [data-orca-link-brand] {
+body[data-dsh-orca-link-wj] [data-orca-link-brand] {
   align-self: center;
   height: 30px;
 }
-body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > :first-child {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > :first-child {
   position: relative;
 }
-body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > :first-child::after {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > :first-child::after {
   content: '';
   position: absolute;
   z-index: 2;
@@ -1325,7 +1325,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > :first-child::af
   transform: translateX(0) scaleY(0.72);
   will-change: transform, opacity;
 }
-body[data-dsh-orca-link] .dshWordmark {
+body[data-dsh-orca-link-wj] .dshWordmark {
   display: block;
   position: absolute;
   z-index: 1;
@@ -1346,18 +1346,18 @@ body[data-dsh-orca-link] .dshWordmark {
     opacity 220ms ease,
     transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-body[data-dsh-orca-link][data-orca-sidebar-wide] .dshWordmark {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] .dshWordmark {
   opacity: 1;
   transform: translateX(16px) scale(1);
 }
-body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > :first-child::after {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > :first-child::after {
   animation: orcaWordmarkScan 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > :first-child > button:first-of-type > svg,
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > :first-child > button:first-of-type [data-slot='sidebar.brand.mark'] svg {
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > :first-child > button:first-of-type > svg,
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > :first-child > button:first-of-type [data-slot='sidebar.brand.mark'] svg {
   opacity: 0;
 }
-body[data-dsh-orca-link][data-ds-dark-theme] .dshWordmark { color: #eef4ff; }
+body[data-dsh-orca-link-wj][data-ds-dark-theme] .dshWordmark { color: #eef4ff; }
 
 @keyframes orcaWordmarkScan {
   0% {
@@ -1374,14 +1374,14 @@ body[data-dsh-orca-link][data-ds-dark-theme] .dshWordmark { color: #eef4ff; }
 
 /* The operator stage belongs to the sidebar only; its state actor is mounted as
    live chrome while this pseudo-element keeps the scrim and seam ruler. */
-body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) {
+body[data-dsh-orca-link-wj] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   background-color: rgba(250, 247, 241, 0.64);
 }
 
-body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before {
+body[data-dsh-orca-link-wj] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before {
   position: absolute;
   inset: 0 auto 0 0;
   z-index: 0;
@@ -1409,7 +1409,7 @@ body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :fir
   will-change: opacity;
 }
 
-body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) > :not([role='tooltip'], [data-orca-link-wordmark], [data-plugin-entry]) {
+body[data-dsh-orca-link-wj] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) > :not([role='tooltip'], [data-orca-link-wordmark], [data-plugin-entry]) {
   position: relative;
   z-index: 1;
 }
@@ -1436,7 +1436,7 @@ body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :fir
    plugin-injected block. Both must stay out of the native-button takeover
    below: that takeover hides every child of a matching button, and a plugin
    row that copies the host's own button class is exactly the case it reaches. */
-body[data-dsh-orca-link][data-orca-sidebar-wide]
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
   [data-slot='sidebar']
   > :first-child
   > :is(button[data-dsh-part='sidebar-entry'], [data-plugin-entry]) {
@@ -1450,7 +1450,7 @@ body[data-dsh-orca-link][data-orca-sidebar-wide]
    stage-margin must retire or the region drops by a full stage and leaves a
    dead band between the entry and the workspace. Without the entry the
    original margin still does the stage push. */
-body[data-dsh-orca-link][data-orca-sidebar-wide]
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
   [data-slot='sidebar']
   > :first-child:has(> :is(button[data-dsh-part='sidebar-entry'], [data-plugin-entry]))
   [class*='regionArea'] {
@@ -1461,7 +1461,7 @@ body[data-dsh-orca-link][data-orca-sidebar-wide]
    (ssh / task-board / skill-explorer) stack their rows one after the other,
    so a full stage-sized margin on every entry would separate each native row
    by 124–204px. The z-index promotion above still covers all entries. */
-body[data-dsh-orca-link][data-orca-sidebar-wide]
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
   [data-slot='sidebar']
   > :first-child
   > :is(button[data-dsh-part='sidebar-entry'], [data-plugin-entry])
@@ -1476,7 +1476,7 @@ body[data-dsh-orca-link][data-orca-sidebar-wide]
    holds a tooltip: position stays relative (no re-homing), so the lifted
    chrome below is unaffected and the bubble's own overlay tier competes at
    page level again. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-slot='sidebar']
   > :first-child
   > :has([role='tooltip']) {
@@ -1495,18 +1495,18 @@ body[data-dsh-orca-link]
    NOTE: the :has() must sit on the SAME element as the :is() match (no
    descendant space) — with a space it would release the root's child
    (already isolation: auto) and leave the root context intact. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child):has([role='tooltip']) {
   z-index: auto;
   isolation: auto;
 }
 
-body[data-dsh-orca-link][data-orca-sidebar-wide] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before {
   opacity: 1;
   transition-duration: 200ms;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > .statusCharacter {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > .statusCharacter {
   --orca-character-signal: var(--orca-cyan);
   position: absolute;
   z-index: 1;
@@ -1529,14 +1529,14 @@ body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > .statusCharacter
   will-change: clip-path, transform, opacity;
 }
 
-body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > .statusCharacter {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > .statusCharacter {
   opacity: 1;
   clip-path: inset(0);
   transform: translateX(0);
   transition-timing-function: ease-out, cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body[data-dsh-orca-link] .statusCharacterFrame {
+body[data-dsh-orca-link-wj] .statusCharacterFrame {
   --orca-character-mirror: 1;
   position: absolute;
   top: 0;
@@ -1553,12 +1553,12 @@ body[data-dsh-orca-link] .statusCharacterFrame {
 }
 
 html[data-dsh-whale-orca-character-mirror='mirrored']
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
   .statusCharacterFrame {
   --orca-character-mirror: -1;
 }
 
-body[data-dsh-orca-link] .statusCharacterSprite {
+body[data-dsh-orca-link-wj] .statusCharacterSprite {
   position: absolute;
   inset: 0;
   background-image: var(--orca-link-status-atlas);
@@ -1574,7 +1574,7 @@ body[data-dsh-orca-link] .statusCharacterSprite {
     drop-shadow(0.45px 0.65px 0 rgba(76, 47, 22, 0.22));
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] .statusCharacterSprite {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] .statusCharacterSprite {
   filter:
     sepia(0.08)
     saturate(0.78)
@@ -1583,7 +1583,7 @@ body[data-dsh-orca-link][data-ds-dark-theme] .statusCharacterSprite {
     drop-shadow(0.45px 0.65px 0 rgba(0, 0, 0, 0.35));
 }
 
-body[data-dsh-orca-link] .statusCharacterBubble {
+body[data-dsh-orca-link-wj] .statusCharacterBubble {
   position: absolute;
   z-index: 2;
   top: 2px;
@@ -1604,7 +1604,7 @@ body[data-dsh-orca-link] .statusCharacterBubble {
   transition: opacity 120ms ease, transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body[data-dsh-orca-link] .statusCharacterBubble::after {
+body[data-dsh-orca-link-wj] .statusCharacterBubble::after {
   position: absolute;
   right: auto;
   left: 8px;
@@ -1618,20 +1618,20 @@ body[data-dsh-orca-link] .statusCharacterBubble::after {
   transform: skewY(-45deg);
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='input'],
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='review'] {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='input'],
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='review'] {
   --orca-character-signal: #8859d6;
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='approval'] {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='approval'] {
   --orca-character-signal: var(--orca-permission-write);
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='fault'] {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='fault'] {
   --orca-character-signal: #d14343;
 }
 
-body[data-dsh-orca-link] .statusCharacter:is(
+body[data-dsh-orca-link-wj] .statusCharacter:is(
   [data-orca-link-status='approval'],
   [data-orca-link-status='input'],
   [data-orca-link-status='review'],
@@ -1641,16 +1641,16 @@ body[data-dsh-orca-link] .statusCharacter:is(
   transform: translateY(0) scale(1);
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='input'] [data-orca-link-character-bubble-glyph]::before {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='input'] [data-orca-link-character-bubble-glyph]::before {
   content: '...';
   letter-spacing: 0.08em;
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='fault'] [data-orca-link-character-bubble-glyph]::before {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='fault'] [data-orca-link-character-bubble-glyph]::before {
   content: '?';
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='approval'] [data-orca-link-character-bubble-glyph] {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='approval'] [data-orca-link-character-bubble-glyph] {
   position: relative;
   display: block;
   width: 15px;
@@ -1659,7 +1659,7 @@ body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='approval'] [dat
   clip-path: polygon(50% 0, 100% 18%, 86% 76%, 50% 100%, 14% 76%, 0 18%);
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='approval'] [data-orca-link-character-bubble-glyph]::before {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='approval'] [data-orca-link-character-bubble-glyph]::before {
   position: absolute;
   top: 7px;
   left: 6px;
@@ -1669,7 +1669,7 @@ body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='approval'] [dat
   background: currentColor;
 }
 
-body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='review'] [data-orca-link-character-bubble-glyph] {
+body[data-dsh-orca-link-wj] .statusCharacter[data-orca-link-status='review'] [data-orca-link-character-bubble-glyph] {
   box-sizing: border-box;
   width: 15px;
   height: 18px;
@@ -1681,11 +1681,11 @@ body[data-dsh-orca-link] .statusCharacter[data-orca-link-status='review'] [data-
 /* The stock wide New Session control keeps its layout slot and official
    click handler, but its hit plane expands over the portrait stage. The rail
    restores the visible control when collapsed. */
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-orca-link-brand] {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-orca-link-brand] {
   pointer-events: none;
 }
 
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *) {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *) {
   position: relative;
   z-index: 2;
   overflow: visible;
@@ -1695,12 +1695,12 @@ html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data
   color: transparent;
 }
 
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *) > * {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *) > * {
   opacity: 0;
   pointer-events: none;
 }
 
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *)::before {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *)::before {
   position: absolute;
   top: -14px;
   right: -14px;
@@ -1722,7 +1722,7 @@ html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data
   transition: opacity 160ms ease;
 }
 
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *)::after {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *)::after {
   position: absolute;
   top: calc(var(--orca-stage, 300px) - 86px);
   right: -10px;
@@ -1735,32 +1735,32 @@ html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data
   transition: opacity 160ms ease, transform 160ms ease;
 }
 
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):hover::before,
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):focus-visible::before {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):hover::before,
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):focus-visible::before {
   opacity: 0.62;
 }
 
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):hover::after,
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):focus-visible::after {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):hover::after,
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):focus-visible::after {
   opacity: 0.92;
   transform: translate(-2px, -2px);
 }
 
-html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):focus-visible {
+html:not([data-dsh-whale-orca-character='hidden']) body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'], [data-plugin-entry] *):focus-visible {
   outline: none;
 }
 
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry']) {
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry']) {
   position: relative;
   border-radius: 0;
   clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
 }
 
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry']) > svg {
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry']) > svg {
   opacity: 0;
 }
 
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'])::before {
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'])::before {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1786,26 +1786,26 @@ body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :
 /* Official rail tooltips are rendered beside their anchors instead of through
    a portal. Release only their collapsed-rail ancestor chain so fixed bubbles
    can leave the 36px action cell and the 55px sidebar shell. */
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child,
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [class*='regionArea'],
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [class*='sectionHeader'],
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [class*='headerActions'] {
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] > :first-child,
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [class*='regionArea'],
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [class*='sectionHeader'],
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [class*='headerActions'] {
   overflow: visible;
 }
 
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [role='tooltip'] {
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] [role='tooltip'] {
   z-index: var(--orca-z-tooltip);
 }
 
 /* Alt+Tab may restore both the pointer hit and the previously focused
    workspace control. Keep stale sidebar tooltips hidden until the user makes
    a fresh pointer or keyboard gesture; keyboard focus behavior then resumes. */
-body[data-dsh-orca-link][data-orca-window-resuming] [data-slot='sidebar'] [role='tooltip'] {
+body[data-dsh-orca-link-wj][data-orca-window-resuming] [data-slot='sidebar'] [role='tooltip'] {
   display: none;
 }
 
 /* Vertical identity label riding the stage's left edge (White Route language). */
-body[data-dsh-orca-link][data-orca-sidebar-wide] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::after {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::after {
   content: 'ORCA LINK';
   position: absolute;
   z-index: 1;
@@ -1823,7 +1823,7 @@ body[data-dsh-orca-link][data-orca-sidebar-wide] :is([data-pane='sidebar'], [dat
 /* The browsing region becomes a frosted glass panel pushed below the stage:
    the art never fights the session list for readability. The production
    shell measures 120px from the pane top to the region's normal position. */
-body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea'] {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea'] {
   isolation: isolate;
   margin-top: calc(var(--orca-stage, 300px) - 120px);
   border-top: 1px solid var(--orca-line);
@@ -1831,7 +1831,7 @@ body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='
   backdrop-filter: none;
 }
 
-body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea']::before {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea']::before {
   position: absolute;
   z-index: -1;
   inset: 0;
@@ -1841,11 +1841,11 @@ body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='
   backdrop-filter: blur(10px) saturate(1.03);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child) {
   background-color: rgba(8, 12, 19, 0.88);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before {
   background-image:
     linear-gradient(180deg, rgba(8, 12, 19, 0.68) 0%, rgba(8, 12, 19, 0.08) 76px),
     linear-gradient(180deg,
@@ -1856,28 +1856,28 @@ body[data-dsh-orca-link][data-ds-dark-theme] :is([data-pane='sidebar'], [data-sl
     repeating-linear-gradient(90deg, rgba(180, 199, 226, 0.2) 0 1px, transparent 1px 7px);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] .statusCharacterBubble {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] .statusCharacterBubble {
   background: color-mix(in srgb, var(--orca-character-signal) 12%, rgba(12, 18, 27, 0.96));
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme][data-orca-sidebar-wide] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::after {
+body[data-dsh-orca-link-wj][data-ds-dark-theme][data-orca-sidebar-wide] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::after {
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea']::before {
+body[data-dsh-orca-link-wj][data-ds-dark-theme][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea']::before {
   background: rgba(10, 15, 23, 0.88);
 }
 
 /* Settings is a thin-edged instrument row, not a rounded hover pill. */
-body[data-dsh-orca-link] [data-slot='sidebar'] button[aria-haspopup='dialog'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] button[aria-haspopup='dialog'] {
   position: relative;
   border: 1px solid transparent;
   border-radius: 0;
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] button[aria-haspopup='dialog']::after {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] button[aria-haspopup='dialog']::after {
   position: absolute;
   top: 7px;
   right: 7px;
@@ -1891,19 +1891,19 @@ body[data-dsh-orca-link] [data-slot='sidebar'] button[aria-haspopup='dialog']::a
   transition: opacity 140ms ease, transform 140ms ease;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] button[aria-haspopup='dialog']:hover {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] button[aria-haspopup='dialog']:hover {
   border-color: color-mix(in srgb, var(--orca-blue) 28%, transparent);
   background: color-mix(in srgb, var(--orca-blue) 5.5%, transparent);
   box-shadow: inset 2px 0 0 var(--orca-blue);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] button[aria-haspopup='dialog']:hover::after,
-body[data-dsh-orca-link] [data-slot='sidebar'] button[aria-haspopup='dialog']:focus-visible::after {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] button[aria-haspopup='dialog']:hover::after,
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] button[aria-haspopup='dialog']:focus-visible::after {
   opacity: 0.72;
   transform: translate(0, 0);
 }
 
-body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] button[aria-haspopup='dialog']::after {
+body[data-dsh-orca-link-wj]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] button[aria-haspopup='dialog']::after {
   top: auto;
   right: 3px;
   bottom: 3px;
@@ -1917,26 +1917,26 @@ body[data-dsh-orca-link]:not([data-orca-sidebar-wide]) [data-slot='sidebar'] but
 /* Workspace/session browser: workspaces are quiet chapter rows and sessions
    are compact entries on one structural guide. The hierarchy comes from
    spacing, type, and one selected rail rather than a stack of rounded cards. */
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree'] {
   --orca-tree-guide: rgba(43, 55, 72, 0.16);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-slot='sidebar'] [role='tree'] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-slot='sidebar'] [role='tree'] {
   --orca-tree-guide: rgba(180, 199, 226, 0.18);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree'] > div:has([role='treeitem'][aria-expanded]) {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree'] > div:has([role='treeitem'][aria-expanded]) {
   position: relative;
   padding: 3px 0 5px;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree'] > div:has([role='treeitem'][aria-expanded])
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree'] > div:has([role='treeitem'][aria-expanded])
   + div:has([role='treeitem'][aria-expanded]) {
   margin-top: 2px;
   border-top: 1px solid color-mix(in srgb, var(--orca-tree-guide) 72%, transparent);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree'] > div:has([role='treeitem'][aria-selected])::before {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree'] > div:has([role='treeitem'][aria-selected])::before {
   position: absolute;
   z-index: 0;
   top: 41px;
@@ -1948,13 +1948,13 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree'] > div:has([role='tr
   pointer-events: none;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'] {
   text-shadow: none;
 }
 
 /* Workspace chapter row: collapse the stock two-line 54px cell into a quiet
    single-line index row while retaining its folder, count, menus, and toggle. */
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded] {
   position: relative;
   box-sizing: border-box;
   height: 38px;
@@ -1965,14 +1965,14 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded] 
   background: transparent;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded]::before {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded]::before {
   position: absolute;
   left: 0;
   content: '';
   pointer-events: none;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true'] {
   border-left: 2px solid color-mix(in srgb, var(--orca-graphite) 34%, transparent);
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--orca-graphite) 6%, transparent), transparent 68%);
@@ -1980,7 +1980,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='
   box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--orca-graphite) 10%, transparent);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true']::before {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true']::before {
   top: 6px;
   bottom: 6px;
   width: 2px;
@@ -1988,13 +1988,13 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='
   box-shadow: 3px 0 0 color-mix(in srgb, var(--orca-graphite) 12%, transparent);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false'] {
   border-left: 1px solid color-mix(in srgb, var(--orca-graphite) 18%, transparent);
   color: color-mix(in srgb, var(--orca-graphite) 76%, var(--orca-muted));
   background: linear-gradient(90deg, color-mix(in srgb, var(--orca-graphite) 3%, transparent), transparent 58%);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false']::before {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false']::before {
   top: 16px;
   width: 5px;
   height: 5px;
@@ -2003,40 +2003,40 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='
   transform: translateX(-3px);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true']
   svg[data-orca-link-icon='folder-open'] {
   color: color-mix(in srgb, var(--orca-graphite) 82%, var(--orca-muted));
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false']
   svg[data-orca-link-icon='folder-closed'] {
   color: var(--orca-muted);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded]
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded]
   > span:nth-child(3) {
   flex-direction: row;
   align-items: center;
   gap: 8px;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded]
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded]
   > span:nth-child(3) > span:first-child {
   font-weight: 600;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='true']
   > span:nth-child(3) > span:first-child {
   font-weight: 700;
   letter-spacing: 0.015em;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded='false']
   > span:nth-child(3) > span:first-child {
   font-weight: 500;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded]
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded]
   > span:nth-child(3) > span:nth-child(2) {
   flex: none;
   margin-left: auto;
@@ -2045,11 +2045,11 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded]
   color: var(--orca-muted);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='treeitem'][aria-expanded]:hover {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='treeitem'][aria-expanded]:hover {
   background: color-mix(in srgb, var(--orca-blue) 5.5%, transparent);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree']
   > div:has([role='treeitem'][aria-selected='true'])
   [role='treeitem'][aria-expanded] {
   border-left-color: var(--orca-blue);
@@ -2060,14 +2060,14 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree']
 /* Folder geometry communicates open/closed; blue communicates the current
    workspace. The small square is deliberately independent from the open
    folder glyph, so an expanded inactive workspace cannot read as selected. */
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree']
   > div:has([role='treeitem'][aria-selected='true'])
   [role='treeitem'][aria-expanded]::before {
   background: var(--orca-blue);
   box-shadow: 3px 0 0 color-mix(in srgb, var(--orca-blue) 20%, transparent);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree']
   > div:has([role='treeitem'][aria-selected='true'])
   [role='treeitem'][aria-expanded]::after {
   position: absolute;
@@ -2081,7 +2081,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree']
   pointer-events: none;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree']
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] [role='tree']
   > div:has([role='treeitem'][aria-selected='true'])
   [role='treeitem'][aria-expanded]
   svg[data-orca-link-icon^='folder-'] {
@@ -2090,7 +2090,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] [role='tree']
 
 /* Session entry: keep the stock status slot and hover actions, but indent the
    row from the workspace guide and reserve a stable right-aligned time cell. */
-body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selected] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] div[role='treeitem'][aria-selected] {
   position: relative;
   z-index: 1;
   box-sizing: border-box;
@@ -2104,7 +2104,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selecte
   box-shadow: none;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selected]::before {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] div[role='treeitem'][aria-selected]::before {
   position: absolute;
   top: 50%;
   left: -7px;
@@ -2115,7 +2115,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selecte
   pointer-events: none;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selected] > span:nth-child(2) {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] div[role='treeitem'][aria-selected] > span:nth-child(2) {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2123,7 +2123,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selecte
   font-size: 13px;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selected]
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] div[role='treeitem'][aria-selected]
   > span:nth-child(3):not(:has(button)) {
   flex: 0 0 44px;
   margin-left: auto;
@@ -2132,15 +2132,15 @@ body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selecte
   font-size: 11px;
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selected]:hover {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] div[role='treeitem'][aria-selected]:hover {
   background: color-mix(in srgb, var(--orca-blue) 5.5%, transparent);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selected='true'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] div[role='treeitem'][aria-selected='true'] {
   background: color-mix(in srgb, var(--orca-blue) 10%, transparent);
 }
 
-body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selected='true']::after {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] div[role='treeitem'][aria-selected='true']::after {
   position: absolute;
   top: 6px;
   bottom: 6px;
@@ -2151,25 +2151,25 @@ body[data-dsh-orca-link] [data-slot='sidebar'] div[role='treeitem'][aria-selecte
   pointer-events: none;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-slot='sidebar'] [role='treeitem'][aria-expanded]:hover {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-slot='sidebar'] [role='treeitem'][aria-expanded]:hover {
   background: rgba(77, 145, 255, 0.09);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-slot='sidebar'] [role='tree']
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-slot='sidebar'] [role='tree']
   > div:has([role='treeitem'][aria-selected='true'])
   [role='treeitem'][aria-expanded] {
   background: linear-gradient(90deg, rgba(77, 145, 255, 0.2), rgba(77, 145, 255, 0.06) 72%, transparent);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-slot='sidebar'] div[role='treeitem'][aria-selected]:hover {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-slot='sidebar'] div[role='treeitem'][aria-selected]:hover {
   background: rgba(77, 145, 255, 0.09);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-slot='sidebar'] div[role='treeitem'][aria-selected='true'] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-slot='sidebar'] div[role='treeitem'][aria-selected='true'] {
   background: rgba(77, 145, 255, 0.16);
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   :where(button, input, textarea, select, [role='dialog'], [role='menu']):not(
     [data-slot='conversation.input.left'] *,
     [data-slot='conversation.input.right'] *,
@@ -2179,7 +2179,7 @@ body[data-dsh-orca-link]
   border-color: var(--orca-line);
 }
 
-body[data-dsh-orca-link] :where(input, textarea, select):not(
+body[data-dsh-orca-link-wj] :where(input, textarea, select):not(
     [data-slot='conversation.input.left'] *,
     [data-slot='conversation.input.right'] *,
     [data-slot='sidebar.footer.action'] *,
@@ -2191,16 +2191,16 @@ body[data-dsh-orca-link] :where(input, textarea, select):not(
   caret-color: var(--orca-blue);
 }
 
-body[data-dsh-orca-link] [data-composer-card] :is(input, textarea, [data-composer-input]) {
+body[data-dsh-orca-link-wj] [data-composer-card] :is(input, textarea, [data-composer-input]) {
   background-color: transparent;
 }
 
-body[data-dsh-orca-link] [data-composer-card] [data-composer-input] {
+body[data-dsh-orca-link-wj] [data-composer-card] [data-composer-input] {
   color: var(--orca-ink);
   caret-color: var(--orca-blue);
 }
 
-body[data-dsh-orca-link] :where(input, textarea):not(
+body[data-dsh-orca-link-wj] :where(input, textarea):not(
     [data-slot='conversation.input.left'] *,
     [data-slot='conversation.input.right'] *,
     [data-slot='sidebar.footer.action'] *,
@@ -2211,17 +2211,17 @@ body[data-dsh-orca-link] :where(input, textarea):not(
   opacity: 1;
 }
 
-body[data-dsh-orca-link] :where(input, textarea, select):focus:not(
+body[data-dsh-orca-link-wj] :where(input, textarea, select):focus:not(
     [data-slot='conversation.input.left'] *,
     [data-slot='conversation.input.right'] *,
     [data-slot='sidebar.footer.action'] *,
     [data-slot='settings.section'] *
   ),
-body[data-dsh-orca-link] [data-composer-card]:focus-within {
+body[data-dsh-orca-link-wj] [data-composer-card]:focus-within {
   background-color: var(--dsw-input-solid);
 }
 
-body[data-dsh-orca-link] :where(button, [role='button']):not(
+body[data-dsh-orca-link-wj] :where(button, [role='button']):not(
     [data-slot='conversation.input.left'] *,
     [data-slot='conversation.input.right'] *,
     [data-slot='sidebar.footer.action'] *,
@@ -2230,7 +2230,7 @@ body[data-dsh-orca-link] :where(button, [role='button']):not(
   transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
 }
 
-body[data-dsh-orca-link] :where(button:hover:not(:disabled), [role='button']:hover):not(
+body[data-dsh-orca-link-wj] :where(button:hover:not(:disabled), [role='button']:hover):not(
     [data-slot='conversation.input.left'] *,
     [data-slot='conversation.input.right'] *,
     [data-slot='sidebar.footer.action'] *,
@@ -2239,7 +2239,7 @@ body[data-dsh-orca-link] :where(button:hover:not(:disabled), [role='button']:hov
   border-color: color-mix(in srgb, var(--orca-blue) 34%, transparent);
 }
 
-body[data-dsh-orca-link] :focus-visible:not(
+body[data-dsh-orca-link-wj] :focus-visible:not(
     [data-slot='conversation.input.left'] *,
     [data-slot='conversation.input.right'] *,
     [data-slot='sidebar.footer.action'] *,
@@ -2253,18 +2253,18 @@ body[data-dsh-orca-link] :focus-visible:not(
    generic accessibility outline would otherwise override its outline:none
    input and draw the saturated blue rectangle inside that row. Keep the
    keyboard cue, but move it to the rectilinear row with a calmer signal. */
-body[data-dsh-orca-link] [data-question-key] :is(input, textarea):focus-visible {
+body[data-dsh-orca-link-wj] [data-question-key] :is(input, textarea):focus-visible {
   outline: none;
 }
 
-body[data-dsh-orca-link] [data-question-key] :has(> input:focus) {
+body[data-dsh-orca-link-wj] [data-question-key] :has(> input:focus) {
   border-color: var(--orca-question-focus);
   box-shadow:
     inset 3px 0 0 var(--orca-question-focus),
     inset 0 0 0 1px var(--orca-question-focus-wash);
 }
 
-body[data-dsh-orca-link] [data-question-key] textarea:focus {
+body[data-dsh-orca-link-wj] [data-question-key] textarea:focus {
   border-color: var(--orca-question-focus);
   box-shadow:
     inset 3px 0 0 var(--orca-question-focus),
@@ -2276,40 +2276,40 @@ body[data-dsh-orca-link] [data-question-key] textarea:focus {
    outside [data-chat-flow], so their section cards and span chips miss the
    ORCA shape contract. Square the cards, option index chips, custom rows,
    checkbox glyphs, status dots and the recommendation badge. */
-body[data-dsh-orca-link] [data-question-key] [class*='_card'],
-body[data-dsh-orca-link] [data-plan-review-key] [class*='_card'],
-body[data-dsh-orca-link] [data-approval-key] [class*='_card'],
-body[data-dsh-orca-link] [data-testid='todo-panel'] {
+body[data-dsh-orca-link-wj] [data-question-key] [class*='_card'],
+body[data-dsh-orca-link-wj] [data-plan-review-key] [class*='_card'],
+body[data-dsh-orca-link-wj] [data-approval-key] [class*='_card'],
+body[data-dsh-orca-link-wj] [data-testid='todo-panel'] {
   border-radius: 0 !important;
 }
 
-body[data-dsh-orca-link] [data-question-key] [class*='_number'],
-body[data-dsh-orca-link] [data-question-key] [class*='_customRow'],
-body[data-dsh-orca-link] [data-question-key] [class*='_badge'],
-body[data-dsh-orca-link] [data-plan-review-key] [class*='_dot'],
-body[data-dsh-orca-link] [data-approval-key] [class*='_dot'],
-body[data-dsh-orca-link] [data-queue-dock] [class*='_panel'],
-body[data-dsh-orca-link] [data-queue-dock] [class*='_row'],
-body[data-dsh-orca-link] [data-composer-card] [class*='_notice']:not(
+body[data-dsh-orca-link-wj] [data-question-key] [class*='_number'],
+body[data-dsh-orca-link-wj] [data-question-key] [class*='_customRow'],
+body[data-dsh-orca-link-wj] [data-question-key] [class*='_badge'],
+body[data-dsh-orca-link-wj] [data-plan-review-key] [class*='_dot'],
+body[data-dsh-orca-link-wj] [data-approval-key] [class*='_dot'],
+body[data-dsh-orca-link-wj] [data-queue-dock] [class*='_panel'],
+body[data-dsh-orca-link-wj] [data-queue-dock] [class*='_row'],
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_notice']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *),
-body[data-dsh-orca-link] [data-composer-card] [class*='_chip']:not(
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_chip']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *),
-body[data-dsh-orca-link] [data-composer-card] [class*='_hlSegment']:not(
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_hlSegment']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *),
-body[data-dsh-orca-link] [data-composer-card] [class*='_pending']:not(
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_pending']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *),
-body[data-dsh-orca-link] [data-composer-card] [class*='_panel']:not(
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_panel']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *),
-body[data-dsh-orca-link] [data-composer-card] [class*='_bar']:not(
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_bar']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *),
-body[data-dsh-orca-link] [data-composer-card] [class*='_segment']:not(
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_segment']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *),
-body[data-dsh-orca-link] [data-composer-card] [class*='_swatch']:not(
+body[data-dsh-orca-link-wj] [data-composer-card] [class*='_swatch']:not(
     [data-slot='conversation.input.left'] *, [data-slot='conversation.input.right'] *) {
   border-radius: 0 !important;
 }
 
-body[data-dsh-orca-link] [data-question-key] [class*='_checkbox']::before {
+body[data-dsh-orca-link-wj] [data-question-key] [class*='_checkbox']::before {
   border-radius: 0 !important;
 }
 
@@ -2317,24 +2317,24 @@ body[data-dsh-orca-link] [data-question-key] [class*='_checkbox']::before {
    the same electric blue (#4d91ff on #4d91ff). Keep the accent fill and switch
    the dark label to inverted brand ink; the light theme keeps its host pair,
    which already separates beige fill from graphite ink. */
-body[data-dsh-orca-link][data-ds-dark-theme] [data-question-key] [class*='_badge'] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-question-key] [class*='_badge'] {
   background: var(--dsw-specific-sidebar-nav-item-active-accent);
   color: var(--dsw-alias-brand-primary-invert);
 }
 
-body[data-dsh-orca-link] ::selection { color: #fff; background: var(--orca-blue); }
-body[data-dsh-orca-link] ::-webkit-scrollbar { width: 9px; height: 9px; }
-body[data-dsh-orca-link] ::-webkit-scrollbar-track { background: transparent; }
-body[data-dsh-orca-link] ::-webkit-scrollbar-thumb {
+body[data-dsh-orca-link-wj] ::selection { color: #fff; background: var(--orca-blue); }
+body[data-dsh-orca-link-wj] ::-webkit-scrollbar { width: 9px; height: 9px; }
+body[data-dsh-orca-link-wj] ::-webkit-scrollbar-track { background: transparent; }
+body[data-dsh-orca-link-wj] ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 0;
   background: rgba(87, 101, 121, 0.35);
   background-clip: padding-box;
 }
-body[data-dsh-orca-link] ::-webkit-scrollbar-thumb:hover { background-color: var(--orca-blue); }
+body[data-dsh-orca-link-wj] ::-webkit-scrollbar-thumb:hover { background-color: var(--orca-blue); }
 
 /* Signal chip riding the sidebar logo row, right of the replacement wordmark. */
-body[data-dsh-orca-link] .signalChip {
+body[data-dsh-orca-link-wj] .signalChip {
   --orca-signal-color: var(--orca-cyan);
   --orca-signal-wash: color-mix(in srgb, var(--orca-signal-color) 8%, transparent);
   position: absolute; z-index: 1; top: 50%; left: 136px;
@@ -2352,8 +2352,8 @@ body[data-dsh-orca-link] .signalChip {
   opacity: 0;
   transition: opacity 220ms ease 90ms, color 160ms ease, border-color 160ms ease, background-color 160ms ease;
 }
-body[data-dsh-orca-link][data-orca-sidebar-wide] .signalChip { opacity: 1; }
-body[data-dsh-orca-link] .signalDot {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] .signalChip { opacity: 1; }
+body[data-dsh-orca-link-wj] .signalDot {
   width: 6px; height: 6px; border-radius: 0;
   flex: 0 0 6px;
   background: var(--orca-signal-color);
@@ -2361,49 +2361,49 @@ body[data-dsh-orca-link] .signalDot {
   animation: orcaSignalPulse 2.6s ease-in-out infinite;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='syncing'],
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='working'] {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='syncing'],
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='working'] {
   --orca-signal-color: var(--orca-blue);
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='approval'] {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='approval'] {
   --orca-signal-color: var(--orca-permission-write);
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='input'],
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='review'] {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='input'],
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='review'] {
   --orca-signal-color: #8859d6;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='complete'] {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='complete'] {
   --orca-signal-color: #238a58;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='fault'] {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='fault'] {
   --orca-signal-color: #d14343;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='offline'] {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='offline'] {
   --orca-signal-color: #798394;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='ready'] {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='ready'] {
   --orca-signal-color: #5483a8;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='working'] .signalDot {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='working'] .signalDot {
   animation: orcaSignalWork 920ms steps(2, end) infinite;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='approval'] .signalDot,
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='input'] .signalDot,
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='review'] .signalDot {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='approval'] .signalDot,
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='input'] .signalDot,
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='review'] .signalDot {
   animation-duration: 740ms;
 }
 
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='complete'] .signalDot,
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='fault'] .signalDot,
-body[data-dsh-orca-link] .signalChip[data-orca-link-status='offline'] .signalDot {
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='complete'] .signalDot,
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='fault'] .signalDot,
+body[data-dsh-orca-link-wj] .signalChip[data-orca-link-status='offline'] .signalDot {
   animation: none;
 }
 
@@ -2429,7 +2429,7 @@ body[data-dsh-orca-link] .signalChip[data-orca-link-status='offline'] .signalDot
    its quiet glance-only behavior. The expanded sidebar parks it in the strip
    right under the full wordmark, above the operator stage and the session
    region, and restores the hover detail card. */
-body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > .pricingLight {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > .pricingLight {
   --orca-price-signal: #238a58;
   --orca-price-glow: rgba(35, 138, 88, 0.72);
   position: absolute;
@@ -2461,7 +2461,7 @@ body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > .pricingLight {
   will-change: transform, opacity;
 }
 
-body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > .pricingLight {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-child > .pricingLight {
   top: 46px;
   left: 4px;
   transform: none;
@@ -2476,26 +2476,26 @@ body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] > :first-
    signal vars on the light element itself, and its specificity (0,4,1) would
    otherwise beat a bare .pricingLight[data-orca-link-price=...] rule (0,3,1),
    freezing text/border/glow on the valley green while only the lamps moved. */
-body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > .pricingLight[data-orca-link-price='high'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > .pricingLight[data-orca-link-price='high'] {
   --orca-price-signal: #d14343;
   --orca-price-glow: rgba(209, 67, 67, 0.72);
 }
-body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > .pricingLight[data-orca-link-price='transition'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > .pricingLight[data-orca-link-price='transition'] {
   --orca-price-signal: #dfa02b;
   --orca-price-glow: rgba(223, 160, 43, 0.8);
 }
-body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > .pricingLight[data-orca-link-price='low'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > .pricingLight[data-orca-link-price='low'] {
   --orca-price-signal: #238a58;
   --orca-price-glow: rgba(35, 138, 88, 0.72);
 }
 
-body[data-dsh-orca-link] .pricingHousing {
+body[data-dsh-orca-link-wj] .pricingHousing {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 2px;
 }
-body[data-dsh-orca-link] .pricingLamp {
+body[data-dsh-orca-link-wj] .pricingLamp {
   box-sizing: border-box;
   width: 4px;
   height: 4px;
@@ -2505,16 +2505,16 @@ body[data-dsh-orca-link] .pricingLamp {
   opacity: 0.3;
   transition: opacity 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
-body[data-dsh-orca-link][data-orca-sidebar-wide] .pricingLamp {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] .pricingLamp {
   width: 5px;
   height: 5px;
 }
-body[data-dsh-orca-link] .pricingLampRed { --orca-lamp-color: #d14343; }
-body[data-dsh-orca-link] .pricingLampAmber { --orca-lamp-color: #dfa02b; }
-body[data-dsh-orca-link] .pricingLampGreen { --orca-lamp-color: #238a58; }
-body[data-dsh-orca-link] .pricingLight[data-orca-link-price='high'] .pricingLampRed,
-body[data-dsh-orca-link] .pricingLight[data-orca-link-price='transition'] .pricingLampAmber,
-body[data-dsh-orca-link] .pricingLight[data-orca-link-price='low'] .pricingLampGreen {
+body[data-dsh-orca-link-wj] .pricingLampRed { --orca-lamp-color: #d14343; }
+body[data-dsh-orca-link-wj] .pricingLampAmber { --orca-lamp-color: #dfa02b; }
+body[data-dsh-orca-link-wj] .pricingLampGreen { --orca-lamp-color: #238a58; }
+body[data-dsh-orca-link-wj] .pricingLight[data-orca-link-price='high'] .pricingLampRed,
+body[data-dsh-orca-link-wj] .pricingLight[data-orca-link-price='transition'] .pricingLampAmber,
+body[data-dsh-orca-link-wj] .pricingLight[data-orca-link-price='low'] .pricingLampGreen {
   border-color: var(--orca-lamp-color);
   background: var(--orca-lamp-color);
   box-shadow: 0 0 8px var(--orca-price-glow);
@@ -2522,7 +2522,7 @@ body[data-dsh-orca-link] .pricingLight[data-orca-link-price='low'] .pricingLampG
 }
 /* The amber lamp blinks like a real traffic light during the 20-minute early
    warning, then hands the glow to the red lamp exactly at 09:00 / 14:00. */
-body[data-dsh-orca-link] .pricingLight[data-orca-link-price='transition'] .pricingLampAmber {
+body[data-dsh-orca-link-wj] .pricingLight[data-orca-link-price='transition'] .pricingLampAmber {
   animation: orcaPricePulse 1.3s ease-in-out infinite;
 }
 @keyframes orcaPricePulse {
@@ -2530,7 +2530,7 @@ body[data-dsh-orca-link] .pricingLight[data-orca-link-price='transition'] .prici
   50% { opacity: 0.35; }
 }
 
-body[data-dsh-orca-link] .pricingLabel {
+body[data-dsh-orca-link-wj] .pricingLabel {
   display: block;
   max-width: 100%;
   overflow: hidden;
@@ -2540,7 +2540,7 @@ body[data-dsh-orca-link] .pricingLabel {
 /* Hover detail card. The card is a descendant of the light, so :hover on the
    light stays true while the pointer reads the card; the top padding doubles
    as the visual gap so the pointer never crosses a dead zone. */
-body[data-dsh-orca-link] .pricingTooltip {
+body[data-dsh-orca-link-wj] .pricingTooltip {
   position: absolute;
   z-index: 4;
   top: 100%;
@@ -2567,13 +2567,13 @@ body[data-dsh-orca-link] .pricingTooltip {
 }
 /* The detail card opens on hover only in the expanded sidebar; the collapsed
    rail keeps the light glance-only (no hover surface, default cursor). */
-body[data-dsh-orca-link][data-orca-sidebar-wide] .pricingLight:hover .pricingTooltip {
+body[data-dsh-orca-link-wj][data-orca-sidebar-wide] .pricingLight:hover .pricingTooltip {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
   transition: opacity 140ms ease 70ms, transform 140ms ease 70ms, visibility 0s linear 0s;
 }
-body[data-dsh-orca-link] .pricingTooltipTitle {
+body[data-dsh-orca-link-wj] .pricingTooltipTitle {
   padding-bottom: 4px;
   border-bottom: 1px solid var(--orca-line);
   color: var(--orca-muted);
@@ -2581,23 +2581,23 @@ body[data-dsh-orca-link] .pricingTooltipTitle {
   font-weight: 600;
   letter-spacing: 0.2em;
 }
-body[data-dsh-orca-link] .pricingTooltipRow {
+body[data-dsh-orca-link-wj] .pricingTooltipRow {
   display: grid;
   grid-template-columns: 30px 1fr;
   gap: 8px;
 }
-body[data-dsh-orca-link] .pricingTooltipKey {
+body[data-dsh-orca-link-wj] .pricingTooltipKey {
   color: var(--orca-muted);
   font-weight: 600;
 }
-body[data-dsh-orca-link] .pricingTooltipValue {
+body[data-dsh-orca-link-wj] .pricingTooltipValue {
   color: var(--orca-ink);
   font-weight: 700;
 }
 
 /* Sidebar seam ruler: a tick strip centered on the column boundary replaces
    the old metal bar — mechanism through precision, not mass. */
-body[data-dsh-orca-link] .spine {
+body[data-dsh-orca-link-wj] .spine {
   position: fixed; top: 0; bottom: 0; left: var(--orca-sidebar-width);
   z-index: 850; width: 9px; transform: translateX(-4px);
   pointer-events: none;
@@ -2609,12 +2609,12 @@ body[data-dsh-orca-link] .spine {
 /* The seam is decorative in constrained layouts; retiring it avoids moving a
    body-level fixed layer alongside the AppFrame track transition. */
 @media (max-width: 1099px) {
-  body[data-dsh-orca-link] .spine { display: none; }
+  body[data-dsh-orca-link-wj] .spine { display: none; }
 }
 
 /* ---- Hero橱窗：空态是皮肤的展示窗口 -------------------------------------- */
 
-body[data-dsh-orca-link] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge']) {
+body[data-dsh-orca-link-wj] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge']) {
   display: inline-block;
   min-width: 8.2em;
   color: var(--orca-ink);
@@ -2624,7 +2624,7 @@ body[data-dsh-orca-link] [data-phase='hero'] [class*='titleGroup'] > span:not([c
   text-align: left;
   white-space: nowrap;
 }
-body[data-dsh-orca-link] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge'])::after {
+body[data-dsh-orca-link-wj] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge'])::after {
   content: '';
   display: inline-block;
   width: 9px; height: 9px; margin-left: 10px;
@@ -2637,21 +2637,21 @@ body[data-dsh-orca-link] [data-phase='hero'] [class*='titleGroup'] > span:not([c
   0%, 48% { opacity: 1; }
   49%, 100% { opacity: 0; }
 }
-body[data-dsh-orca-link] [data-phase='hero'] [class*='previewBadge'] {
+body[data-dsh-orca-link-wj] [data-phase='hero'] [class*='previewBadge'] {
   border: 1px solid var(--orca-line); border-radius: 0;
   padding: 3px 8px 2px;
   color: var(--orca-muted); background: var(--orca-surface);
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
   font-size: 9px; letter-spacing: 0.22em;
 }
-body[data-dsh-orca-link] [data-phase='hero'] [class*='heroGlow'] ellipse {
+body[data-dsh-orca-link-wj] [data-phase='hero'] [class*='heroGlow'] ellipse {
   fill: var(--orca-blue);
   fill-opacity: 0.06;
 }
 
 /* Hero and active phases share one signature terminal: squared corners, a
    stronger frame, and mechanical side arms bracketing the card. */
-body[data-dsh-orca-link] [data-composer-card] {
+body[data-dsh-orca-link-wj] [data-composer-card] {
   position: relative;
   container-name: orca-composer;
   container-type: inline-size;
@@ -2661,20 +2661,20 @@ body[data-dsh-orca-link] [data-composer-card] {
   background-color: var(--dsw-specific-input-major);
   box-shadow: var(--orca-shadow);
 }
-body[data-dsh-orca-link] [data-composer-card][class*='cardWorkspaceTrigger']::after {
+body[data-dsh-orca-link-wj] [data-composer-card][class*='cardWorkspaceTrigger']::after {
   content: none;
   -webkit-mask: none;
   mask: none;
 }
-body[data-dsh-orca-link] :is([role='menu'], [role='listbox']) {
+body[data-dsh-orca-link-wj] :is([role='menu'], [role='listbox']) {
   overscroll-behavior: contain;
 }
-body[data-dsh-orca-link] [data-composer-card]:focus-within {
+body[data-dsh-orca-link-wj] [data-composer-card]:focus-within {
   border-color: color-mix(in srgb, var(--orca-blue) 45%, transparent);
   box-shadow: var(--orca-shadow), 0 0 0 3px color-mix(in srgb, var(--orca-blue) 10%, transparent);
 }
-body[data-dsh-orca-link] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::before,
-body[data-dsh-orca-link] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::after {
+body[data-dsh-orca-link-wj] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::before,
+body[data-dsh-orca-link-wj] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::after {
   position: absolute;
   z-index: 5;
   top: 22%;
@@ -2685,19 +2685,19 @@ body[data-dsh-orca-link] [data-composer-card]:not([class*='cardWorkspaceTrigger'
   pointer-events: none;
 }
 
-body[data-dsh-orca-link] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::before {
+body[data-dsh-orca-link-wj] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::before {
   left: -10px;
   border-right: 0;
 }
 
-body[data-dsh-orca-link] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::after {
+body[data-dsh-orca-link-wj] [data-composer-card]:not([class*='cardWorkspaceTrigger'])::after {
   right: -10px;
   border-left: 0;
 }
 
 /* The stock bracket artwork remains untouched. These transparent controls
    only turn its existing left and right hit planes into drag surfaces. */
-body[data-dsh-orca-link] [data-orca-composer-handle] {
+body[data-dsh-orca-link-wj] [data-orca-composer-handle] {
   position: absolute;
   z-index: 6;
   top: 50%;
@@ -2714,17 +2714,17 @@ body[data-dsh-orca-link] [data-orca-composer-handle] {
   transform: translateY(-50%);
 }
 
-body[data-dsh-orca-link] [data-orca-composer-handle='left'] { left: -16px; }
-body[data-dsh-orca-link] [data-orca-composer-handle='right'] { right: -16px; }
+body[data-dsh-orca-link-wj] [data-orca-composer-handle='left'] { left: -16px; }
+body[data-dsh-orca-link-wj] [data-orca-composer-handle='right'] { right: -16px; }
 
-body[data-dsh-orca-link][data-ds-dark-theme]
+body[data-dsh-orca-link-wj][data-ds-dark-theme]
   [data-composer-card]:not([class*='cardWorkspaceTrigger'])::before,
-body[data-dsh-orca-link][data-ds-dark-theme]
+body[data-dsh-orca-link-wj][data-ds-dark-theme]
   [data-composer-card]:not([class*='cardWorkspaceTrigger'])::after {
   border-color: color-mix(in srgb, var(--orca-graphite) 34%, transparent);
 }
 
-body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat] {
+body[data-dsh-orca-link-wj] [data-phase='active'] [data-composer-seat] {
   transition:
     opacity 300ms ease,
     transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -2733,7 +2733,7 @@ body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat] {
 /* Promote the seat only while one of its own transitions is in flight. A seat
    that stays promoted keeps its subtree — the goal dock's 13px text included —
    on the scaled compositor raster instead of the crisp 1:1 one. */
-body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat]:is(
+body[data-dsh-orca-link-wj] [data-phase='active'] [data-composer-seat]:is(
     [data-orca-composer-motion],
     [data-orca-composer-collapsing],
     [data-orca-composer-collapse-rebounding],
@@ -2742,18 +2742,18 @@ body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat]:is(
   will-change: opacity, transform;
 }
 
-body[data-dsh-orca-link][data-orca-composer-handle-dragging] {
+body[data-dsh-orca-link-wj][data-orca-composer-handle-dragging] {
   cursor: ew-resize;
   user-select: none;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapse-dragging] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapse-dragging] {
   transition: none !important;
 }
 
 /* Transform the intact card: its editor and container queries retain their
    layout width throughout a drag, so the transcript keeps its original seat. */
-body[data-dsh-orca-link] [data-composer-seat]:is(
+body[data-dsh-orca-link-wj] [data-composer-seat]:is(
   [data-orca-composer-collapse-dragging],
   [data-orca-composer-collapse-rebounding],
   [data-orca-composer-collapsing],
@@ -2764,28 +2764,28 @@ body[data-dsh-orca-link] [data-composer-seat]:is(
   transition: none !important;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapse-dragging] [data-composer-card] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapse-dragging] [data-composer-card] {
   transform: scale(var(--orca-composer-scale, 1));
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapse-rebounding] [data-composer-card] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapse-rebounding] [data-composer-card] {
   animation: orcaComposerRebound 400ms linear both;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-manual-hidden] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-manual-hidden] {
   pointer-events: none;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-manual-hidden]:not([data-orca-composer-collapsing]) {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-manual-hidden]:not([data-orca-composer-collapsing]) {
   opacity: 0;
   transition: none;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapsing] [data-composer-card] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapsing] [data-composer-card] {
   animation: orcaComposerFold 420ms cubic-bezier(0.32, 0, 0.2, 1) both;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-restoring] [data-composer-card] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-restoring] [data-composer-card] {
   animation: orcaComposerManualRestore 500ms linear both;
 }
 
@@ -2808,16 +2808,16 @@ body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-restoring] [dat
 /* The host permission control starts hiding its label at a fairly generous
    width. Keep all wording intact until the controls genuinely run out of
    room, then let the card's real inline size drive the compact states. */
-body[data-dsh-orca-link] [data-composer-card] :is([class*='triggerLabel'], [class*='triggerEffort']) {
+body[data-dsh-orca-link-wj] [data-composer-card] :is([class*='triggerLabel'], [class*='triggerEffort']) {
   display: block !important;
 }
 
 @container orca-composer (max-width: 260px) {
-  body[data-dsh-orca-link] [data-composer-card] :is([class*='triggerLabel'], [class*='triggerEffort']) {
+  body[data-dsh-orca-link-wj] [data-composer-card] :is([class*='triggerLabel'], [class*='triggerEffort']) {
     display: none !important;
   }
 
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-composer-card]
     :is([class*='_row'], [class*='_tools'], [class*='_modes'], [class*='_trailing']) {
     gap: 2px;
@@ -2825,19 +2825,19 @@ body[data-dsh-orca-link] [data-composer-card] :is([class*='triggerLabel'], [clas
 }
 
 @container orca-composer (max-width: 200px) {
-  body[data-dsh-orca-link] [data-composer-card] [class*='_row'] {
+  body[data-dsh-orca-link-wj] [data-composer-card] [class*='_row'] {
     justify-content: center;
     padding-inline: 4px;
   }
 
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj]
     [data-composer-card]
     :is(button[aria-haspopup='listbox'], button[aria-label*='上下文'], button[aria-label*='Context']) {
     display: none;
   }
 }
 
-body[data-dsh-orca-link] [data-orca-composer-restore] {
+body[data-dsh-orca-link-wj] [data-orca-composer-restore] {
   position: fixed;
   z-index: var(--orca-z-restore);
   display: grid;
@@ -2854,10 +2854,10 @@ body[data-dsh-orca-link] [data-orca-composer-restore] {
   animation: orcaComposerRestoreControlIn 240ms linear 260ms both;
 }
 
-body[data-dsh-orca-link] [data-orca-composer-restore][hidden] { display: none; }
+body[data-dsh-orca-link-wj] [data-orca-composer-restore][hidden] { display: none; }
 
-body[data-dsh-orca-link] [data-orca-composer-restore]::before,
-body[data-dsh-orca-link] [data-orca-composer-restore]::after {
+body[data-dsh-orca-link-wj] [data-orca-composer-restore]::before,
+body[data-dsh-orca-link-wj] [data-orca-composer-restore]::after {
   position: absolute;
   top: 4px;
   bottom: 4px;
@@ -2866,17 +2866,17 @@ body[data-dsh-orca-link] [data-orca-composer-restore]::after {
   border: 1px solid currentColor;
 }
 
-body[data-dsh-orca-link] [data-orca-composer-restore]::before {
+body[data-dsh-orca-link-wj] [data-orca-composer-restore]::before {
   left: -6px;
   border-right: 0;
 }
 
-body[data-dsh-orca-link] [data-orca-composer-restore]::after {
+body[data-dsh-orca-link-wj] [data-orca-composer-restore]::after {
   right: -6px;
   border-left: 0;
 }
 
-body[data-dsh-orca-link] [data-orca-composer-restore-core] {
+body[data-dsh-orca-link-wj] [data-orca-composer-restore-core] {
   width: 10px;
   height: 10px;
   border: 1px solid currentColor;
@@ -2884,7 +2884,7 @@ body[data-dsh-orca-link] [data-orca-composer-restore-core] {
   box-shadow: inset 3px 0 0 var(--orca-blue);
 }
 
-body[data-dsh-orca-link] [data-orca-composer-restore]:is(:hover, :focus-visible) {
+body[data-dsh-orca-link-wj] [data-orca-composer-restore]:is(:hover, :focus-visible) {
   border-color: var(--orca-blue);
   color: var(--orca-blue);
   outline: 1px solid color-mix(in srgb, var(--orca-blue) 40%, transparent);
@@ -2892,12 +2892,12 @@ body[data-dsh-orca-link] [data-orca-composer-restore]:is(:hover, :focus-visible)
   transform: translateY(-1px);
 }
 
-body[data-dsh-orca-link] [data-orca-composer-restore][data-orca-composer-restore-exiting] {
+body[data-dsh-orca-link-wj] [data-orca-composer-restore][data-orca-composer-restore-exiting] {
   pointer-events: none;
   animation: orcaComposerRestoreControlOut 160ms ease-out both;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-orca-composer-restore] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-orca-composer-restore] {
   border-color: color-mix(in srgb, var(--orca-graphite) 34%, transparent);
   background: #111925;
   box-shadow: 5px 7px 0 rgba(0, 0, 0, 0.2), 0 12px 30px rgba(0, 0, 0, 0.34);
@@ -2927,7 +2927,7 @@ body[data-dsh-orca-link][data-ds-dark-theme] [data-orca-composer-restore] {
   100% { opacity: 1; transform: none; }
 }
 
-body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] {
+body[data-dsh-orca-link-wj] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] {
   opacity: 1;
   /* `none`, not translateY(0): any non-none transform makes the seat the
      containing block for fixed descendants, which re-homes the host tooltip
@@ -2936,42 +2936,42 @@ body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat][data-orca-co
   transition: none;
 }
 
-body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card] {
+body[data-dsh-orca-link-wj] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card] {
   background-color: var(--dsw-specific-input-major);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card] {
   background-color: var(--dsw-specific-input-major);
 }
 
-body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card]:focus-within,
-body[data-dsh-orca-link][data-ds-dark-theme] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card]:focus-within {
+body[data-dsh-orca-link-wj] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card]:focus-within,
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-phase='active'] [data-composer-seat][data-orca-composer-interactive] [data-composer-card]:focus-within {
   background-color: var(--dsw-input-solid);
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-hidden] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-hidden] {
   opacity: 0;
   transform: translateY(28px);
   pointer-events: none;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-outside-chat] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-outside-chat] {
   display: none !important;
 }
 
 /* Clip the moving card inside its stationary seat so the transformed footer
    cannot extend the transcript's scroll range and be chased by auto-follow. */
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-entering] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-entering] {
   overflow: clip;
   overflow-clip-margin: 12px;
 }
 
-body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-entering] [data-composer-card] {
+body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-entering] [data-composer-card] {
   will-change: transform, opacity;
   animation: orcaComposerDockIn 700ms linear 100ms both;
 }
 
-body[data-dsh-orca-link] [data-orca-composer-ghost] {
+body[data-dsh-orca-link-wj] [data-orca-composer-ghost] {
   position: fixed;
   z-index: var(--orca-z-ghost);
   box-sizing: border-box;
@@ -2997,57 +2997,57 @@ body[data-dsh-orca-link] [data-orca-composer-ghost] {
 
 /* Standby telemetry lives only under the hero橱窗 — an instrument reading,
    not floating chrome. */
-body[data-dsh-orca-link] .standby {
+body[data-dsh-orca-link-wj] .standby {
   position: fixed; bottom: 18px; left: calc(50% + 9vw); z-index: 900;
   display: none; align-items: center; gap: 14px; width: min(420px, 38vw);
   transform: translateX(-50%); color: var(--orca-muted);
   font: 500 8px/1 ui-monospace, "SFMono-Regular", Consolas, monospace;
   letter-spacing: 0.2em; pointer-events: none;
 }
-body[data-dsh-orca-link][data-orca-scene='hero'] .standby { display: flex; }
-body[data-dsh-orca-link] .standbyLine {
+body[data-dsh-orca-link-wj][data-orca-scene='hero'] .standby { display: flex; }
+body[data-dsh-orca-link-wj] .standbyLine {
   flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--orca-line));
 }
-body[data-dsh-orca-link] .standbyLine:last-child {
+body[data-dsh-orca-link-wj] .standbyLine:last-child {
   background: linear-gradient(90deg, var(--orca-line), transparent);
 }
 
-body[data-dsh-orca-link] [data-aionui-explorer-col],
-body[data-dsh-orca-link] [data-aionui-preview-col],
-body[data-dsh-orca-link] [data-gitgraph-dialog] {
+body[data-dsh-orca-link-wj] [data-aionui-explorer-col],
+body[data-dsh-orca-link-wj] [data-aionui-preview-col],
+body[data-dsh-orca-link-wj] [data-gitgraph-dialog] {
   border-color: var(--orca-line); background: var(--orca-surface); box-shadow: var(--orca-shadow);
 }
 
 /* Icon redraw: matched host glyphs keep their element, sizing and React
    ownership, but the original drawing is retired while the ORCA art group
    (see icons.ts) carries the visible rectilinear geometry instead. */
-body[data-dsh-orca-link] [data-orca-link-icon] > :not([data-orca-link-icon-art]) {
+body[data-dsh-orca-link-wj] [data-orca-link-icon] > :not([data-orca-link-icon-art]) {
   display: none;
 }
 
 /* Todo progress borrows the context-usage pixel field: the frame stays still
    while cells fill bottom-up, then clear for the next cycle. This explicitly
    retires the host's rotating-ring animation from the retained SVG element. */
-body[data-dsh-orca-link] [data-orca-link-icon='todo-progress'] {
+body[data-dsh-orca-link-wj] [data-orca-link-icon='todo-progress'] {
   animation: none !important;
 }
 
-body[data-dsh-orca-link] [data-orca-link-icon='todo-progress'] [data-orca-link-todo-progress-cell] {
+body[data-dsh-orca-link-wj] [data-orca-link-icon='todo-progress'] [data-orca-link-todo-progress-cell] {
   opacity: 0.12;
   animation-duration: 2.4s;
   animation-timing-function: steps(1, end);
   animation-iteration-count: infinite;
 }
 
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='0'] { animation-name: orcaTodoFill0; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='1'] { animation-name: orcaTodoFill1; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='2'] { animation-name: orcaTodoFill2; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='3'] { animation-name: orcaTodoFill3; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='4'] { animation-name: orcaTodoFill4; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='5'] { animation-name: orcaTodoFill5; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='6'] { animation-name: orcaTodoFill6; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='7'] { animation-name: orcaTodoFill7; }
-body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='8'] { animation-name: orcaTodoFill8; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='0'] { animation-name: orcaTodoFill0; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='1'] { animation-name: orcaTodoFill1; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='2'] { animation-name: orcaTodoFill2; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='3'] { animation-name: orcaTodoFill3; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='4'] { animation-name: orcaTodoFill4; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='5'] { animation-name: orcaTodoFill5; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='6'] { animation-name: orcaTodoFill6; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='7'] { animation-name: orcaTodoFill7; }
+body[data-dsh-orca-link-wj] [data-orca-link-todo-progress-cell='8'] { animation-name: orcaTodoFill8; }
 
 @keyframes orcaTodoFill0 { 0%, 7.999% { opacity: 0.12; } 8%, 89.999% { opacity: 1; } 90%, 100% { opacity: 0.12; } }
 @keyframes orcaTodoFill1 { 0%, 15.999% { opacity: 0.12; } 16%, 89.999% { opacity: 1; } 90%, 100% { opacity: 0.12; } }
@@ -3059,7 +3059,7 @@ body[data-dsh-orca-link] [data-orca-link-todo-progress-cell='8'] { animation-nam
 @keyframes orcaTodoFill7 { 0%, 63.999% { opacity: 0.12; } 64%, 89.999% { opacity: 1; } 90%, 100% { opacity: 0.12; } }
 @keyframes orcaTodoFill8 { 0%, 71.999% { opacity: 0.12; } 72%, 89.999% { opacity: 1; } 90%, 100% { opacity: 0.12; } }
 
-body[data-dsh-orca-link] {
+body[data-dsh-orca-link-wj] {
   --aion-bg-base: var(--orca-surface-strong);
   --aion-bg-1: var(--orca-surface);
   --aion-bg-2: rgba(240, 236, 229, 0.72);
@@ -3075,11 +3075,11 @@ body[data-dsh-orca-link] {
 }
 
 @media (max-width: 900px) {
-  body[data-dsh-orca-link] .lightScene { display: none; }
-  body[data-dsh-orca-link][data-ds-dark-theme] .darkScene { display: none; }
-  body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before,
-  body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::after { display: none; }
-  body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea'] {
+  body[data-dsh-orca-link-wj] .lightScene { display: none; }
+  body[data-dsh-orca-link-wj][data-ds-dark-theme] .darkScene { display: none; }
+  body[data-dsh-orca-link-wj] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before,
+  body[data-dsh-orca-link-wj] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::after { display: none; }
+  body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea'] {
     margin-top: 0;
     border-top: none;
     background: transparent;
@@ -3088,59 +3088,59 @@ body[data-dsh-orca-link] {
   /* The portrait stage is retired in this layout, so the entries' stage-sized
      offset would leave a blank band above the plugin rows; reset it with the
      rest of the stage chrome. */
-  body[data-dsh-orca-link][data-orca-sidebar-wide]
+  body[data-dsh-orca-link-wj][data-orca-sidebar-wide]
     [data-slot='sidebar']
     > :first-child
     > :is(button[data-dsh-part='sidebar-entry'], [data-plugin-entry]) {
     margin-top: 0;
   }
-  body[data-dsh-orca-link][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea']::before { display: none; }
-  body[data-dsh-orca-link] .spine,
-  body[data-dsh-orca-link] .signalChip,
-  body[data-dsh-orca-link] .statusCharacter,
-  body[data-dsh-orca-link] .pricingLight { display: none; }
-  body[data-dsh-orca-link][data-orca-scene='hero'] .standby { display: none; }
+  body[data-dsh-orca-link-wj][data-orca-sidebar-wide] [data-slot='sidebar'] [class*='regionArea']::before { display: none; }
+  body[data-dsh-orca-link-wj] .spine,
+  body[data-dsh-orca-link-wj] .signalChip,
+  body[data-dsh-orca-link-wj] .statusCharacter,
+  body[data-dsh-orca-link-wj] .pricingLight { display: none; }
+  body[data-dsh-orca-link-wj][data-orca-scene='hero'] .standby { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-manual-hidden] { opacity: 0; }
-  body[data-dsh-orca-link] button,
-  body[data-dsh-orca-link] [role='button'],
-  body[data-dsh-orca-link] .dshWordmark,
-  body[data-dsh-orca-link] .statusCharacter,
-  body[data-dsh-orca-link] .statusCharacterBubble,
-  body[data-dsh-orca-link] .pricingLight,
-  body[data-dsh-orca-link] .pricingLamp,
-  body[data-dsh-orca-link] .pricingTooltip,
-  body[data-dsh-orca-link] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before { transition: none; }
-  body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > :first-child::after,
-  body[data-dsh-orca-link] .signalDot,
-  body[data-dsh-orca-link] [data-orca-link-icon='todo-progress'] [data-orca-link-todo-progress-cell],
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > :first-child,
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'],
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::before,
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::after,
-  body[data-dsh-orca-link] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge'])::after,
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-entering] [data-composer-card],
-  body[data-dsh-orca-link] [data-orca-composer-ghost],
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-restoring] [data-composer-card],
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapse-rebounding] [data-composer-card],
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapsing] [data-composer-card],
-  body[data-dsh-orca-link] [data-orca-composer-restore] { animation: none; }
-  body[data-dsh-orca-link] [data-phase='active'] [data-composer-seat],
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapse-rebounding],
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-collapsing],
-  body[data-dsh-orca-link] [data-orca-composer-restore],
-  body[data-dsh-orca-link] .lightSceneLayer,
-  body[data-dsh-orca-link] .darkSceneLayer,
-  body[data-dsh-orca-link] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'])::before,
-  body[data-dsh-orca-link] [data-slot='sidebar'] button[aria-haspopup='dialog']::after { transition: none; }
-  body[data-dsh-orca-link] [data-orca-link-icon='todo-progress'] [data-orca-link-todo-progress-cell] { opacity: 0.55; }
-  body[data-dsh-orca-link] .statusCharacterBubble { transition: none; }
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::before,
-  body[data-dsh-orca-link][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::after { display: none; }
-  body[data-dsh-orca-link] .statusCharacterFrame { animation: none; }
-  body[data-dsh-orca-link] .pricingLight[data-orca-link-price='transition'] .pricingLampAmber { animation: none; }
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-manual-hidden] { opacity: 0; }
+  body[data-dsh-orca-link-wj] button,
+  body[data-dsh-orca-link-wj] [role='button'],
+  body[data-dsh-orca-link-wj] .dshWordmark,
+  body[data-dsh-orca-link-wj] .statusCharacter,
+  body[data-dsh-orca-link-wj] .statusCharacterBubble,
+  body[data-dsh-orca-link-wj] .pricingLight,
+  body[data-dsh-orca-link-wj] .pricingLamp,
+  body[data-dsh-orca-link-wj] .pricingTooltip,
+  body[data-dsh-orca-link-wj] :is([data-pane='sidebar'], [data-slot='sidebar'] > :first-child)::before { transition: none; }
+  body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > :first-child::after,
+  body[data-dsh-orca-link-wj] .signalDot,
+  body[data-dsh-orca-link-wj] [data-orca-link-icon='todo-progress'] [data-orca-link-todo-progress-cell],
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > :first-child,
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog'],
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::before,
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::after,
+  body[data-dsh-orca-link-wj] [data-phase='hero'] [class*='titleGroup'] > span:not([class*='previewBadge'])::after,
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-entering] [data-composer-card],
+  body[data-dsh-orca-link-wj] [data-orca-composer-ghost],
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-restoring] [data-composer-card],
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapse-rebounding] [data-composer-card],
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapsing] [data-composer-card],
+  body[data-dsh-orca-link-wj] [data-orca-composer-restore] { animation: none; }
+  body[data-dsh-orca-link-wj] [data-phase='active'] [data-composer-seat],
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapse-rebounding],
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-collapsing],
+  body[data-dsh-orca-link-wj] [data-orca-composer-restore],
+  body[data-dsh-orca-link-wj] .lightSceneLayer,
+  body[data-dsh-orca-link-wj] .darkSceneLayer,
+  body[data-dsh-orca-link-wj] [data-slot='sidebar'] > :first-child > button:not([data-dsh-part='sidebar-entry'])::before,
+  body[data-dsh-orca-link-wj] [data-slot='sidebar'] button[aria-haspopup='dialog']::after { transition: none; }
+  body[data-dsh-orca-link-wj] [data-orca-link-icon='todo-progress'] [data-orca-link-todo-progress-cell] { opacity: 0.55; }
+  body[data-dsh-orca-link-wj] .statusCharacterBubble { transition: none; }
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::before,
+  body[data-dsh-orca-link-wj][data-orca-settings-open] [data-slot='sidebar.settings'] > [role='presentation'] > [role='dialog']::after { display: none; }
+  body[data-dsh-orca-link-wj] .statusCharacterFrame { animation: none; }
+  body[data-dsh-orca-link-wj] .pricingLight[data-orca-link-price='transition'] .pricingLampAmber { animation: none; }
 }
 
 @keyframes orcaGateWeave {
@@ -3165,7 +3165,7 @@ body[data-dsh-orca-link] {
 /* The semantic handles are siblings of the conversation scrollport inside the
    host body wrapper. Anchor the rule to that relationship without depending
    on generated class names. */
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-phase='active']
   > :has(> [data-conversation-scroll])
   > [data-width-handle][data-side]::after {
@@ -3186,7 +3186,7 @@ body[data-dsh-orca-link]
     drop-shadow(0 0 3px rgba(115, 88, 63, 0.42));
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme]
+body[data-dsh-orca-link-wj][data-ds-dark-theme]
   [data-phase='active']
   > :has(> [data-conversation-scroll])
   > [data-width-handle][data-side]::after {
@@ -3205,7 +3205,7 @@ body[data-dsh-orca-link][data-ds-dark-theme]
     drop-shadow(0 0 6px rgba(69, 217, 244, 0.78));
 }
 
-body[data-dsh-orca-link]
+body[data-dsh-orca-link-wj]
   [data-phase='active']
   > :has(> [data-conversation-scroll])
   > [data-width-handle][data-side]:is(:hover, [data-dragging])::after {
@@ -3213,33 +3213,33 @@ body[data-dsh-orca-link]
   animation: orcaLinkWidthHandleSignal 920ms steps(4, end) infinite;
 }
 
-body[data-dsh-orca-link]:not([data-ds-dark-theme]) [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]::before {
+body[data-dsh-orca-link-wj]:not([data-ds-dark-theme]) [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]::before {
   border-radius: 0;
   background: rgba(115, 88, 63, 0.56);
 }
 
-body[data-dsh-orca-link]:not([data-ds-dark-theme]) [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]:is(:hover, :focus-visible)::before {
+body[data-dsh-orca-link-wj]:not([data-ds-dark-theme]) [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]:is(:hover, :focus-visible)::before {
   background: #9b8061;
   box-shadow: 0 0 5px rgba(115, 88, 63, 0.46);
 }
 
-body[data-dsh-orca-link]:not([data-ds-dark-theme]) [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label][aria-current='true']::before {
+body[data-dsh-orca-link-wj]:not([data-ds-dark-theme]) [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label][aria-current='true']::before {
   background: #73583f;
   box-shadow:
     0 0 0 1px rgba(255, 252, 246, 0.92),
     0 0 5px rgba(115, 88, 63, 0.38);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]::before {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]::before {
   background: color-mix(in srgb, var(--orca-muted) 74%, transparent);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]:is(:hover, :focus-visible)::before {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]:is(:hover, :focus-visible)::before {
   background: var(--orca-cyan);
   box-shadow: 0 0 6px color-mix(in srgb, var(--orca-cyan) 72%, transparent);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label][aria-current='true']::before {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label][aria-current='true']::before {
   background: var(--orca-cyan);
   box-shadow:
     0 0 0 1px #f7fbff,
@@ -3260,8 +3260,8 @@ body[data-dsh-orca-link][data-ds-dark-theme] [data-phase='active'] :has(+ [data-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body[data-dsh-orca-link] [data-composer-seat][data-orca-composer-manual-hidden] { opacity: 0; }
-  body[data-dsh-orca-link]
+  body[data-dsh-orca-link-wj] [data-composer-seat][data-orca-composer-manual-hidden] { opacity: 0; }
+  body[data-dsh-orca-link-wj]
     [data-phase='active']
     > :has(> [data-conversation-scroll])
     > [data-width-handle][data-side]::after {
@@ -3272,10 +3272,10 @@ body[data-dsh-orca-link][data-ds-dark-theme] [data-phase='active'] :has(+ [data-
 /* Agent preset id captions keep the official light caption colour, which the
    ORCA backdrop turns illegible (light text on the cream surface). Pin them
    to the ink ramp so the id stays readable in both themes. */
-body[data-dsh-orca-link] [data-slot='sidebar.settings'] [class$='_cardId'] {
+body[data-dsh-orca-link-wj] [data-slot='sidebar.settings'] [class$='_cardId'] {
   color: var(--orca-graphite);
 }
-body[data-dsh-orca-link][data-ds-dark-theme] [data-slot='sidebar.settings'] [class$='_cardId'] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-slot='sidebar.settings'] [class$='_cardId'] {
   color: var(--orca-muted);
 }
 

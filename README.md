@@ -34,7 +34,7 @@ DeepSeek Harness Web GUI 的鲸鱼娘主题皮肤系列(独立分发仓库)。
 
 ### 一行安装（推荐）
 
-> **先确认发行版：**下面的命令只用于直接运行 DSH 的 standalone 环境。若已安装 `@linxin666/dsh-web-all`（dsh-web），请改从 dsh-web 自带的皮肤中心/安装入口安装其 `maid-atelier` 与 `orca-link` 适配版；不要在同一 profile 中再叠装本仓库的 standalone 包，否则组件与样式契约不一致，界面可能显示异常。
+> **先确认发行版：**下面的命令只用于直接运行 DSH 的 standalone 环境。若已安装 `@linxin666/dsh-web-all`（dsh-web），请改从 dsh-web 自带的皮肤中心/安装入口安装其 `maid-atelier-wj` 与 `orca-link-wj` 适配版；不要在同一 profile 中再叠装本仓库的 standalone 包，否则组件与样式契约不一致，界面可能显示异常。
 
 三个发行包（皮肤管理器 + 两套皮肤）**尚未发布到 npm**（`@wjingshan/*` 是它们在 npm 上的目标包名）。发布前请用下面的 GitHub 一行安装：按子目录直接从本仓库 `main` 拉取，**无需 clone**，要求 pnpm ≥ 9。
 
@@ -55,6 +55,27 @@ dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager
 首次安装是新增插件包，需要重启一次 DSH。重启时 skin-manager 会检测“两套皮肤同时启用”并**自动原子回退到官方默认**，所以首次安装不会出现皮肤叠加窗口；随后打开「设置 → 皮肤管理」点击目标皮肤「切换」即热重载生效，此后切换不再需要重启，也不需要 AI 参与。
 
 > npm 包发布之前，上面的 GitHub `#path:` spec 是唯一免 clone 的安装来源（要求 pnpm ≥ 9）；固定提交与本地开发见[独立子包安装](#独立子包安装本地开发与弱网备用)。npm（发布后）、GitHub 与本地 link 是同一包名的不同来源，混用时以最后一次 `add` 为准。
+
+### 与上游原版共存（身份分离）
+
+本 fork 的**插件身份**与上游完全分离，因此两边的包可以装在同一个 profile 里而不互相顶掉：
+
+| 身份 | 上游 | 本 fork |
+|---|---|---|
+| npm 包名 | 上游 scope + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
+| `skin.json` 的 `id` | `maid-atelier` | `maid-atelier-wj` |
+| `wiring.id`（patch 行 id） | `ui-skin-maid-atelier` | `ui-skin-maid-atelier-wj` |
+| `bodyAttr` | `data-dsh-maid-atelier` | `data-dsh-maid-atelier-wj` |
+
+（orca-link 同理，后缀同为 `-wj`。上游的 npm scope 与本仓库不同，这里有意不写出——本仓库的改名规则会改写该字面量。）
+分离规则由 `scripts/apply-fork-rename.py` 在每次同步上游之后自动重放；该文件的注释解释了为什么
+`id` / `wiring.id` / `bodyAttr` 三件套必须同时唯一：管理器按 `id` 与 `wiringId` 去重（重复项被丢弃），
+并靠 `bodyAttr` 判断当前激活的是哪套皮肤。
+
+皮肤管理器是**通用**的：它按 profile 依赖里带有效 `skin.json` 的包来发现皮肤，因此**上游发布的那个 manager 包**
+（包名后缀与本仓库的 `…-deep-whale-manager` 相同，scope 不同）同样能发现并切换本 fork 的皮肤。
+上游的 manager 与本仓库自带的 `…-manager-wj` **不要同时安装**——两者会各自注册一个「皮肤管理」设置页。
+
 
 ### 更新
 
@@ -82,7 +103,7 @@ dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-maid-atelier'
 dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-deep-whale-manager'
 ```
 
-随后重启一次 DSH。皮肤偏好按 `maid-atelier` / `orca-link` 的 skin id 保存，不会随 npm scope 改名。
+随后重启一次 DSH。皮肤偏好按 `maid-atelier-wj` / `orca-link-wj` 的 skin id 保存，不会随 npm scope 改名。
 
 ### 懒得敲命令？让 AI 装
 
@@ -107,13 +128,13 @@ dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-deep-whale-man
 
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone 到任意位置（浅克隆足够，跳过历史）
-node <clone 的绝对路径>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier
+node <clone 的绝对路径>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier-wj
 dsh plugin --profile web add <clone 的绝对路径>/skin-manager   # 常驻皮肤管理面板（推荐）
 dsh plugin --profile web add <clone 的绝对路径>/maid-atelier   # 深海女仆工坊
 dsh plugin --profile web add <clone 的绝对路径>/orca-link      # 虎鲸链路
 ```
 
-> 第一条 `node` 命令是**可选优化**：它在 `plugin add` 前把目标皮肤设为唯一启用项，使第一次启动直接就是目标皮肤；保留非皮肤 YAML，不整文件覆盖 patch。跳过它也安全——首次启动时 skin-manager 兜底会回退到官方默认，进「设置 → 皮肤管理」切换即可。要默认启用虎鲸则把 target 改成 `orca-link`，要保持原版则改成 `official`。
+> 第一条 `node` 命令是**可选优化**：它在 `plugin add` 前把目标皮肤设为唯一启用项，使第一次启动直接就是目标皮肤；保留非皮肤 YAML，不整文件覆盖 patch。跳过它也安全——首次启动时 skin-manager 兜底会回退到官方默认，进「设置 → 皮肤管理」切换即可。要默认启用虎鲸则把 target 改成 `orca-link-wj`，要保持原版则改成 `official`。
 
 **方式 A（推荐）：设置 → 皮肤管理 → 点击要用的那一套「切换」**。管理器自动把互斥 `disabled` 行写入两个 patch 层并热重载，刷新页面即可。
 
@@ -121,11 +142,11 @@ dsh plugin --profile web add <clone 的绝对路径>/orca-link      # 虎鲸链�
 
 ```yaml
 # 示例：只启用 maid-atelier；改为 orca-link 时把 false 移到它那行，两套皮肤只能有一套是 false
-- id: ui-skin-maid-atelier
+- id: ui-skin-maid-atelier-wj
   disabled: false
-- id: ui-skin-orca-link
+- id: ui-skin-orca-link-wj
   disabled: true
-- id: ui-skin-deep-whale-manager
+- id: ui-skin-deep-whale-manager-wj
   disabled: false
 ```
 

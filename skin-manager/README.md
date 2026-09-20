@@ -8,7 +8,7 @@
 - 渲染活动皮肤通过版本化协议主动暴露的开关、下拉、复选组、滑杆、颜色与可见时段配置项；当前声明使用 v2，manager 仍兼容已发布的完整 v1 声明，包括颜色、复选组、条件显示与旧值映射；
 - 通用的“不那么二次元模式”：按本机时间设置多个显示或隐藏时段。
 
-> 若已安装 `@linxin666/dsh-web-all`（dsh-web），请使用 dsh-web 自带的皮肤中心/安装入口及其 `maid-atelier`、`orca-link` 适配版，不要安装本管理器或执行下面的 standalone 安装命令。两种发行方式不能在同一 profile 中叠装。
+> 若已安装 `@linxin666/dsh-web-all`（dsh-web），请使用 dsh-web 自带的皮肤中心/安装入口及其 `maid-atelier-wj`、`orca-link-wj` 适配版，不要安装本管理器或执行下面的 standalone 安装命令。两种发行方式不能在同一 profile 中叠装。
 
 与皮肤一起安装。本包**尚未发布到 npm**，用下面的 GitHub 子目录 spec（要求 pnpm ≥ 9，spec 需单引号包裹）：
 

@@ -1,4 +1,4 @@
-body[data-dsh-orca-link] [data-dsh-boot][data-orca-boot-error] {
+body[data-dsh-orca-link-wj] [data-dsh-boot][data-orca-boot-error] {
   box-sizing: border-box;
   position: relative;
   display: grid;
@@ -16,11 +16,11 @@ body[data-dsh-orca-link] [data-dsh-boot][data-orca-boot-error] {
   background: #f6f1e7;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-dsh-boot][data-orca-boot-error] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-dsh-boot][data-orca-boot-error] {
   background: #090f18;
 }
 
-body[data-dsh-orca-link] [data-orca-boot-error] > div {
+body[data-dsh-orca-link-wj] [data-orca-boot-error] > div {
   grid-area: report;
   box-sizing: border-box;
   align-items: stretch;
@@ -38,13 +38,13 @@ body[data-dsh-orca-link] [data-orca-boot-error] > div {
   scrollbar-gutter: stable;
 }
 
-body[data-dsh-orca-link] [data-orca-boot-error] > div > div {
+body[data-dsh-orca-link-wj] [data-orca-boot-error] > div > div {
   min-width: 0;
   max-width: none;
   width: 100%;
 }
 
-body[data-dsh-orca-link] [data-orca-boot-error] > div > div:first-child {
+body[data-dsh-orca-link-wj] [data-orca-boot-error] > div > div:first-child {
   padding-bottom: 18px;
   border-bottom: 1px solid var(--orca-line);
   color: var(--orca-muted);
@@ -52,14 +52,14 @@ body[data-dsh-orca-link] [data-orca-boot-error] > div > div:first-child {
   font-size: 12px;
 }
 
-body[data-dsh-orca-link] [data-orca-boot-error] > div > div + div > div:first-child {
+body[data-dsh-orca-link-wj] [data-orca-boot-error] > div > div + div > div:first-child {
   margin-bottom: 12px;
   color: var(--orca-ink);
   font-size: clamp(20px, 2.2vw, 26px);
   line-height: 1.4;
 }
 
-body[data-dsh-orca-link] [data-orca-boot-scene] {
+body[data-dsh-orca-link-wj] [data-orca-boot-scene] {
   grid-area: scene;
   position: relative;
   width: 100%;
@@ -72,7 +72,7 @@ body[data-dsh-orca-link] [data-orca-boot-scene] {
   isolation: isolate;
 }
 
-body[data-dsh-orca-link] [data-orca-boot-figure] {
+body[data-dsh-orca-link-wj] [data-orca-boot-figure] {
   position: absolute;
   left: 3%;
   bottom: 5%;
@@ -82,47 +82,47 @@ body[data-dsh-orca-link] [data-orca-boot-figure] {
   object-position: center bottom;
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-orca-boot-figure] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-orca-boot-figure] {
   filter: brightness(.77) saturate(.78);
 }
 
-body[data-dsh-orca-link] [data-orca-boot-scene] [data-orca-work-light='repair'] {
+body[data-dsh-orca-link-wj] [data-orca-boot-scene] [data-orca-work-light='repair'] {
   top: -10%;
   bottom: 10%;
 }
 
-body[data-dsh-orca-link] [data-orca-boot-floor] {
+body[data-dsh-orca-link-wj] [data-orca-boot-floor] {
   position: absolute;
   inset: auto 7% 1%;
   height: 9%;
   background: radial-gradient(ellipse, #50463522, transparent 70%);
 }
 
-body[data-dsh-orca-link][data-ds-dark-theme] [data-orca-boot-floor] {
+body[data-dsh-orca-link-wj][data-ds-dark-theme] [data-orca-boot-floor] {
   background: radial-gradient(ellipse, #edc78818, transparent 70%);
 }
 
-html[data-dsh-whale-orca-art='hidden'] body[data-dsh-orca-link] [data-dsh-boot][data-orca-boot-error] {
+html[data-dsh-whale-orca-art='hidden'] body[data-dsh-orca-link-wj] [data-dsh-boot][data-orca-boot-error] {
   grid-template-columns: minmax(0, 620px);
   grid-template-areas: 'report';
 }
 
-html[data-dsh-whale-orca-art='hidden'] body[data-dsh-orca-link] [data-orca-boot-scene] {
+html[data-dsh-whale-orca-art='hidden'] body[data-dsh-orca-link-wj] [data-orca-boot-scene] {
   display: none;
 }
 
 @media (max-width: 760px) {
-  body[data-dsh-orca-link] [data-dsh-boot][data-orca-boot-error] {
+  body[data-dsh-orca-link-wj] [data-dsh-boot][data-orca-boot-error] {
     grid-template-columns: minmax(0, 620px);
     grid-template-areas: 'scene' 'report';
     align-content: start;
     gap: 16px;
     padding: 20px;
   }
-  body[data-dsh-orca-link] [data-orca-boot-scene] {
+  body[data-dsh-orca-link-wj] [data-orca-boot-scene] {
     width: min(72vw, 300px);
   }
-  body[data-dsh-orca-link] [data-orca-boot-error] > div {
+  body[data-dsh-orca-link-wj] [data-orca-boot-error] > div {
     max-height: none;
   }
 }

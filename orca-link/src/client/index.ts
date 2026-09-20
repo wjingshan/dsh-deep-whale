@@ -113,10 +113,10 @@ function syncSidebarWidth(body: HTMLElement, pane: Element): number {
 
 export function apply(ctx: Context): void {
   const body = document.body
-  ctx.effect(() => installOrcaCustomization(), 'ui-skin-orca-link: customization declaration')
-  ctx.effect(() => installOrcaLightVisibility(body), 'ui-skin-orca-link: decorative light visibility')
-  ctx.effect(() => installOrcaBootError(), 'ui-skin-orca-link: boot failure presentation')
-  ctx.effect(() => installOrcaPageIcons(), 'ui-skin-orca-link: page icons')
+  ctx.effect(() => installOrcaCustomization(), 'ui-skin-orca-link-wj: customization declaration')
+  ctx.effect(() => installOrcaLightVisibility(body), 'ui-skin-orca-link-wj: decorative light visibility')
+  ctx.effect(() => installOrcaBootError(), 'ui-skin-orca-link-wj: boot failure presentation')
+  ctx.effect(() => installOrcaPageIcons(), 'ui-skin-orca-link-wj: page icons')
   const originalTitle = document.title
   const originalLightHeroArt = body.style.getPropertyValue(LIGHT_HERO_ART_PROPERTY)
   const originalLightActiveArt = body.style.getPropertyValue(LIGHT_ACTIVE_ART_PROPERTY)
@@ -125,7 +125,7 @@ export function apply(ctx: Context): void {
   const originalSidebarWidth = body.style.getPropertyValue(SIDEBAR_WIDTH_PROPERTY)
   const originalSidebarArtWidth = body.style.getPropertyValue(SIDEBAR_ART_WIDTH_PROPERTY)
   const originalSidebarWide = body.hasAttribute(SIDEBAR_WIDE_ATTRIBUTE)
-  body.dataset.dshOrcaLink = ''
+  body.dataset.dshOrcaLinkWj = ''
   body.style.setProperty(LIGHT_HERO_ART_PROPERTY, `url("${ORCA_LINK_LIGHT_HERO_ART}")`)
   body.style.setProperty(LIGHT_ACTIVE_ART_PROPERTY, `url("${ORCA_LINK_LIGHT_ACTIVE_ART}")`)
   body.style.setProperty(DARK_HERO_ART_PROPERTY, `url("${ORCA_LINK_DARK_HERO_ART}")`)
@@ -263,7 +263,7 @@ export function apply(ctx: Context): void {
     disposeWindowResume()
     disposeTerminalPerformance()
     disposeSettingsOverlay()
-    delete body.dataset.dshOrcaLink
+    delete body.dataset.dshOrcaLinkWj
     if (originalLightHeroArt === '') body.style.removeProperty(LIGHT_HERO_ART_PROPERTY)
     else body.style.setProperty(LIGHT_HERO_ART_PROPERTY, originalLightHeroArt)
     if (originalLightActiveArt === '') body.style.removeProperty(LIGHT_ACTIVE_ART_PROPERTY)
@@ -291,5 +291,5 @@ export function apply(ctx: Context): void {
       brandButton.removeAttribute('data-orca-link-brand')
     })
     if (document.title === SKIN_TITLE) document.title = originalTitle
-  }, 'ui-skin-orca-link: technical chrome')
+  }, 'ui-skin-orca-link-wj: technical chrome')
 }

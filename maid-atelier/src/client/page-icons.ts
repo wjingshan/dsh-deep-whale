@@ -23,7 +23,7 @@ export function installMaidPageIcons(ctx: Context): void {
       current.restore()
       installations.delete(doc)
     }
-  }, 'ui-skin-maid-atelier: page icons')
+  }, 'ui-skin-maid-atelier-wj: page icons')
 }
 
 function mountPageIcons(doc: Document): () => void {
@@ -53,7 +53,7 @@ function mountPageIcons(doc: Document): () => void {
       node.href = href
       node.type = type
       node.dataset.skinChrome = rel === 'icon' ? 'favicon' : 'manifest'
-      node.dataset.skinOwner = 'maid-atelier'
+      node.dataset.skinOwner = 'maid-atelier-wj'
       doc.head.append(node)
       return node
     }

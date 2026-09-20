@@ -8,7 +8,7 @@ const css = readFileSync(
 
 describe('ORCA LINK sidebar motion', () => {
   it('moves the wordmark in a stable sidebar coordinate system', () => {
-    const rule = css.match(/body\[data-dsh-orca-link\] \.dshWordmark\s*\{([^}]*)\}/s)?.[1] ?? ''
+    const rule = css.match(/body\[data-dsh-orca-link-wj\] \.dshWordmark\s*\{([^}]*)\}/s)?.[1] ?? ''
     expect(rule).toContain('top: 21px;')
     expect(rule).toContain('left: 0;')
     expect(rule).toContain('transform-origin: center;')
@@ -37,7 +37,7 @@ describe('ORCA LINK sidebar motion', () => {
   // the takeover's own selectors must stay intact.
   it('treats a portalled plugin entry host as a sidebar entry', () => {
     const lifted = css.match(
-      /body\[data-dsh-orca-link\]\[data-orca-sidebar-wide\]\s*\[data-slot='sidebar'\]\s*>\s*:first-child\s*>\s*:is\((?<selector>[^{]*)\)\s*\{/,
+      /body\[data-dsh-orca-link-wj\]\[data-orca-sidebar-wide\]\s*\[data-slot='sidebar'\]\s*>\s*:first-child\s*>\s*:is\((?<selector>[^{]*)\)\s*\{/,
     )?.groups?.selector ?? ''
     expect(lifted).toContain("button[data-dsh-part='sidebar-entry']")
     expect(lifted).toContain('[data-plugin-entry]')

@@ -53,7 +53,7 @@ import { installMaidTableCards } from './table-card.ts'
 import { installMaidPageIcons } from './page-icons.ts'
 
 const SKIN_TITLE = '深海女仆工坊 · DeepSeek Harness'
-const SKIN_OWNER = 'maid-atelier'
+const SKIN_OWNER = 'maid-atelier-wj'
 const SKIN_SYSTEM_CHROME_COLOR = '#0b193f'
 const VIEWPORT_RESIZE_SETTLE_MS = 120
 const SIDEBAR_COLUMN_SELECTOR = ":is([data-pane='sidebar'], [class*='sidebarCol'])"
@@ -436,8 +436,8 @@ function decorateWorkspaceTree(decoratedElements: Set<HTMLElement>): void {
  */
 export function apply(ctx: Context): void {
   const body = document.body
-  ctx.effect(() => installMaidCustomization(), 'ui-skin-maid-atelier: customization declaration')
-  ctx.effect(() => installMaidBootError(), 'ui-skin-maid-atelier: boot failure presentation')
+  ctx.effect(() => installMaidCustomization(), 'ui-skin-maid-atelier-wj: customization declaration')
+  ctx.effect(() => installMaidBootError(), 'ui-skin-maid-atelier-wj: boot failure presentation')
   const originalTitle = document.title
   const layoutResizeLease = createBodyAttributeLease(body, 'data-maid-layout-resizing')
   const lowPowerLease = createBodyAttributeLease(body, 'data-maid-low-power')
@@ -475,7 +475,7 @@ export function apply(ctx: Context): void {
   let disposeMaidTableCards = (): void => {}
 
   ctx.effect(() => () => {
-    delete body.dataset.dshMaidAtelier
+    delete body.dataset.dshMaidAtelierWj
     delete body.dataset.maidComposerMotion
     delete body.dataset.maidSidebarCompact
     delete body.dataset.maidSidebarSize
@@ -521,7 +521,7 @@ export function apply(ctx: Context): void {
       themeColorMeta.content = previousThemeColor ?? ''
     }
     if (document.title === SKIN_TITLE) document.title = originalTitle
-  }, 'ui-skin-maid-atelier: layered background and ornament')
+  }, 'ui-skin-maid-atelier-wj: layered background and ornament')
 
   handleViewportResize = (): void => {
     layoutResizeLease.acquire()
@@ -551,16 +551,16 @@ export function apply(ctx: Context): void {
     subtree: true,
   })
   syncSystemChrome()
-  body.dataset.dshMaidAtelier = ''
+  body.dataset.dshMaidAtelierWj = ''
   // Composer presentation modes (skin setting 「输入框显示方式」):
   // capsule collapses the empty unfocused card, scroll fades it on scroll-up.
-  ctx.effect(() => installMaidComposerDismiss(body), 'ui-skin-maid-atelier: composer stats dismissal')
+  ctx.effect(() => installMaidComposerDismiss(body), 'ui-skin-maid-atelier-wj: composer stats dismissal')
   const disposeMaidComposerCapsule = installMaidComposerCapsule(body)
   const disposeMaidComposerScroll = installMaidComposerScroll(body)
   const settingsNavigation = createMaidSettingsNavigation(body)
-  ctx.effect(() => settingsNavigation.dispose, 'ui-skin-maid-atelier: settings navigation hint')
-  ctx.effect(() => installMaidMobileDrawerAutoClose(body), 'ui-skin-maid-atelier: mobile drawer auto-close')
-  ctx.effect(() => installMaidMobileViewport(body), 'ui-skin-maid-atelier: phone viewport')
+  ctx.effect(() => settingsNavigation.dispose, 'ui-skin-maid-atelier-wj: settings navigation hint')
+  ctx.effect(() => installMaidMobileDrawerAutoClose(body), 'ui-skin-maid-atelier-wj: mobile drawer auto-close')
+  ctx.effect(() => installMaidMobileViewport(body), 'ui-skin-maid-atelier-wj: phone viewport')
   disposeMaidTableCards = installMaidTableCards(ctx).dispose
   body.style.setProperty('--maid-top-trim-art', `url(${MAID_ATELIER_TOP_TRIM_TILE})`)
   body.style.setProperty('--maid-boot-error-left-art', `url(${MAID_BOOT_ERROR_LEFT})`)
@@ -619,7 +619,7 @@ export function apply(ctx: Context): void {
   // every frame, and each additional CSSOM write is another style invalidation
   // through the same rule. The two consumers that used to be mirrored from it
   // are derived here instead, where they cost nothing per frame.
-  widthSheet.sheet!.insertRule(`body[data-dsh-maid-atelier] :is(${SIDEBAR_COLUMN_SELECTOR}, [data-cordis-panel], [data-maid-settings-backdrop-frame], [data-maid-table-lightbox]) { --maid-sidebar-width: 280px; --maid-sidebar-swag-height: clamp(54px, calc(var(--maid-sidebar-width) * 0.2575), 94px); --maid-sidebar-mascot-width: min(320px, calc(var(--maid-sidebar-width) * 0.82)); }`)
+  widthSheet.sheet!.insertRule(`body[data-dsh-maid-atelier-wj] :is(${SIDEBAR_COLUMN_SELECTOR}, [data-cordis-panel], [data-maid-settings-backdrop-frame], [data-maid-table-lightbox]) { --maid-sidebar-width: 280px; --maid-sidebar-swag-height: clamp(54px, calc(var(--maid-sidebar-width) * 0.2575), 94px); --maid-sidebar-mascot-width: min(320px, calc(var(--maid-sidebar-width) * 0.82)); }`)
   // The official frame rules reference env(titlebar-area-height), but the
   // CSS-modules pipeline rewrites the env() identifier there too, so the
   // title-bar row silently falls back to an auto row: expanding the sidebar
@@ -633,10 +633,10 @@ export function apply(ctx: Context): void {
   const appendRule = (rule: string): void => {
     widthSheet.sheet!.insertRule(rule, widthSheet.sheet!.cssRules.length)
   }
-  appendRule('body[data-dsh-maid-atelier] { --maid-titlebar-height: 0px; }')
-  appendRule('body[data-dsh-maid-atelier] [class*=\"frame\"][data-wco] { grid-template-rows: env(titlebar-area-height, 40px) 1fr; }')
-  appendRule('body[data-dsh-maid-atelier] [class*=\"frame\"][data-desktop] { grid-template-rows: 32px 1fr; }')
-  appendRule('body[data-dsh-maid-atelier] [class*=\"frame\"] [class*=\"handle\"] { top: var(--maid-titlebar-height, 0px); }')
+  appendRule('body[data-dsh-maid-atelier-wj] { --maid-titlebar-height: 0px; }')
+  appendRule('body[data-dsh-maid-atelier-wj] [class*=\"frame\"][data-wco] { grid-template-rows: env(titlebar-area-height, 40px) 1fr; }')
+  appendRule('body[data-dsh-maid-atelier-wj] [class*=\"frame\"][data-desktop] { grid-template-rows: 32px 1fr; }')
+  appendRule('body[data-dsh-maid-atelier-wj] [class*=\"frame\"] [class*=\"handle\"] { top: var(--maid-titlebar-height, 0px); }')
 
   const widthRule = widthSheet.sheet!.cssRules[0] as CSSStyleRule
   const titlebarRule = widthSheet.sheet!.cssRules[1] as CSSStyleRule

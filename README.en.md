@@ -34,7 +34,7 @@ Click an image for the full size.
 
 ### One-line install (recommended)
 
-> **Check your distribution first:** the commands below are only for standalone environments that run DSH directly. If you installed `@linxin666/dsh-web-all` (dsh-web), install its adapted `maid-atelier` and `orca-link` through dsh-web's own skin center/installer instead. Do not add this repository's standalone packages to the same profile; the component and styling contracts differ and the resulting UI may be broken.
+> **Check your distribution first:** the commands below are only for standalone environments that run DSH directly. If you installed `@linxin666/dsh-web-all` (dsh-web), install its adapted `maid-atelier-wj` and `orca-link-wj` through dsh-web's own skin center/installer instead. Do not add this repository's standalone packages to the same profile; the component and styling contracts differ and the resulting UI may be broken.
 
 The three distribution packages (skin manager + both skins) are **not published on npm yet** (`@wjingshan/*` are their intended npm names). Until then, the one-line install below pulls them straight from this repository's `main` by subdirectory — **no clone required**, pnpm ≥ 9.
 
@@ -55,6 +55,30 @@ For a single skin, drop the line you do not need (keep skin-manager: switching a
 This is a first-time package addition, so restart DSH once. On that restart the skin manager detects "two skins enabled at once" and **atomically falls back to the official default**, so a fresh install can never leave skins stacked; then open Settings → Skin Management and click Switch on your skin — hot reload applies it. Later switches need no restart and no AI assistance.
 
 > Until the npm packages are published, these GitHub `#path:` specs are the only install source that needs no clone (pnpm ≥ 9). For pinned commits and local development, see [Standalone sub-package install](#standalone-sub-package-install-dev-and-weak-network-fallback). npm (once published), GitHub and local links are different sources for the same package names; the last `add` wins.
+
+### Coexisting with the upstream packages (separated identity)
+
+This fork's **plugin identity** is fully separated from upstream, so both distributions can live in one
+profile without either skin shadowing the other:
+
+| Identity | Upstream | This fork |
+|---|---|---|
+| npm package name | upstream scope + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
+| `skin.json` `id` | `maid-atelier` | `maid-atelier-wj` |
+| `wiring.id` (patch row id) | `ui-skin-maid-atelier` | `ui-skin-maid-atelier-wj` |
+| `bodyAttr` | `data-dsh-maid-atelier` | `data-dsh-maid-atelier-wj` |
+
+(The same `-wj` suffix applies to `orca-link`. The upstream npm scope is deliberately not spelled out
+here, because this repository's rename rules rewrite that literal.) The separation is reapplied automatically
+after every upstream sync by `scripts/apply-fork-rename.py`; that file's comments explain why `id`,
+`wiring.id` and `bodyAttr` must all be unique — the manager de-duplicates by `id` and `wiringId`
+(later duplicates are dropped) and detects the active skin through `bodyAttr`.
+
+The skin manager is **generic**: it discovers skins by the valid `skin.json` in the profile's dependencies,
+so the manager package published by the upstream project (same `…-deep-whale-manager` suffix, different
+scope) manages this fork's skins as well. Do **not** install it together with this repository's
+`…-manager-wj`: each registers its own "Skin Management" settings page.
+
 
 ### Update
 
@@ -82,7 +106,7 @@ dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-maid-atelier'
 dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-deep-whale-manager'
 ```
 
-Restart DSH once after installing the new packages. Skin preferences remain keyed by the `maid-atelier` / `orca-link` skin ids and are not renamed with the npm scope.
+Restart DSH once after installing the new packages. Skin preferences remain keyed by the `maid-atelier-wj` / `orca-link-wj` skin ids and are not renamed with the npm scope.
 
 ### Can't be bothered? Let an AI install it
 
@@ -107,13 +131,13 @@ Read https://github.com/wjingshan/dsh-deep-whale/INSTALL.md and install the skin
 
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone anywhere (shallow is enough, skips history)
-node <abs path to clone>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier
+node <abs path to clone>/.agents/skills/dsh-skin-install/scripts/stage-mutual-exclusion.mjs --profile web --target maid-atelier-wj
 dsh plugin --profile web add <abs path to clone>/skin-manager   # persistent skin manager panel (recommended)
 dsh plugin --profile web add <abs path to clone>/maid-atelier   # Abyssal Maid Atelier
 dsh plugin --profile web add <abs path to clone>/orca-link      # ORCA LINK
 ```
 
-> The `node` command is an **optional optimization**: staged before any `plugin add`, it makes the target skin the only enabled one so the first startup already shows it; it preserves unrelated YAML and never overwrites the whole patch. Skipping it is safe too — the skin-manager fallback returns to Official default on first startup, then switch in Settings → Skin Management. Use `--target orca-link` for ORCA LINK or `--target official` for the stock UI.
+> The `node` command is an **optional optimization**: staged before any `plugin add`, it makes the target skin the only enabled one so the first startup already shows it; it preserves unrelated YAML and never overwrites the whole patch. Skipping it is safe too — the skin-manager fallback returns to Official default on first startup, then switch in Settings → Skin Management. Use `--target orca-link-wj` for ORCA LINK or `--target official` for the stock UI.
 
 **Option A (recommended): Settings → Skin Management → click Switch on the skin you want.** The manager writes the mutual-exclusion `disabled` rows to both patch layers and hot reloads; just refresh the page.
 
@@ -121,11 +145,11 @@ dsh plugin --profile web add <abs path to clone>/orca-link      # ORCA LINK
 
 ```yaml
 # Example: enable only maid-atelier; for orca-link move `false` to its row — exactly one of the two skins may be false
-- id: ui-skin-maid-atelier
+- id: ui-skin-maid-atelier-wj
   disabled: false
-- id: ui-skin-orca-link
+- id: ui-skin-orca-link-wj
   disabled: true
-- id: ui-skin-deep-whale-manager
+- id: ui-skin-deep-whale-manager-wj
   disabled: false
 ```
 

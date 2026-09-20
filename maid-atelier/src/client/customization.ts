@@ -147,7 +147,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
 
   return exposeSkinCustomization({
     protocol: SKIN_CUSTOMIZATION_PROTOCOL,
-    skinId: 'maid-atelier',
+    skinId: 'maid-atelier-wj',
     title: '深海女仆工坊',
     titleEn: 'Abyssal Maid Atelier',
     settings: [

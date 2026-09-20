@@ -42,10 +42,10 @@ const CORDIS_ROOT_RULE = block(
 
 /** Always-on sidebar layering the release rules have to neutralise. */
 const SIDEBAR_BASE_RULE = block(
-  /body\[data-dsh-orca-link\]\s*:is\(\[data-pane='sidebar'\],\s*\[data-slot='sidebar'\]\s*>\s*:first-child\)\s*\{([^}]*)\}/,
+  /body\[data-dsh-orca-link-wj\]\s*:is\(\[data-pane='sidebar'\],\s*\[data-slot='sidebar'\]\s*>\s*:first-child\)\s*\{([^}]*)\}/,
 )
 const SIDEBAR_CHILDREN_RULE = block(
-  /body\[data-dsh-orca-link\]\s*:is\(\[data-pane='sidebar'\],\s*\[data-slot='sidebar'\]\s*>\s*:first-child\)\s*>\s*:not\(\[role='tooltip'\][^)]*\)\s*\{([^}]*)\}/,
+  /body\[data-dsh-orca-link-wj\]\s*:is\(\[data-pane='sidebar'\],\s*\[data-slot='sidebar'\]\s*>\s*:first-child\)\s*>\s*:not\(\[role='tooltip'\][^)]*\)\s*\{([^}]*)\}/,
 )
 
 describe('ORCA LINK cordis panel stacking', () => {
@@ -93,6 +93,6 @@ describe('ORCA LINK cordis panel stacking', () => {
     // attribute consumed by the CSS release rules.
     expect(OVERLAY_SOURCE).toContain("[data-slot='sidebar.footer.action'] [data-cordis-panel]")
     expect(OVERLAY_SOURCE).toContain('data-orca-cordis-panel-open')
-    expect(CSS).toContain('body[data-dsh-orca-link][data-orca-cordis-panel-open]')
+    expect(CSS).toContain('body[data-dsh-orca-link-wj][data-orca-cordis-panel-open]')
   })
 })

@@ -12,9 +12,9 @@ const css = readFileSync(
 
 describe('ORCA LINK performance guards', () => {
   it('does not apply the shape contract to every descendant and pseudo-element', () => {
-    expect(css).not.toContain('body[data-dsh-orca-link] *,')
-    expect(css).not.toContain('body[data-dsh-orca-link] *::before')
-    expect(css).not.toContain('body[data-dsh-orca-link] *::after')
+    expect(css).not.toContain('body[data-dsh-orca-link-wj] *,')
+    expect(css).not.toContain('body[data-dsh-orca-link-wj] *::before')
+    expect(css).not.toContain('body[data-dsh-orca-link-wj] *::after')
   })
 
   it('promotes the composer seat only while one of its own transitions runs', () => {
@@ -35,8 +35,8 @@ describe('ORCA LINK performance guards', () => {
   })
 
   it('uses the stable scene attribute instead of a body-wide phase query', () => {
-    expect(css).toContain("body[data-dsh-orca-link][data-orca-scene='hero'] .standby")
-    expect(css).not.toContain("body[data-dsh-orca-link]:has([data-phase='hero'])")
+    expect(css).toContain("body[data-dsh-orca-link-wj][data-orca-scene='hero'] .standby")
+    expect(css).not.toContain("body[data-dsh-orca-link-wj]:has([data-phase='hero'])")
     const handleOwner = String.raw`\[data-phase='active'\]\s*>\s*:has\(> \[data-conversation-scroll\]\)\s*>\s*\[data-width-handle\]\[data-side\]`
     expect(css).toMatch(new RegExp(`${handleOwner}::after\\s*\\{`))
     expect(css).toMatch(new RegExp(`${handleOwner}:is\\(:hover, \\[data-dragging\\]\\)::after\\s*\\{`))
@@ -233,8 +233,8 @@ describe('ORCA LINK performance guards', () => {
   })
 
   it('raises the app root only while the settings dialog is open', async () => {
-    expect(css).toContain("body[data-dsh-orca-link][data-orca-settings-open] [id='root']")
-    expect(css).not.toContain("body[data-dsh-orca-link]:has([data-slot='sidebar.settings']")
+    expect(css).toContain("body[data-dsh-orca-link-wj][data-orca-settings-open] [id='root']")
+    expect(css).not.toContain("body[data-dsh-orca-link-wj]:has([data-slot='sidebar.settings']")
     document.body.innerHTML = '<div id="root"><div data-slot="sidebar.settings"></div></div>'
     const dispose = installOrcaSettingsOverlay(document.body)
     const settings = document.querySelector<HTMLElement>("[data-slot='sidebar.settings']")!

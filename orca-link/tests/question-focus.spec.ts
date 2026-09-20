@@ -8,7 +8,7 @@ const css = readFileSync(
 
 describe('question composer focus styling', () => {
   it('keeps the global accessibility outline while exempting question inputs', () => {
-    expect(css).toContain("body[data-dsh-orca-link] :focus-visible:not(")
+    expect(css).toContain("body[data-dsh-orca-link-wj] :focus-visible:not(")
     expect(css).toContain('outline: 2px solid var(--orca-blue)')
     expect(css).toContain("[data-question-key] :is(input, textarea):focus-visible {\n  outline: none;")
   })

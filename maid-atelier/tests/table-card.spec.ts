@@ -59,7 +59,7 @@ describe('installMaidTableCards', () => {
     expect(card.parentElement).toBe(bubble)
     expect(card.hasAttribute('data-maid-table-frame')).toBe(true)
     const button = card.querySelector<HTMLButtonElement>('[data-maid-table-expand]')
-    expect(button?.dataset.skinOwner).toBe('maid-atelier')
+    expect(button?.dataset.skinOwner).toBe('maid-atelier-wj')
     expect(button?.getAttribute('aria-label')).toBe('展开表格预览')
     expect(button?.title).toBe('展开表格预览')
     expect(button?.hidden).toBe(false)

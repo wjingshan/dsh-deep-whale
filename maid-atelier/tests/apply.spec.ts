@@ -153,9 +153,9 @@ describe('Maid Atelier skin apply', () => {
 
   it('sets the body attribute and retracts it on dispose', async () => {
     fiber = await mount()
-    expect(document.body.hasAttribute('data-dsh-maid-atelier')).toBe(true)
+    expect(document.body.hasAttribute('data-dsh-maid-atelier-wj')).toBe(true)
     await fiber.dispose()
-    expect(document.body.hasAttribute('data-dsh-maid-atelier')).toBe(false)
+    expect(document.body.hasAttribute('data-dsh-maid-atelier-wj')).toBe(false)
   })
 
   it('registers cleanup before a later CSSOM initialization failure', () => {
@@ -174,8 +174,8 @@ describe('Maid Atelier skin apply', () => {
     expect(disposers.length).toBeGreaterThan(0)
     for (const dispose of disposers.reverse()) dispose()
 
-    expect(document.body.hasAttribute('data-dsh-maid-atelier')).toBe(false)
-    expect(document.querySelector("[data-skin-owner='maid-atelier']")).toBeNull()
+    expect(document.body.hasAttribute('data-dsh-maid-atelier-wj')).toBe(false)
+    expect(document.querySelector("[data-skin-owner='maid-atelier-wj']")).toBeNull()
     insertRule.mockRestore()
   })
 
@@ -211,7 +211,7 @@ describe('Maid Atelier skin apply', () => {
   it('does not remove a foreign node that happens to reuse the owner marker', async () => {
     fiber = await mount()
     const foreign = document.createElement('div')
-    foreign.dataset.skinOwner = 'maid-atelier'
+    foreign.dataset.skinOwner = 'maid-atelier-wj'
     document.body.append(foreign)
 
     await fiber.dispose()
@@ -240,7 +240,7 @@ describe('Maid Atelier skin apply', () => {
     expect(document.querySelector("[data-skin-chrome='brand-lockup']")).toBeNull()
 
     await fiber.dispose()
-    expect(document.querySelector("[data-skin-owner='maid-atelier']")).toBeNull()
+    expect(document.querySelector("[data-skin-owner='maid-atelier-wj']")).toBeNull()
   })
 
   it('decorates a sidebar mounted after the skin', async () => {
@@ -904,7 +904,7 @@ describe('Maid Atelier skin apply', () => {
 
   it('keeps settings content independent from collapsed sidebar icon chrome', () => {
     const railIconSelectors = [...CSS.matchAll(
-      /body\[data-dsh-maid-atelier\]\[data-maid-sidebar-size='rail'\][^{]+:is\(\[class\*='iconButton'\], \[class\*='searchButton'\]\)[^{]+\{/g,
+      /body\[data-dsh-maid-atelier-wj\]\[data-maid-sidebar-size='rail'\][^{]+:is\(\[class\*='iconButton'\], \[class\*='searchButton'\]\)[^{]+\{/g,
     )].map(match => match[0] ?? '')
     const centeredSettingsContentRule = CSS.match(
       /:not\(\[data-maid-sidebar-size='rail'\]\)[\s\S]*?\[data-slot='sidebar\.settings'\][\s\S]*?button\[aria-haspopup='dialog'\]:has\(> \[data-slot='settings\.trigger'\]\)\s*\{([^}]*)\}/s,
@@ -1102,7 +1102,7 @@ describe('Maid Atelier skin apply', () => {
     // the assertions below read the captured selector, not the declaration body.
     const windowRules = [
       ...CSS.matchAll(
-        /html:not\(\[data-maid-nav-mode='rail'\]\) body\[data-dsh-maid-atelier\][^{}]*?div\[data-sidebar-collapsed\][^{}]*?\{([^{}]*)\}/g,
+        /html:not\(\[data-maid-nav-mode='rail'\]\) body\[data-dsh-maid-atelier-wj\][^{}]*?div\[data-sidebar-collapsed\][^{}]*?\{([^{}]*)\}/g,
       ),
     ]
       .map((match) => ({
@@ -1137,7 +1137,7 @@ describe('Maid Atelier skin apply', () => {
     // The list rows are `nav.panelList`'s children, not portalled buttons, so a
     // selector-only assertion above would not prove this.
     document.documentElement.removeAttribute('data-maid-nav-mode')
-    document.body.setAttribute('data-dsh-maid-atelier', '')
+    document.body.setAttribute('data-dsh-maid-atelier-wj', '')
     document.body.innerHTML = `
       <div class="fixture_frame" data-sidebar-collapsed>
         <div class="fixture_sidebarCol">
@@ -1171,7 +1171,7 @@ describe('Maid Atelier skin apply', () => {
     // rail keeps every control.
     document.querySelector('.fixture_root')!.className = 'fixture_root fixture_collapsed fixture_railIn'
     expect(hiddenFixtures()).toEqual([])
-    document.body.removeAttribute('data-dsh-maid-atelier')
+    document.body.removeAttribute('data-dsh-maid-atelier-wj')
   })
 
   it('dresses the frameless title bar with the sidebar navy gradient', () => {
@@ -1187,7 +1187,7 @@ describe('Maid Atelier skin apply', () => {
 
   it('keeps delayed sidebar tooltips out of the rail flex layout', () => {
     const sidebarLayerSelector = CSS.match(
-      /body\[data-dsh-maid-atelier\] :is\(\[data-pane='sidebar'\], \[class\*='sidebarCol'\]\) > div > :not\(([\s\S]*?)\)\s*\{/,
+      /body\[data-dsh-maid-atelier-wj\] :is\(\[data-pane='sidebar'\], \[class\*='sidebarCol'\]\) > div > :not\(([\s\S]*?)\)\s*\{/,
     )?.[1] ?? ''
     expect(sidebarLayerSelector).toContain("[role='tooltip']")
   })
@@ -1245,7 +1245,7 @@ describe('Maid Atelier skin apply', () => {
     // next tap elsewhere. Touch pins the resting state; pointer devices keep the
     // host's reveal.
     const touchBlock = CSS.match(
-      /@media \(hover: none\)\s*\{\s*body\[data-dsh-maid-atelier\][\s\S]*?\n\}/,
+      /@media \(hover: none\)\s*\{\s*body\[data-dsh-maid-atelier-wj\][\s\S]*?\n\}/,
     )?.[0] ?? ''
     expect(touchBlock).toContain("[class*='panelIcon']")
     expect(touchBlock).toContain('display: none')
@@ -1320,7 +1320,7 @@ describe('Maid Atelier skin apply', () => {
       /\[class\*='headline'\]:has\(> \[class\*='fish'\]\) > \[class\*='titleGroup'\]\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const titleRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\s*\[data-phase='hero'\]\s*\[class\*='titleGroup'\] > span:not\(\[class\*='previewBadge'\]\)\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\s*\[data-phase='hero'\]\s*\[class\*='titleGroup'\] > span:not\(\[class\*='previewBadge'\]\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const previewRule = CSS.match(
       /\[data-phase='hero'\] \[class\*='previewBadge'\]\s*\{([^}]*)\}/s,
@@ -1346,10 +1346,10 @@ describe('Maid Atelier skin apply', () => {
 
   it('keeps the dark hero title and preview badge legible over the night palace', () => {
     const titleRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\[data-ds-dark-theme\]\s*\[data-phase='hero'\] \[class\*='titleGroup'\] > span:not\(\[class\*='previewBadge'\]\)\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\[data-ds-dark-theme\]\s*\[data-phase='hero'\] \[class\*='titleGroup'\] > span:not\(\[class\*='previewBadge'\]\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const badgeRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\[data-ds-dark-theme\]\s*\[data-phase='hero'\] \[class\*='previewBadge'\]\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\[data-ds-dark-theme\]\s*\[data-phase='hero'\] \[class\*='previewBadge'\]\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     expect(titleRule).toContain('color: #fffaf0')
     expect(titleRule).toContain('-webkit-text-stroke: 0.35px')
@@ -1487,7 +1487,7 @@ describe('Maid Atelier skin apply', () => {
 
   it('keeps root-level relational selectors out of the skin scope', () => {
     expect(CSS).not.toMatch(
-      /body\[data-dsh-maid-atelier\](?:\[[^\]]+\]|:not\([^)]*\))*:has\(/,
+      /body\[data-dsh-maid-atelier-wj\](?:\[[^\]]+\]|:not\([^)]*\))*:has\(/,
     )
   })
 
@@ -1581,7 +1581,7 @@ describe('Maid Atelier skin apply', () => {
     // `--maid-sidebar-width`: the desktop inset above then left the lightbox
     // with no width behind the bar and a ~90px sliver under the open drawer.
     const phoneLightboxRule = CSS.match(
-      /@media \(max-width: 700px\)\s*\{\s*body\[data-dsh-maid-atelier\] \[data-maid-table-lightbox\]\s*\{([^{}]*)\}/s,
+      /@media \(max-width: 700px\)\s*\{\s*body\[data-dsh-maid-atelier-wj\] \[data-maid-table-lightbox\]\s*\{([^{}]*)\}/s,
     )?.[1] ?? ''
     expect(phoneLightboxRule).toContain('left: 0')
     // The panel owns the remaining width, so the table keeps its natural width
@@ -1866,7 +1866,7 @@ describe('Maid Atelier skin apply', () => {
     // dialog opaque legitimately declares `animation: none` for another element,
     // and the reduced-motion overrides are stripped above — outside those, no
     // rule may cancel this column's entrance.
-    document.body.setAttribute('data-dsh-maid-atelier', '')
+    document.body.setAttribute('data-dsh-maid-atelier-wj', '')
     document.body.innerHTML = `
       <div class="fixture_frame">
         <div class="fixture_sidebarCol">
@@ -1914,7 +1914,7 @@ describe('Maid Atelier skin apply', () => {
       }
     }
     document.documentElement.removeAttribute('data-maid-nav-mode')
-    document.body.removeAttribute('data-dsh-maid-atelier')
+    document.body.removeAttribute('data-dsh-maid-atelier-wj')
   })
 
   it('targets the carrier suppression at the official footArea, not the SidebarRoot', () => {
@@ -2027,7 +2027,7 @@ describe('Maid Atelier skin apply', () => {
     expect(settingsSurfaceBackingRule).toContain('backdrop-filter: blur(6px) saturate(0.9)')
     expect(darkSettingsSurfaceRule).toContain('--dsw-alias-bg-layer-2: rgba(24, 40, 80, 0.82)')
     expect(CSS).not.toMatch(
-      /body\[data-dsh-maid-atelier\]\s+\[role='presentation'\]\s*> \[role='dialog'\]\[aria-modal='true'\]/s,
+      /body\[data-dsh-maid-atelier-wj\]\s+\[role='presentation'\]\s*> \[role='dialog'\]\[aria-modal='true'\]/s,
     )
   })
 
@@ -2068,52 +2068,52 @@ describe('Maid Atelier skin apply', () => {
       /data-maid-settings-open[\s\S]*?\[role='presentation'\]\s*\{[^}]*justify-content: flex-start/s,
     )
     const overlayBaselineRule = [...CSS.matchAll(
-      /body\[data-dsh-maid-atelier\]\[data-maid-settings-open\]\s+\[data-slot='sidebar\.settings'\]\s*> \[role='presentation'\]\s*\{([^}]*)\}/g,
+      /body\[data-dsh-maid-atelier-wj\]\[data-maid-settings-open\]\s+\[data-slot='sidebar\.settings'\]\s*> \[role='presentation'\]\s*\{([^}]*)\}/g,
     )].map(match => match[1] ?? '').join('\n')
     expect(overlayBaselineRule).toBe('')
 
     // Every rule is scoped to the open settings dialog, never body-level :has.
     expect(CSS).not.toMatch(
-      /body\[data-dsh-maid-atelier\](?:\[[^\]]+\]|:not\([^)]*\))*:has\(/,
+      /body\[data-dsh-maid-atelier-wj\](?:\[[^\]]+\]|:not\([^)]*\))*:has\(/,
     )
   })
 
   it('dresses the settings select popup in the porcelain-and-gold language', () => {
     const baseSelectRule = CSS.match(
-      /@supports \(appearance: base-select\)\s*\{[\s\S]*?body\[data-dsh-maid-atelier\] \[role='dialog'\] select\s*\{([^}]*)\}/s,
+      /@supports \(appearance: base-select\)\s*\{[\s\S]*?body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const inputSelectRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] \[role='dialog'\] select\[class\$='_selectInput'\]\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select\[class\$='_selectInput'\]\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const pickerIconRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] \[role='dialog'\] select::picker-icon\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select::picker-icon\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const openIconRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] \[role='dialog'\] select:open::picker-icon\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select:open::picker-icon\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const pickerRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] \[role='dialog'\] select::picker\(select\)\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select::picker\(select\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const optionRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] \[role='dialog'\] select option\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select option\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const hoverRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] \[role='dialog'\] select option:hover,\s*body\[data-dsh-maid-atelier\] \[role='dialog'\] select option:focus-visible\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select option:hover,\s*body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select option:focus-visible\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const checkedRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] \[role='dialog'\] select option:checked\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] \[role='dialog'\] select option:checked\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const darkIconRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\[data-ds-dark-theme\] \[role='dialog'\] select::picker-icon\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\[data-ds-dark-theme\] \[role='dialog'\] select::picker-icon\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const darkPickerRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\[data-ds-dark-theme\] \[role='dialog'\] select::picker\(select\)\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\[data-ds-dark-theme\] \[role='dialog'\] select::picker\(select\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const darkOptionRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\[data-ds-dark-theme\] \[role='dialog'\] select option\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\[data-ds-dark-theme\] \[role='dialog'\] select option\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const darkCheckedRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\[data-ds-dark-theme\] \[role='dialog'\] select option:checked\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\[data-ds-dark-theme\] \[role='dialog'\] select option:checked\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
 
     // The closed control keeps the product's `_input` geometry (32px, 8px
@@ -2165,10 +2165,10 @@ describe('Maid Atelier skin apply', () => {
     // Every rule stays inside a dialog and behind the base-select gate: no
     // body-level select styling, no body-level :has() selector.
     expect(CSS).not.toMatch(
-      /body\[data-dsh-maid-atelier\](?:\[[^\]]+\])?\s+select\s*\{[^}]*appearance: base-select/s,
+      /body\[data-dsh-maid-atelier-wj\](?:\[[^\]]+\])?\s+select\s*\{[^}]*appearance: base-select/s,
     )
     expect(CSS).not.toMatch(
-      /body\[data-dsh-maid-atelier\]\s+(?:\[[^\]]+\]\s+)*:has\([^)]*\)[^{}]*select\s*\{/s,
+      /body\[data-dsh-maid-atelier-wj\]\s+(?:\[[^\]]+\]\s+)*:has\([^)]*\)[^{}]*select\s*\{/s,
     )
   })
 
@@ -2317,7 +2317,7 @@ describe('Maid Atelier skin apply', () => {
       /\[data-maid-conversation-active\] \[data-skin-chrome='bottom-trim'\]\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const movingTrimRule = CSS.match(
-      /body\[data-dsh-maid-atelier\]\[data-maid-composer-motion\]\s*\[data-skin-chrome='bottom-trim'\]\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\]\[data-maid-composer-motion\]\s*\[data-skin-chrome='bottom-trim'\]\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     expect(bottomTrimRule).not.toContain('--maid-sidebar-width')
     expect(bottomTrimRule).toContain('transform: translateY(0)')
@@ -2361,7 +2361,7 @@ describe('Maid Atelier skin apply', () => {
 
   it('keeps the animated workspace trim above its tablist without reserving lace space', () => {
     const workspaceHeaderRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] header:has\(\[role='tablist'\]\)\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] header:has\(\[role='tablist'\]\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     expect(workspaceHeaderRule).toContain('position: relative')
     expect(workspaceHeaderRule).toContain('z-index: 21')
@@ -2388,7 +2388,7 @@ describe('Maid Atelier skin apply', () => {
 
   it('softens workspace entry and disables decorative motion when requested', () => {
     const workspaceHeaderRule = CSS.match(
-      /body\[data-dsh-maid-atelier\] header:has\(\[role='tablist'\]\)\s*\{([^}]*)\}/s,
+      /body\[data-dsh-maid-atelier-wj\] header:has\(\[role='tablist'\]\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const reducedMotionRule = Array.from(
       CSS.matchAll(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/g),
