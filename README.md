@@ -19,7 +19,7 @@ DeepSeek Harness Web GUI 的鲸鱼娘主题皮肤系列(独立分发仓库)。
 |---|---|---|---|
 | [maid-atelier](maid-atelier/) | `@wjingshan/dsh-client-ui-skin-maid-atelier` | 深海女仆工坊:双女仆背景、深海蓝蕾丝界面与 Q 版侧栏 | MIT (code) / CC BY-NC-SA 4.0 (artwork) |
 | [orca-link](orca-link/) | `@wjingshan/dsh-client-ui-skin-orca-link` | 虎鲸链路:珍珠白机械舱、虎鲸娘角色与电蓝链路信号 | MIT (code) / CC BY-NC-SA 4.0 (artwork) |
-| [skin-manager](skin-manager/) | `@wjingshan/dsh-client-ui-skin-deep-whale-manager` | 通用皮肤发现、切换与皮肤自声明配置面板 | MIT |
+| [skin-manager](skin-manager/) | `@wjingshan/dsh-client-ui-skin-deep-whale-manager` | 通用皮肤发现与切换面板；**本仓库不发行**，请安装上游已发布的同名包 | MIT |
 
 ## 版权所有人
 
@@ -36,18 +36,22 @@ DeepSeek Harness Web GUI 的鲸鱼娘主题皮肤系列(独立分发仓库)。
 
 > **先确认发行版：**下面的命令只用于直接运行 DSH 的 standalone 环境。若已安装 `@linxin666/dsh-web-all`（dsh-web），请改从 dsh-web 自带的皮肤中心/安装入口安装其 `maid-atelier-wj` 与 `orca-link-wj` 适配版；不要在同一 profile 中再叠装本仓库的 standalone 包，否则组件与样式契约不一致，界面可能显示异常。
 
-三个发行包（皮肤管理器 + 两套皮肤）**尚未发布到 npm**（`@wjingshan/*` 是它们在 npm 上的目标包名）。发布前请用下面的 GitHub 一行安装：按子目录直接从本仓库 `main` 拉取，**无需 clone**，要求 pnpm ≥ 9。
+本仓库发行**两套皮肤**（`@wjingshan/dsh-client-ui-skin-maid-atelier` / `-orca-link`）——它们**尚未发布到 npm**，用下面的 GitHub 一行安装按子目录直接从本仓库 `main` 拉取，**无需 clone**（要求 pnpm ≥ 9）。**皮肤管理器请安装上游已发布的 `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`**；本仓库不再发行自己的 manager。
 
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 **PowerShell**（用 `;` 分隔命令）：
 
 ```powershell
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 只想用其中一套皮肤时，把不需要的那行删掉（skin-manager 建议保留，切换与互斥都靠它）。
@@ -62,19 +66,20 @@ dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager
 
 | 身份 | 上游 | 本 fork |
 |---|---|---|
-| npm 包名 | 上游 scope + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
+| npm 包名 | `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`（管理器）/ 上游 scope + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
 | `skin.json` 的 `id` | `maid-atelier` | `maid-atelier-wj` |
 | `wiring.id`（patch 行 id） | `ui-skin-maid-atelier` | `ui-skin-maid-atelier-wj` |
 | `bodyAttr` | `data-dsh-maid-atelier` | `data-dsh-maid-atelier-wj` |
 
-（orca-link 同理，后缀同为 `-wj`。上游的 npm scope 与本仓库不同，这里有意不写出——本仓库的改名规则会改写该字面量。）
+（orca-link 同理，后缀同为 `-wj`。上游的 npm scope 除 manager 那一行外有意不写出——本仓库的改名规则会改写该字面量。）
 分离规则由 `scripts/apply-fork-rename.py` 在每次同步上游之后自动重放；该文件的注释解释了为什么
 `id` / `wiring.id` / `bodyAttr` 三件套必须同时唯一：管理器按 `id` 与 `wiringId` 去重（重复项被丢弃），
 并靠 `bodyAttr` 判断当前激活的是哪套皮肤。
 
-皮肤管理器是**通用**的：它按 profile 依赖里带有效 `skin.json` 的包来发现皮肤，因此**上游发布的那个 manager 包**
-（包名后缀与本仓库的 `…-deep-whale-manager` 相同，scope 不同）同样能发现并切换本 fork 的皮肤。
-上游的 manager 与本仓库自带的 `…-manager-wj` **不要同时安装**——两者会各自注册一个「皮肤管理」设置页。
+**manager 不做身份分离**：本仓库不再发行自己的 manager，请安装上游已发布的
+`@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`——它是通用的（按 profile 依赖里带有效 `skin.json` 的包发现皮肤），
+因此同样能发现并切换本 fork 的皮肤。仓库里的 `skin-manager/` 只作为**皮肤编译所用的 protocol 源码**
+与上游镜像保留，其 loader id 与上游一致；因为不发行，也就不存在第二个 manager 身份。
 
 
 ### 更新
@@ -82,13 +87,13 @@ dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web update @wjingshan/dsh-client-ui-skin-deep-whale-manager @wjingshan/dsh-client-ui-skin-maid-atelier @wjingshan/dsh-client-ui-skin-orca-link
+dsh plugin --profile web update
 ```
 
 **PowerShell**（`@` 开头 token 建议加引号）：
 
 ```powershell
-dsh plugin --profile web update '@wjingshan/dsh-client-ui-skin-deep-whale-manager' '@wjingshan/dsh-client-ui-skin-maid-atelier' '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web update
 ```
 
 GitHub 依赖会重新解析仓库最新提交；npm 依赖（发布后）默认跟随 `latest`，`update` 重新解析该标签当前指向的版本。`dsh plugin --profile web update` 也可以不带包名执行（更新 profile 全部依赖，只装了本仓库皮肤时效果相同）——依赖键就是 `@wjingshan/*` 包名，所以 GitHub 来源与将来发布后的 npm 来源共用同一条命令。bundle 内容更新走配置热重载；只有新增/删除插件包才需要重启。
@@ -146,7 +151,7 @@ dsh plugin --profile web add <clone 的绝对路径>/orca-link      # 虎鲸链�
   disabled: false
 - id: ui-skin-orca-link-wj
   disabled: true
-- id: ui-skin-deep-whale-manager-wj
+- id: ui-skin-deep-whale-manager
   disabled: false
 ```
 
@@ -193,7 +198,7 @@ document.documentElement.outerHTML.match(/\/plugins\/@wjingshan\/[^"'\s]+/g) ?? 
 |---|---|---|
 | `ERR_PNPM_FETCH_404` | spec 拼写错误、网络不可用，或独立子包用了裸目录名 | 正式安装复制上方一行命令里的 spec；开发 link 使用绝对路径 |
 | `The matching commit...`/无法解析 ref | **pnpm < 9**，`#path:` 子目录语法不被支持 | 升级 pnpm 到 ≥ 9（`npm i -g pnpm@latest`） |
-| `ERR_PNPM_EXOTIC_SUBDEP` | 尝试安装会再带 Git 依赖的“根包/聚合包”（pnpm 11 安全策略，本仓库不提供此类包） | 按本页一行命令安装三个发行包 |
+| `ERR_PNPM_EXOTIC_SUBDEP` | 尝试安装会再带 Git 依赖的“根包/聚合包”（pnpm 11 安全策略，本仓库不提供此类包） | 按本页一行命令安装两套皮肤（manager 用上游已发布的包） |
 | `pnpm not found on PATH` | 环境缺少 pnpm | 安装 pnpm（`npm i -g pnpm`）后重试 |
 | 包在列表里但页面无效果 | 皮肤被 `disabled`（多皮肤互斥开关）或浏览器未刷新 | `--dump-config` 核对 disabled；刷新页面 |
 | PowerShell 命令不完整/报错 | `#` 未加引号被当注释截断 | spec 一律单引号包裹 |

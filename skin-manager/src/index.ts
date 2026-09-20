@@ -14,7 +14,8 @@ import { SKIN_MANAGER_ROUTE, type SkinCatalogEntry, type SkinTarget, type SkinUp
 export { SKIN_MANAGER_ROUTE, type SkinCatalogEntry, type SkinTarget } from './contract.ts'
 export * from './protocol.ts'
 
-export const name = 'ui-skin-deep-whale-manager-wj'
+// 本 fork 不发行 manager：loader id 与上游一致，避免出现第二个 manager 身份。
+export const name = 'ui-skin-deep-whale-manager'
 export const inject = ['webServer']
 
 export const MANAGED_START = '# --- dsh-skin managed (auto-generated; do not edit) ---'

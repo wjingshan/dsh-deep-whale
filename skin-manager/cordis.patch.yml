@@ -1,4 +1,6 @@
 # Permanent generic skin manager; installed skins expose their own controls.
+# 本 fork 不再发行这个 manager（用户安装上游已发布的同名包）；此目录保留作为皮肤编译所用的
+# protocol 源码与上游镜像，loader id 与上游保持一致。
 - insert:
-    - id: ui-skin-deep-whale-manager-wj
+    - id: ui-skin-deep-whale-manager
       name: '@wjingshan/dsh-client-ui-skin-deep-whale-manager'

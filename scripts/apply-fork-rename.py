@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""把上游 Small-tailqwq 的 scope 重新改回本 fork 的 @wjingshan，并分离插件身份。
+"""把上游 Small-tailqwq 的 scope 重新改回本 fork 的 @wjingshan，并分离两套皮肤的身份。
 
 上游每次发布都可能把包名写成 @smalltailqwq/*，而本 fork 使用 @wjingshan/*。
 本脚本在每次合并上游之后运行，把改名规则重新施加一遍，因此合并时
@@ -15,13 +15,16 @@ profile 里而不互相顶掉——管理器按 id 与 wiringId 去重，重复�
 注意 bodyAttr 在源码里是用 dataset 驼峰 API 设置的（body.dataset.dshMaidAtelier），
 只改字面量会漏掉它。
 
+**manager 不做身份分离**：本 fork 不再发行自己的 manager，用户安装上游已发布的那个
+（`skin-manager/` 只作为皮肤编译所用的 protocol 源码与上游镜像保留，其 loader id
+保持上游的 `ui-skin-deep-whale-manager`）。因此文档需要写出上游 manager 的真实包名，
+而 scope 规则会改写该字面量——用哨兵先占位、最后还原。
+
 规则分两层，**不要把它们合成一层**：
-  * 全局规则（RULES / REGEX_RULES）：scope 改名、文档里的 id 用法、manager 自身的插件 id。
+  * 全局规则（RULES / REGEX_RULES）：scope 改名、文档里的 id 用法。
   * 皮肤内规则（SKIN_RULES / SKIN_REGEX_RULES）：皮肤的身份值。它们只在 maid-atelier/ 与
     orca-link/ 下生效——manager 的源码与测试同样用 'maid-atelier' 表示合成 id、甚至表示
     临时目录名，全局替换会破坏上游自带的 manager 测试。
-  同理，仓库里不能出现「上游的字面标识符」（scope 会被全局规则改掉），文档描述上游时
-  只能写不带上游 scope 的形式。
 
 所有规则都必须可重复执行（本脚本每天在 CI 里跑）：带引号/冒号/方括号锚点的规则天然幂等，
 而后缀式规则必须用 `(?!-wj)` / `(?!Wj)` 负向断言，否则第二遍会叠成 `-wj-wj`。
@@ -44,14 +47,17 @@ SELF = Path(__file__).resolve()
 # 身份值规则的作用范围：只有这两个皮肤包需要身份分离。
 SKIN_PREFIXES = ('maid-atelier/', 'orca-link/')
 
+# 文档必须能写出上游 manager 的真实包名（用户要装它）。scope 规则会改写该字面量，
+# 所以先换成哨兵、跑完全部规则后再还原。
+UPSTREAM_MANAGER = '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+UPSTREAM_MANAGER_SENTINEL = '@@UPSTREAM_MANAGER@@'
+
 # ── 全局规则：顺序重要，先处理带斜杠的包名，再处理裸形式 ──
 RULES: list[tuple[str, str]] = [
     ('@smalltailqwq/', '@wjingshan/'),
     ('@smalltailqwq', '@wjingshan'),
     ('Small-tailqwq/dsh-deep-whale', 'wjingshan/dsh-deep-whale'),
     ("owner: 'Small-tailqwq'", "owner: 'wjingshan'"),
-    # manager 自身的插件 id（出现在 skin-manager/src/index.ts 的 name 常量里）
-    ("= 'ui-skin-deep-whale-manager'", "= 'ui-skin-deep-whale-manager-wj'"),
 ]
 
 # ── 皮肤内规则：身份三件套（id / wiring.id / bodyAttr）与显示名 ──
@@ -92,7 +98,6 @@ REGEX_RULES: list[tuple[str, str]] = [
     # cordis.patch.yml 的 insert id，以及文档里的 YAML 示例（不碰同行的 name: 包名）
     (r'id: ui-skin-maid-atelier(?!-wj)', 'id: ui-skin-maid-atelier-wj'),
     (r'id: ui-skin-orca-link(?!-wj)', 'id: ui-skin-orca-link-wj'),
-    (r'id: ui-skin-deep-whale-manager(?!-wj)', 'id: ui-skin-deep-whale-manager-wj'),
     # 文档与脚本里的皮肤 id 用法
     (r'--target maid-atelier(?!-wj)', '--target maid-atelier-wj'),
     (r'--target orca-link(?!-wj)', '--target orca-link-wj'),
@@ -157,7 +162,7 @@ def main() -> int:
                 missing.append(relative)
             continue
 
-        new = text
+        new = text.replace(UPSTREAM_MANAGER, UPSTREAM_MANAGER_SENTINEL)
         for old, repl in RULES:
             new = new.replace(old, repl)
         for pattern, repl in REGEX_RULES:
@@ -167,6 +172,7 @@ def main() -> int:
                 new = new.replace(old, repl)
             for pattern, repl in SKIN_REGEX_RULES:
                 new = re.sub(pattern, repl, new)
+        new = new.replace(UPSTREAM_MANAGER_SENTINEL, UPSTREAM_MANAGER)
 
         if new != text:
             path.write_text(new, encoding='utf-8')

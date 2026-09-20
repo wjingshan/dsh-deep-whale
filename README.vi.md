@@ -19,7 +19,7 @@ Nhấp vào ảnh để xem kích thước đầy đủ.
 |---|---|---|---|
 | [maid-atelier](maid-atelier/) | `@wjingshan/dsh-client-ui-skin-maid-atelier` | Xưởng hầu biển sâu: nền hai hầu gái, giao diện ren xanh biển sâu và thanh bên chibi | MIT (code) / CC BY-NC-SA 4.0 (artwork) |
 | [orca-link](orca-link/) | `@wjingshan/dsh-client-ui-skin-orca-link` | ORCA LINK: khoang cơ khí trắng ngọc, nhân vật orca-girl và tín hiệu liên kết xanh điện | MIT (code) / CC BY-NC-SA 4.0 (artwork) |
-| [skin-manager](skin-manager/) | `@wjingshan/dsh-client-ui-skin-deep-whale-manager` | Trình quản lý giao diện: khám phá, chuyển đổi và tùy chỉnh theo giao diện tự khai báo | MIT |
+| [skin-manager](skin-manager/) | `@wjingshan/dsh-client-ui-skin-deep-whale-manager` | Khám phá và chuyển giao diện; **kho này không phát hành** — hãy cài package đã phát hành của bản gốc | MIT |
 
 ## Chủ sở hữu bản quyền
 
@@ -36,18 +36,22 @@ Nhấp vào ảnh để xem kích thước đầy đủ.
 
 > **Trước tiên hãy kiểm tra bản phân phối:** các lệnh dưới đây chỉ dành cho môi trường standalone chạy DSH trực tiếp. Nếu bạn đã cài `@linxin666/dsh-web-all` (dsh-web), hãy cài các bản `maid-atelier-wj` và `orca-link-wj` tương thích từ trung tâm giao diện/trình cài đặt của chính dsh-web. Không cài chồng các package standalone của kho này vào cùng profile vì hợp đồng component và style khác nhau, có thể làm giao diện hiển thị sai.
 
-Ba package phân phối (trình quản lý + hai giao diện) **chưa được phát hành trên npm** (`@wjingshan/*` là tên package dự kiến trên npm). Trước khi phát hành, lệnh một dòng bên dưới cài trực tiếp từ nhánh `main` của kho này theo thư mục con — **không cần clone**, yêu cầu pnpm ≥ 9.
+Kho này phát hành **hai giao diện** (`@wjingshan/dsh-client-ui-skin-maid-atelier` / `-orca-link`); chúng **chưa được phát hành trên npm**, nên lệnh một dòng bên dưới cài trực tiếp từ nhánh `main` của kho này theo thư mục con — **không cần clone** (yêu cầu pnpm ≥ 9). **Hãy cài trình quản lý giao diện từ package đã phát hành của bản gốc `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`** — kho này không còn phát hành trình quản lý riêng.
 
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 **PowerShell** (`#` bắt đầu chú thích, spec phải bọc trong dấu nháy; dùng `;` thay cho `&&`):
 
 ```powershell
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 Chỉ muốn dùng một giao diện thì xóa dòng không cần (khuyến nghị giữ skin-manager vì chuyển đổi và xung đột đều dựa vào nó).
@@ -63,21 +67,22 @@ profile mà không giao diện nào che khuất giao diện kia:
 
 | Danh tính | Bản gốc | Bản fork này |
 |---|---|---|
-| Tên package npm | scope của bản gốc + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
+| Tên package npm | `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager` (trình quản lý) / scope gốc + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
 | `id` trong `skin.json` | `maid-atelier` | `maid-atelier-wj` |
 | `wiring.id` (id dòng patch) | `ui-skin-maid-atelier` | `ui-skin-maid-atelier-wj` |
 | `bodyAttr` | `data-dsh-maid-atelier` | `data-dsh-maid-atelier-wj` |
 
-(hậu tố `-wj` áp dụng tương tự cho `orca-link`. Scope npm của bản gốc được cố ý không viết ra ở đây, vì quy tắc
-đổi tên của kho này sẽ viết lại chính chuỗi đó.) Quy tắc tách danh tính được `scripts/apply-fork-rename.py`
-chạy lại tự động sau mỗi lần đồng bộ bản gốc; phần chú thích trong tệp đó giải thích vì sao `id` / `wiring.id` /
-`bodyAttr` phải cùng duy nhất — trình quản lý khử trùng theo `id` và `wiringId` (mục trùng bị bỏ) và xác định
-giao diện đang bật qua `bodyAttr`.
+(hậu tố `-wj` áp dụng tương tự cho `orca-link`. Trừ dòng trình quản lý, scope npm của bản gốc được cố ý không
+viết ra, vì quy tắc đổi tên của kho này sẽ viết lại chính chuỗi đó.) Quy tắc tách danh tính được
+`scripts/apply-fork-rename.py` chạy lại tự động sau mỗi lần đồng bộ bản gốc; phần chú thích trong tệp đó giải
+thích vì sao `id` / `wiring.id` / `bodyAttr` phải cùng duy nhất — trình quản lý khử trùng theo `id` và
+`wiringId` (mục trùng bị bỏ) và xác định giao diện đang bật qua `bodyAttr`.
 
-Trình quản lý giao diện là **dùng chung**: nó phát hiện giao diện qua `skin.json` hợp lệ trong dependency của
-profile, nên package manager do bản gốc phát hành (cùng hậu tố `…-deep-whale-manager`, khác scope) cũng quản lý
-được giao diện của bản fork này. **Không** cài đồng thời nó với `…-manager-wj` của kho này: mỗi bên sẽ đăng ký
-một trang cài đặt "Quản lý giao diện" riêng.
+**Trình quản lý không tách danh tính**: kho này không còn phát hành trình quản lý riêng. Hãy cài bản đã phát hành
+của bản gốc `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager` — nó dùng chung (phát hiện giao diện qua `skin.json` hợp lệ trong
+dependency của profile), nên cũng quản lý được giao diện của bản fork này. Thư mục `skin-manager/` ở đây chỉ
+được giữ làm **mã nguồn protocol mà các giao diện biên dịch cùng** và làm bản gương của bản gốc, với loader id
+của bản gốc; không phát hành gì nên không tồn tại danh tính trình quản lý thứ hai.
 
 
 ### Cập nhật
@@ -85,13 +90,13 @@ một trang cài đặt "Quản lý giao diện" riêng.
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web update @wjingshan/dsh-client-ui-skin-deep-whale-manager @wjingshan/dsh-client-ui-skin-maid-atelier @wjingshan/dsh-client-ui-skin-orca-link
+dsh plugin --profile web update
 ```
 
 **PowerShell** (token bắt đầu bằng `@` nên thêm ngoặc kép):
 
 ```powershell
-dsh plugin --profile web update '@wjingshan/dsh-client-ui-skin-deep-whale-manager' '@wjingshan/dsh-client-ui-skin-maid-atelier' '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web update
 ```
 
 Dependency GitHub sẽ phân giải lại commit mới nhất; dependency npm (sau khi phát hành) mặc định theo `latest` và `update` phân giải lại phiên bản mà tag đó trỏ tới. Có thể chạy `dsh plugin --profile web update` không kèm tên package (cập nhật toàn bộ dependency trong profile; tương đương nếu chỉ cài các package này) — khóa dependency chính là tên package `@wjingshan/*`, nên nguồn GitHub và nguồn npm sau này dùng chung một lệnh. Nội dung bundle cập nhật qua tải lại nóng cấu hình; chỉ khi thêm/xóa package mới cần khởi động lại.
@@ -149,7 +154,7 @@ dsh plugin --profile web add <đường dẫn tuyệt đối clone>/orca-link   
   disabled: false
 - id: ui-skin-orca-link-wj
   disabled: true
-- id: ui-skin-deep-whale-manager-wj
+- id: ui-skin-deep-whale-manager
   disabled: false
 ```
 
@@ -196,7 +201,7 @@ Kết quả phải chứa manager và package giao diện đang bật; giao di�
 |---|---|---|
 | `ERR_PNPM_FETCH_404` | Spec viết sai, mạng không khả dụng, hoặc dùng tên thư mục trần cho package con | Sao chép spec từ lệnh một dòng ở trên; dùng đường dẫn tuyệt đối cho link phát triển |
 | `The matching commit...`/Không phân giải ref | **pnpm < 9**, cú pháp thư mục con `#path:` không được hỗ trợ | Nâng cấp pnpm lên ≥ 9 (`npm i -g pnpm@latest`) |
-| `ERR_PNPM_EXOTIC_SUBDEP` | Cố gắng cài "package gốc/tổng hợp" mang theo Git dependency (chính sách an ninh chuỗi cung ứng pnpm 11; kho này không cung cấp package như vậy) | Dùng lệnh một dòng ở trên để cài ba package phân phối |
+| `ERR_PNPM_EXOTIC_SUBDEP` | Cố gắng cài "package gốc/tổng hợp" mang theo Git dependency (chính sách an ninh chuỗi cung ứng pnpm 11; kho này không cung cấp package như vậy) | Dùng lệnh một dòng ở trên để cài hai giao diện (trình quản lý: package đã phát hành của bản gốc) |
 | `pnpm not found on PATH` | Môi trường thiếu pnpm | Cài pnpm (`npm i -g pnpm`) rồi thử lại |
 | Package có trong danh sách nhưng trang không hiệu ứng | Giao diện bị `disabled` (công tắc xung đột đa giao diện) hoặc trình duyệt chưa tải lại | Kiểm tra `disabled` trong `--dump-config`; tải lại trang |
 | Lệnh PowerShell không hoàn thành/lỗi | `#` không được đặt trong dấu nháy nên bị coi là chú thích | Luôn bọc spec trong dấu nháy đơn |

@@ -18,7 +18,7 @@ description: 迁移、切换、更新或验证 DSH Web 的 dsh-deep-whale 皮肤
 
 ## 先判断场景（决定走哪条路）
 
-先查当前 dsh 环境：`dsh plugin --profile <name> list`（实际 profile 名如 web）。本仓库三个发行包：`@wjingshan/dsh-client-ui-skin-deep-whale-manager`、`@wjingshan/dsh-client-ui-skin-maid-atelier`、`@wjingshan/dsh-client-ui-skin-orca-link`（npm 安装显示为版本依赖，GitHub 安装显示为 `github:`，本地路径安装显示为 `link:`）：
+先查当前 dsh 环境：`dsh plugin --profile <name> list`（实际 profile 名如 web）。本仓库发行**两套皮肤**：`@wjingshan/dsh-client-ui-skin-maid-atelier`、`@wjingshan/dsh-client-ui-skin-orca-link`（GitHub 安装显示为 `github:`，本地路径安装显示为 `link:`）；**manager 用上游已发布的 `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`**（本仓库不发行 manager）：
 
 - **三包均已安装 → 场景 A 切换**：直接热切换，不 clone、不提问、不介绍，**跳过“重启安全闸门”与扫描清单**。
 - **未安装或只装了部分 → 场景 B 首次/补齐安装**：
@@ -67,7 +67,7 @@ DSH Web 正在运行不代表磁盘上的 profile 能再次启动；旧进程可
 
 ### 1. 确定安装来源
 
-- **正式安装（推荐）**：无需 clone，按 README 用三个 GitHub `#path:` spec 从本仓库 `main` 安装（依赖键仍是 `@wjingshan/*` 包名；npm 尚未发布）。要求 pnpm ≥ 9，PowerShell 下必须单引号包裹。安装全部三个包，把 manager 常驻、两套皮肤都装上，互斥交给首次重启时的 manager 兜底，不需要预置脚本。
+- **正式安装（推荐）**：manager 用上游已发布的 `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`；两套皮肤无需 clone，按 README 用 GitHub `#path:` spec 从本仓库 `main` 安装（依赖键是 `@wjingshan/*` 包名；npm 尚未发布）。要求 pnpm ≥ 9，PowerShell 下必须单引号包裹。两套皮肤都装上，互斥交给首次重启时的 manager 兜底，不需要预置脚本。
 - **本地开发 / 指定提交 / 弱网**：定位或 clone 仓库，然后按"独立子包安装"流程分别 add skin-manager 与目标皮肤的**子目录**绝对路径。**禁止 add 仓库根目录**（仓库根不是包，无 `package.json`，会直接失败）。本地 link 没有一行命令的自动兜底时序，add 之前先运行技能自带脚本预置互斥（见下）。
 - 只装一套皮肤（可带 manager）时没有互斥问题：patch 无行即启用，开箱即用。
 
@@ -80,7 +80,7 @@ DSH Web 正在运行不代表磁盘上的 profile 能再次启动；旧进程可
 
 ### 3. 与用户交互：安装范围与激活目标必须分开表达
 
-安装默认覆盖**全部三个发行包**（manager 常驻 + 两套皮肤），激活哪套在安装后由用户在设置页选择。若用户点名目标皮肤（如"安装 maid-atelier"），说明：装完重启后 manager 兜底会先回退官方默认，首次启动后即可在设置页一键激活；本地 link 流程则可在 add 前用脚本预置目标状态。只有用户明确要求"只安装这一套/最小安装"时，才缩小注册范围；即使最小安装，也必须显式停用其他已经安装的皮肤。
+安装默认覆盖**两套皮肤**（manager 用上游已发布的包），激活哪套在安装后由用户在设置页选择。若用户点名目标皮肤（如"安装 maid-atelier"），说明：装完重启后 manager 兜底会先回退官方默认，首次启动后即可在设置页一键激活；本地 link 流程则可在 add 前用脚本预置目标状态。只有用户明确要求"只安装这一套/最小安装"时，才缩小注册范围；即使最小安装，也必须显式停用其他已经安装的皮肤。
 
 ### 4. 向用户交代版权署名链与许可（初次安装必做）
 
@@ -93,7 +93,9 @@ DSH Web 正在运行不代表磁盘上的 profile 能再次启动；旧进程可
 
 - **正式安装**：
   ```sh
-  dsh plugin --profile <name> add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile <name> add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier' && dsh plugin --profile <name> add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+  dsh plugin --profile <name> add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile <name> add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile <name> add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
   ```
   PowerShell 下把 `&&` 换成 `;`，包名保持单引号。三条 add 之间不手写 patch——首次重启时 skin-manager 兜底负责回退与写入互斥行。
 - **独立子包（本地开发/弱网）**：add 之前先预置互斥（add 后再写会留下叠加窗口）：
@@ -105,7 +107,7 @@ DSH Web 正在运行不代表磁盘上的 profile 能再次启动；旧进程可
 
 ### 6. 验证生效
 
-- `dsh plugin --profile <name> list`：正式安装应看到三个 `@wjingshan/*` 依赖键（值为 `github:`）；本地流程应看到三/两个 `link:` 依赖。
+- `dsh plugin --profile <name> list`：正式安装应看到两个 `@wjingshan/*` 依赖键（值为 `github:`）外加上游 manager 包；本地流程应看到两个 `link:` 依赖。
 - `dsh --profile <name> --dump-config` 一次输出：manager 行 `disabled: false`；皮肤恰一套 `false`（或首次重启前的过渡态——干净环境两套都无 disabled 行，启动兜底后才会写入；若 home 层残留互斥行则直接沿用）。
 - 走重启安全闸门完成冷启动，并核对启动页 client roster：manager 与当前启用皮肤必须存在（`/plugins/<真实包名>/client.js`）。不得用配置树、裸包名匹配或 API 返回替代此项。
 - 安装了 skin-manager 时，`GET /api/dsh/skins` 能返回目录即可；**不要**核对定制卡片等页面细节。
@@ -133,5 +135,5 @@ DSH Web 正在运行不代表磁盘上的 profile 能再次启动；旧进程可
 - 皮肤可热切换，`wiring.id` 即 patch 层控制的插件 id；皮肤中心/互斥切换机制兼容。
 - **skin-manager 插件**（`@wjingshan/dsh-client-ui-skin-deep-whale-manager`）在设置面板注册"皮肤管理"分类：发现已安装皮肤（`GET /api/dsh/skins`，依据是 profile 依赖中导出有效 `skin.json`——`package` 匹配包名——的包）；一键激活（`POST /api/dsh/skins { target }`，同源校验 + catalog 校验 + 两 patch 层原子写入回滚）、皮肤定制声明渲染。启动时若按 profile→home 优先级计算出同时启用两套及以上皮肤，管理器会自动原子切到“官方默认”并写入互斥行；已有零套或一套启用的合法选择保持不变。安装皮肤后管理器自动发现,无需额外配置。
 - 皮肤子包本身**不带**默认 `disabled`（patch 无行 = 启用）；互斥的责任在管理器（启动兜底 + 原子切换），不要求用户预置脚本。预置脚本仅用于本地 link 流程与恢复工具。
-- 一行安装 = 三个 GitHub `#path:` 子包（跟随 `main`；仓库根不是包），依赖键仍是 `@wjingshan/*` 包名，要求 **pnpm ≥ 9**，PowerShell 中 `#` 是注释起始，spec 必须单引号；npm 包尚未发布，发布前不要按包名向 registry 安装；更新命令里 `@` 开头 token 加引号更稳。
+- 一行安装 = 上游已发布的 manager + 两个 GitHub `#path:` 子包（跟随 `main`；仓库根不是包），皮肤依赖键是 `@wjingshan/*` 包名，要求 **pnpm ≥ 9**，PowerShell 中 `#` 是注释起始，spec 必须单引号；皮肤尚未发布到 npm，发布前不要按包名向 registry 安装皮肤；更新命令里 `@` 开头 token 加引号更稳。
 - 仓库 README 提供安装/更新/互斥/验证/排查的完整说明；反馈问题走仓库 issue，不要联系画师本人。

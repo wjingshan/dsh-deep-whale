@@ -19,7 +19,7 @@ Click an image for the full size.
 |---|---|---|---|
 | [maid-atelier](maid-atelier/) | `@wjingshan/dsh-client-ui-skin-maid-atelier` | Abyssal Maid Atelier: twin-maid backdrop, deep-sea navy lace UI and a chibi sidebar | MIT (code) / CC BY-NC-SA 4.0 (artwork) |
 | [orca-link](orca-link/) | `@wjingshan/dsh-client-ui-skin-orca-link` | ORCA LINK: pearl-white mechanical bay, orca-girl character and electric-blue link signals | MIT (code) / CC BY-NC-SA 4.0 (artwork) |
-| [skin-manager](skin-manager/) | `@wjingshan/dsh-client-ui-skin-deep-whale-manager` | Generic skin discovery, switching and skin-declared settings panel | MIT |
+| [skin-manager](skin-manager/) | `@wjingshan/dsh-client-ui-skin-deep-whale-manager` | Generic skin discovery and switching; **not distributed by this fork** — install the upstream published package | MIT |
 
 ## Copyright Holders
 
@@ -36,18 +36,22 @@ Click an image for the full size.
 
 > **Check your distribution first:** the commands below are only for standalone environments that run DSH directly. If you installed `@linxin666/dsh-web-all` (dsh-web), install its adapted `maid-atelier-wj` and `orca-link-wj` through dsh-web's own skin center/installer instead. Do not add this repository's standalone packages to the same profile; the component and styling contracts differ and the resulting UI may be broken.
 
-The three distribution packages (skin manager + both skins) are **not published on npm yet** (`@wjingshan/*` are their intended npm names). Until then, the one-line install below pulls them straight from this repository's `main` by subdirectory — **no clone required**, pnpm ≥ 9.
+This repository ships **both skins** (`@wjingshan/dsh-client-ui-skin-maid-atelier` / `-orca-link`); they are **not published on npm yet**, so the one-line install below pulls them straight from this repository's `main` by subdirectory — **no clone required**, pnpm ≥ 9. **Install the skin manager from the upstream published package `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager`** — this fork no longer ships its own manager.
 
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 **PowerShell** (use `;` between commands):
 
 ```powershell
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 For a single skin, drop the line you do not need (keep skin-manager: switching and mutual exclusion rely on it).
@@ -63,21 +67,22 @@ profile without either skin shadowing the other:
 
 | Identity | Upstream | This fork |
 |---|---|---|
-| npm package name | upstream scope + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
+| npm package name | `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager` (manager) / upstream scope + `dsh-client-ui-skin-maid-atelier` | `@wjingshan/dsh-client-ui-skin-maid-atelier` |
 | `skin.json` `id` | `maid-atelier` | `maid-atelier-wj` |
 | `wiring.id` (patch row id) | `ui-skin-maid-atelier` | `ui-skin-maid-atelier-wj` |
 | `bodyAttr` | `data-dsh-maid-atelier` | `data-dsh-maid-atelier-wj` |
 
-(The same `-wj` suffix applies to `orca-link`. The upstream npm scope is deliberately not spelled out
-here, because this repository's rename rules rewrite that literal.) The separation is reapplied automatically
-after every upstream sync by `scripts/apply-fork-rename.py`; that file's comments explain why `id`,
-`wiring.id` and `bodyAttr` must all be unique — the manager de-duplicates by `id` and `wiringId`
-(later duplicates are dropped) and detects the active skin through `bodyAttr`.
+(The same `-wj` suffix applies to `orca-link`. Except for the manager row, the upstream npm scope is
+deliberately not spelled out, because this repository's rename rules rewrite that literal.) The separation is
+reapplied automatically after every upstream sync by `scripts/apply-fork-rename.py`; that file's comments
+explain why `id`, `wiring.id` and `bodyAttr` must all be unique — the manager de-duplicates by `id` and
+`wiringId` (later duplicates are dropped) and detects the active skin through `bodyAttr`.
 
-The skin manager is **generic**: it discovers skins by the valid `skin.json` in the profile's dependencies,
-so the manager package published by the upstream project (same `…-deep-whale-manager` suffix, different
-scope) manages this fork's skins as well. Do **not** install it together with this repository's
-`…-manager-wj`: each registers its own "Skin Management" settings page.
+**The manager is not identity-separated**: this fork no longer ships its own manager. Install the upstream
+published `@smalltailqwq/dsh-client-ui-skin-deep-whale-manager` — it is generic (it discovers skins through the valid `skin.json` in the
+profile's dependencies), so it manages this fork's skins as well. The `skin-manager/` directory here is kept
+only as the **protocol source the skins compile against** and as an upstream mirror, with upstream's loader id;
+nothing is distributed, so no second manager identity exists.
 
 
 ### Update
@@ -85,13 +90,13 @@ scope) manages this fork's skins as well. Do **not** install it together with th
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web update @wjingshan/dsh-client-ui-skin-deep-whale-manager @wjingshan/dsh-client-ui-skin-maid-atelier @wjingshan/dsh-client-ui-skin-orca-link
+dsh plugin --profile web update
 ```
 
 **PowerShell** (quote `@`-prefixed tokens):
 
 ```powershell
-dsh plugin --profile web update '@wjingshan/dsh-client-ui-skin-deep-whale-manager' '@wjingshan/dsh-client-ui-skin-maid-atelier' '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web update
 ```
 
 GitHub dependencies re-resolve the latest repository commit; npm dependencies (once published) follow `latest` and `update` re-resolves the version that tag points at. `dsh plugin --profile web update` can also run without a package name (updates every dependency in the profile; identical when only these packages are installed) — dependency keys are the `@wjingshan/*` package names, so the GitHub source and a future npm source share the one command. Bundle content updates hot-reload through config HMR; a restart is needed only when adding/removing plugin packages.
@@ -149,7 +154,7 @@ dsh plugin --profile web add <abs path to clone>/orca-link      # ORCA LINK
   disabled: false
 - id: ui-skin-orca-link-wj
   disabled: true
-- id: ui-skin-deep-whale-manager-wj
+- id: ui-skin-deep-whale-manager
   disabled: false
 ```
 
@@ -196,7 +201,7 @@ It must contain the manager and the active skin package; disabled skins may be a
 |---|---|---|
 | `ERR_PNPM_FETCH_404` | misspelled spec, unavailable network, or a bare standalone directory | copy the spec from the one-liner above; use absolute paths for development links |
 | `The matching commit...` / cannot resolve ref | **pnpm < 9** — `#path:` subdirectory syntax unsupported | upgrade pnpm to ≥ 9 (`npm i -g pnpm@latest`) |
-| `ERR_PNPM_EXOTIC_SUBDEP` | installing an aggregate "root package" that itself carries Git dependencies (pnpm 11 supply-chain policy; this repo ships no such package) | use the one-liner above to install the three distribution packages |
+| `ERR_PNPM_EXOTIC_SUBDEP` | installing an aggregate "root package" that itself carries Git dependencies (pnpm 11 supply-chain policy; this repo ships no such package) | use the one-liner above to install both skins (manager: the upstream published package) |
 | `pnpm not found on PATH` | pnpm missing from the environment | install pnpm (`npm i -g pnpm`) and retry |
 | package listed but no effect on the page | skin is `disabled` (multi-skin mutual exclusion) or the browser was not refreshed | check `disabled` in `--dump-config`; refresh |
 | PowerShell command truncated / errors | unquoted `#` starts a comment | always quote specs in single quotes |

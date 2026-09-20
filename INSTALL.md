@@ -9,13 +9,17 @@ The one-line install pulls the skin manager and both Deep Whale skins straight f
 ## Linux / macOS / WSL
 
 ```sh
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 ## PowerShell
 
 ```powershell
-dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
+dsh plugin --profile web add '@smalltailqwq/dsh-client-ui-skin-deep-whale-manager'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 Restart DSH once (first package addition). On that restart the skin manager detects "two skins enabled at once" and atomically falls back to the official default, so skins can never stack; then choose a skin in Settings → Skin Management. Later switches hot-reload without a restart.
@@ -23,11 +27,11 @@ Restart DSH once (first package addition). On that restart the skin manager dete
 Update with:
 
 ```sh
-dsh plugin --profile web update @wjingshan/dsh-client-ui-skin-deep-whale-manager @wjingshan/dsh-client-ui-skin-maid-atelier @wjingshan/dsh-client-ui-skin-orca-link
+dsh plugin --profile web update
 ```
 
 ```powershell
-dsh plugin --profile web update '@wjingshan/dsh-client-ui-skin-deep-whale-manager' '@wjingshan/dsh-client-ui-skin-maid-atelier' '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web update
 ```
 
 ## Migrating from the old placeholder scope
@@ -56,5 +60,5 @@ reapplied after every upstream sync by `scripts/apply-fork-rename.py`.
 
 The skin manager is generic and discovers skins through their `skin.json`, so the manager package published by
 the upstream project (same `…-deep-whale-manager` suffix, different npm scope) manages this fork's skins as well.
-Do not install two managers (that one and this repository's `…-manager-wj`): each registers its own settings page.
+This repository ships no manager of its own, so there is no second manager identity to avoid.
 See the coexistence section in [README.md](README.md) for the identity table.
