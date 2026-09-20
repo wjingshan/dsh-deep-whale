@@ -25,13 +25,13 @@ DeepSeek Harness Web GUI 的黑白机械链路皮肤：珍珠白机械舱、虎�
 
 > 若已安装 `@linxin666/dsh-web-all`（dsh-web），请从 dsh-web 自带的皮肤中心/安装入口安装其适配版 `maid-atelier` 与 `orca-link`，不要执行下面的 standalone 安装命令。两种发行方式的组件与样式契约不同，不能在同一 profile 中叠装。
 
-推荐连同皮肤管理器一起，从 npm 安装稳定版：
+推荐连同皮肤管理器一起安装。本包**尚未发布到 npm**，用下面的 GitHub 子目录 spec（要求 pnpm ≥ 9，spec 需单引号包裹）：
 
 ```sh
-dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-deep-whale-manager' && dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
-PowerShell 版本见仓库 README。未指定 dist-tag 时 npm 使用 `latest`。首次安装后重启一次 DSH，然后在“设置 → 皮肤管理”中选择“虎鲸链路”；之后切换走配置热重载。独立子包 link 仅用于本地开发。
+PowerShell 版本见仓库 README（用 `;` 分隔命令，spec 需单引号包裹）。首次安装后重启一次 DSH，然后在“设置 → 皮肤管理”中选择“虎鲸链路”；之后切换走配置热重载。独立子包 link 仅用于本地开发。
 
 加载即生效、卸载即复原（与皮肤中心/dsh-skin 的互斥切换兼容，`wiring.id` 为 `ui-skin-orca-link`）。
 

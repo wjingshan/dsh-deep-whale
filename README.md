@@ -36,25 +36,25 @@ DeepSeek Harness Web GUI 的鲸鱼娘主题皮肤系列(独立分发仓库)。
 
 > **先确认发行版：**下面的命令只用于直接运行 DSH 的 standalone 环境。若已安装 `@linxin666/dsh-web-all`（dsh-web），请改从 dsh-web 自带的皮肤中心/安装入口安装其 `maid-atelier` 与 `orca-link` 适配版；不要在同一 profile 中再叠装本仓库的 standalone 包，否则组件与样式契约不一致，界面可能显示异常。
 
-三个发行包（皮肤管理器 + 两套皮肤）已发布到 npm。未指定 dist-tag 时安装稳定的 `latest`，**无需 clone**。
+三个发行包（皮肤管理器 + 两套皮肤）**尚未发布到 npm**（`@wjingshan/*` 是它们在 npm 上的目标包名）。发布前请用下面的 GitHub 一行安装：按子目录直接从本仓库 `main` 拉取，**无需 clone**，要求 pnpm ≥ 9。
 
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-deep-whale-manager' && dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-maid-atelier' && dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 **PowerShell**（用 `;` 分隔命令）：
 
 ```powershell
-dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-deep-whale-manager'; dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-maid-atelier'; dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 只想用其中一套皮肤时，把不需要的那行删掉（skin-manager 建议保留，切换与互斥都靠它）。
 
 首次安装是新增插件包，需要重启一次 DSH。重启时 skin-manager 会检测“两套皮肤同时启用”并**自动原子回退到官方默认**，所以首次安装不会出现皮肤叠加窗口；随后打开「设置 → 皮肤管理」点击目标皮肤「切换」即热重载生效，此后切换不再需要重启，也不需要 AI 参与。
 
-> 需要直接跟随 GitHub `main` 时，也可用 `github:wjingshan/dsh-deep-whale#path:/<子目录>`（需要 pnpm ≥ 9）；本地开发见[独立子包安装](#独立子包安装本地开发与弱网备用)。npm、GitHub 与本地 link 是同一包名的不同来源，混用时以最后一次 `add` 为准。
+> npm 包发布之前，上面的 GitHub `#path:` spec 是唯一免 clone 的安装来源（要求 pnpm ≥ 9）；固定提交与本地开发见[独立子包安装](#独立子包安装本地开发与弱网备用)。npm（发布后）、GitHub 与本地 link 是同一包名的不同来源，混用时以最后一次 `add` 为准。
 
 ### 更新
 
@@ -70,11 +70,11 @@ dsh plugin --profile web update @wjingshan/dsh-client-ui-skin-deep-whale-manager
 dsh plugin --profile web update '@wjingshan/dsh-client-ui-skin-deep-whale-manager' '@wjingshan/dsh-client-ui-skin-maid-atelier' '@wjingshan/dsh-client-ui-skin-orca-link'
 ```
 
-npm 依赖默认跟随 `latest`；`update` 重新解析该标签当前指向的版本。GitHub 依赖则重新解析仓库最新提交。也可以不带包名执行 `dsh plugin --profile web update`（更新 profile 全部依赖，只装了本仓库皮肤时效果相同）。bundle 内容更新走配置热重载；只有新增/删除插件包才需要重启。
+GitHub 依赖会重新解析仓库最新提交；npm 依赖（发布后）默认跟随 `latest`，`update` 重新解析该标签当前指向的版本。`dsh plugin --profile web update` 也可以不带包名执行（更新 profile 全部依赖，只装了本仓库皮肤时效果相同）——依赖键就是 `@wjingshan/*` 包名，所以 GitHub 来源与将来发布后的 npm 来源共用同一条命令。bundle 内容更新走配置热重载；只有新增/删除插件包才需要重启。
 
 ### 从旧占位 scope 迁移
 
-`0.1.3` 之前从 GitHub 安装的版本使用 `@dsh-external/*` 依赖键；它只是本项目过去的源码占位符。必须先移除三个旧键，再运行上面的 npm 一行安装，否则 DSH 可能同时保留两组插件身份：
+`0.1.3` 之前从 GitHub 安装的版本使用 `@dsh-external/*` 依赖键；它只是本项目过去的源码占位符。必须先移除三个旧键，再运行上面的一行安装，否则 DSH 可能同时保留两组插件身份：
 
 ```sh
 dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-orca-link'
@@ -103,7 +103,7 @@ dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-deep-whale-man
 
 ### 独立子包安装（本地开发与弱网备用）
 
-> 普通用户不需要使用本节：npm 一行安装无需 clone。本节用于本地开发、指定提交测试，或 registry 网络不可用时。npm/GitHub 依赖与本地 link 针对同一包名，用哪种就执行哪种，不要混跑。
+> 普通用户不需要使用本节：GitHub 一行安装无需 clone。本节用于本地开发、指定提交测试，或网络不可用（含首次抓取仓库快照过大）时。npm（发布后）/GitHub 依赖与本地 link 针对同一包名，用哪种就执行哪种，不要混跑。
 
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone 到任意位置（浅克隆足够，跳过历史）
@@ -170,9 +170,9 @@ document.documentElement.outerHTML.match(/\/plugins\/@wjingshan\/[^"'\s]+/g) ?? 
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| `ERR_PNPM_FETCH_404` | npm 包名/GitHub spec 拼写错误、网络不可用，或独立子包用了裸目录名 | 正式安装复制上方 npm 包名；开发 link 使用绝对路径 |
+| `ERR_PNPM_FETCH_404` | spec 拼写错误、网络不可用，或独立子包用了裸目录名 | 正式安装复制上方一行命令里的 spec；开发 link 使用绝对路径 |
 | `The matching commit...`/无法解析 ref | **pnpm < 9**，`#path:` 子目录语法不被支持 | 升级 pnpm 到 ≥ 9（`npm i -g pnpm@latest`） |
-| `ERR_PNPM_EXOTIC_SUBDEP` | 尝试安装会再带 Git 依赖的“根包/聚合包”（pnpm 11 安全策略，本仓库不提供此类包） | 按本页 npm 一行命令安装三个发行包 |
+| `ERR_PNPM_EXOTIC_SUBDEP` | 尝试安装会再带 Git 依赖的“根包/聚合包”（pnpm 11 安全策略，本仓库不提供此类包） | 按本页一行命令安装三个发行包 |
 | `pnpm not found on PATH` | 环境缺少 pnpm | 安装 pnpm（`npm i -g pnpm`）后重试 |
 | 包在列表里但页面无效果 | 皮肤被 `disabled`（多皮肤互斥开关）或浏览器未刷新 | `--dump-config` 核对 disabled；刷新页面 |
 | PowerShell 命令不完整/报错 | `#` 未加引号被当注释截断 | spec 一律单引号包裹 |

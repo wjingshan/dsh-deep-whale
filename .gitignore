@@ -6,5 +6,8 @@ node_modules/
 # 皮肤开发笔记:权威副本在 dsh-skin-template(本目录为 junction 共享,不入库)
 .agents/notes/
 
+# 桥接降级草稿:note 不可写/中央冲突时的本机落盘位置(AGENTS.md),不入库
+.agents/bridge-state/
+
 # 本地技能测试环境:隔离 DSH_HOME 与测试 profile,含复制的本机配置,绝不可入库
 .test-env/

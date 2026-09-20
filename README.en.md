@@ -36,25 +36,25 @@ Click an image for the full size.
 
 > **Check your distribution first:** the commands below are only for standalone environments that run DSH directly. If you installed `@linxin666/dsh-web-all` (dsh-web), install its adapted `maid-atelier` and `orca-link` through dsh-web's own skin center/installer instead. Do not add this repository's standalone packages to the same profile; the component and styling contracts differ and the resulting UI may be broken.
 
-The three distribution packages (skin manager + both skins) are published on npm. With no dist-tag specified, this installs the stable `latest` release — **no clone required**.
+The three distribution packages (skin manager + both skins) are **not published on npm yet** (`@wjingshan/*` are their intended npm names). Until then, the one-line install below pulls them straight from this repository's `main` by subdirectory — **no clone required**, pnpm ≥ 9.
 
 **Linux / macOS / WSL:**
 
 ```sh
-dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-deep-whale-manager' && dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-maid-atelier' && dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier' && dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 **PowerShell** (use `;` between commands):
 
 ```powershell
-dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-deep-whale-manager'; dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-maid-atelier'; dsh plugin --profile web add '@wjingshan/dsh-client-ui-skin-orca-link'
+dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/skin-manager'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/maid-atelier'; dsh plugin --profile web add 'github:wjingshan/dsh-deep-whale#path:/orca-link'
 ```
 
 For a single skin, drop the line you do not need (keep skin-manager: switching and mutual exclusion rely on it).
 
 This is a first-time package addition, so restart DSH once. On that restart the skin manager detects "two skins enabled at once" and **atomically falls back to the official default**, so a fresh install can never leave skins stacked; then open Settings → Skin Management and click Switch on your skin — hot reload applies it. Later switches need no restart and no AI assistance.
 
-> To follow GitHub `main` directly, use `github:wjingshan/dsh-deep-whale#path:/<subdirectory>` (requires pnpm ≥ 9). For local development, see [Standalone sub-package install](#standalone-sub-package-install-dev-and-weak-network-fallback). npm, GitHub and local links are different sources for the same package names; the last `add` wins.
+> Until the npm packages are published, these GitHub `#path:` specs are the only install source that needs no clone (pnpm ≥ 9). For pinned commits and local development, see [Standalone sub-package install](#standalone-sub-package-install-dev-and-weak-network-fallback). npm (once published), GitHub and local links are different sources for the same package names; the last `add` wins.
 
 ### Update
 
@@ -70,11 +70,11 @@ dsh plugin --profile web update @wjingshan/dsh-client-ui-skin-deep-whale-manager
 dsh plugin --profile web update '@wjingshan/dsh-client-ui-skin-deep-whale-manager' '@wjingshan/dsh-client-ui-skin-maid-atelier' '@wjingshan/dsh-client-ui-skin-orca-link'
 ```
 
-npm dependencies follow `latest` by default; `update` re-resolves the version currently assigned to that tag. GitHub dependencies re-resolve the latest repository commit. You can also run `dsh plugin --profile web update` without a package name (updates the whole profile; identical if only these packages are installed). Bundle content updates hot-reload through config HMR; a restart is needed only when adding/removing plugin packages.
+GitHub dependencies re-resolve the latest repository commit; npm dependencies (once published) follow `latest` and `update` re-resolves the version that tag points at. `dsh plugin --profile web update` can also run without a package name (updates every dependency in the profile; identical when only these packages are installed) — dependency keys are the `@wjingshan/*` package names, so the GitHub source and a future npm source share the one command. Bundle content updates hot-reload through config HMR; a restart is needed only when adding/removing plugin packages.
 
 ### Migrating from the old placeholder scope
 
-GitHub installations made before `0.1.3` use `@dsh-external/*` dependency keys. That scope was only a source-level placeholder for this project. Remove all three old keys before running the npm one-liner above; otherwise DSH may retain both plugin identities:
+GitHub installations made before `0.1.3` use `@dsh-external/*` dependency keys. That scope was only a source-level placeholder for this project. Remove all three old keys before running the one-liner above; otherwise DSH may retain both plugin identities:
 
 ```sh
 dsh plugin --profile web remove '@dsh-external/dsh-client-ui-skin-orca-link'
@@ -103,7 +103,7 @@ Read https://github.com/wjingshan/dsh-deep-whale/INSTALL.md and install the skin
 
 ### Standalone sub-package install (dev and weak-network fallback)
 
-> Regular users do not need this section: the npm one-liner needs no clone. This is for local development, specified-commit testing, or when registry access is unavailable. npm/GitHub specs and local links address the same package names — pick one and stick with it.
+> Regular users do not need this section: the GitHub one-liner needs no clone. This is for local development, specified-commit testing, or when the network is unavailable (including a first fetch of the repository snapshot that is too large). npm (once published)/GitHub specs and local links address the same package names — pick one and stick with it.
 
 ```sh
 git clone --depth 1 https://github.com/wjingshan/dsh-deep-whale   # clone anywhere (shallow is enough, skips history)
@@ -170,9 +170,9 @@ It must contain the manager and the active skin package; disabled skins may be a
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `ERR_PNPM_FETCH_404` | misspelled npm package/GitHub spec, unavailable network, or a bare standalone directory | copy the npm package names above; use absolute paths for development links |
+| `ERR_PNPM_FETCH_404` | misspelled spec, unavailable network, or a bare standalone directory | copy the spec from the one-liner above; use absolute paths for development links |
 | `The matching commit...` / cannot resolve ref | **pnpm < 9** — `#path:` subdirectory syntax unsupported | upgrade pnpm to ≥ 9 (`npm i -g pnpm@latest`) |
-| `ERR_PNPM_EXOTIC_SUBDEP` | installing an aggregate "root package" that itself carries Git dependencies (pnpm 11 supply-chain policy; this repo ships no such package) | use the npm one-liner above to install the three distribution packages |
+| `ERR_PNPM_EXOTIC_SUBDEP` | installing an aggregate "root package" that itself carries Git dependencies (pnpm 11 supply-chain policy; this repo ships no such package) | use the one-liner above to install the three distribution packages |
 | `pnpm not found on PATH` | pnpm missing from the environment | install pnpm (`npm i -g pnpm`) and retry |
 | package listed but no effect on the page | skin is `disabled` (multi-skin mutual exclusion) or the browser was not refreshed | check `disabled` in `--dump-config`; refresh |
 | PowerShell command truncated / errors | unquoted `#` starts a comment | always quote specs in single quotes |
