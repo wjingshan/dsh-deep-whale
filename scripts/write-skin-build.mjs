@@ -26,10 +26,18 @@ if (!skinRootArg || !repository || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(re
       timeout: 5000,
     }).trim()
     if (/^[0-9a-f]{40}$/.test(candidate)) sourceCommit = candidate
-  } catch {
-    // A source archive can still produce a valid fingerprint; without a Git
-    // ancestry anchor the manager conservatively reports differing builds as
-    // incomparable instead of guessing an update direction.
+    else console.warn(`skin-build: git reported a HEAD this script cannot use (${candidate}); sourceCommit omitted`)
+  } catch (error) {
+    // A source archive has no .git and can still produce a valid fingerprint.
+    // A real worktree that merely could not reach Git — a sandbox refusing
+    // piped stdio, for instance — must not degrade the same silent way: the
+    // manifest would ship with no ancestry anchor, and the manager would call
+    // every build incomparable instead of offering an update direction.
+    if (existsSync(resolve(skinRoot, '..', '.git'))) {
+      console.warn(
+        `skin-build: .git is present but \`git rev-parse HEAD\` failed (${error.code ?? error.message}); sourceCommit omitted`,
+      )
+    }
   }
   const inputs = ['lib/client.js', 'lib/index.js', 'cordis.patch.yml', 'skin.json']
   const hash = createHash('sha256')
