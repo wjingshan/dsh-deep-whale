@@ -5,6 +5,7 @@ import {
   type SkinCustomizationState,
 } from '../../../skin-manager/src/protocol.ts'
 import { installSessionArtwork } from './session-artwork.ts'
+import { installLeftArtwork } from './left-artwork.ts'
 
 const ATTR_ART = 'data-dsh-whale-maid-art'
 const ATTR_FONT = 'data-dsh-whale-maid-font'
@@ -39,6 +40,8 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
   let mobile = window.innerWidth <= 700
   /** Live session-state portrait swap; present only while its setting is on. */
   let disposeSessionArtwork: (() => void) | undefined
+  /** Live work-state swimsuit swap for the left maid; on unless switched off. */
+  let disposeLeftArtwork: (() => void) | undefined
 
   const synchronizeModel = (): void => {
     let family: ReturnType<typeof modelFamily> = null
@@ -121,12 +124,25 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     }
   }
 
+  /**
+   * Install or retract the left maid's work-state sprite swap. Idempotent, so
+   * `apply()` can drive it on every settings change without bookkeeping.
+   */
+  const synchronizeLeftArtwork = (enabled: boolean, variant: unknown): void => {
+    if (disposeLeftArtwork !== undefined) {
+      disposeLeftArtwork()
+      disposeLeftArtwork = undefined
+    }
+    if (enabled) disposeLeftArtwork = installLeftArtwork({ enabled: true, variant })
+  }
+
   const apply = (state: SkinCustomizationState | null): void => {
     if (state === null) {
       window.removeEventListener('resize', onResize)
       activeState = null
       stopModelObserver()
       synchronizeSessionArtwork(false)
+      synchronizeLeftArtwork(false, undefined)
       projector.release()
       return
     }
@@ -143,6 +159,9 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     const navMode = state.values.mobileNav
     projector.set(ATTR_NAV_MODE, typeof navMode === 'string' && NAV_MODES.has(navMode) ? navMode : 'corner')
     synchronizeSessionArtwork(state.values.stateArtwork === true, state.values.artworkVariant)
+    // The outfits are the left maid's own artwork, so the swap is on unless the
+    // manager explicitly stores it off (an older manager has no key at all).
+    synchronizeLeftArtwork(state.values.leftStateArtwork !== false, state.values.leftArtworkVariant)
   }
 
   return exposeSkinCustomization({
@@ -230,13 +249,36 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
         ],
       },
       {
+        key: 'leftStateArtwork',
+        type: 'boolean',
+        label: '左女仆按工作状态切换立绘',
+        labelEn: 'Left maid artwork follows the work state',
+        description: '左女仆按会话此刻在做什么换姿势与表情：思考、工具执行、回答中、出错。关闭后固定为待机立绘。',
+        descriptionEn: 'The left maid changes pose and expression with the work state: thinking, running a tool, answering, or startled after an error. Switched off she keeps the idle sprite.',
+        defaultValue: true,
+      },
+      {
+        key: 'leftArtworkVariant',
+        type: 'select',
+        label: '左女仆造型',
+        labelEn: 'Left maid outfit',
+        description: '左女仆当前穿的整套造型；每套都带上述五种工作状态立绘。默认冬日洋装（与右女仆同套）。',
+        descriptionEn: 'The outfit the left maid wears; every outfit carries the five work-state sprites above. Defaults to the winter dress that matches the right maid.',
+        defaultValue: 'winter',
+        options: [
+          { value: 'winter', label: '冬日洋装（与右女仆同套）', labelEn: 'Winter dress (matches the right maid)' },
+          { value: 'swimsuit', label: '泳装（分体）', labelEn: 'Swimsuit (two-piece)' },
+          { value: 'yukata', label: '浴衣（夏日祭）', labelEn: 'Yukata (summer festival)' },
+        ],
+      },
+      {
         key: 'stateArtwork',
         type: 'boolean',
         label: '按会话状态切换立绘',
         labelEn: 'Switch artwork with session state',
-        description: '思考或工具运行时换成思考造型，一轮结束换成完成造型，本轮出错或被中断换成泄气造型。立绘由 window.__dshMaidAtelierArtwork 提供；未提供时本开关不产生任何变化。',
-        descriptionEn: 'Swap the right maid for a thinking portrait while she works, a finished one after a turn, and a dejected one when a turn fails or is interrupted. Portraits come from window.__dshMaidAtelierArtwork; without them this switch changes nothing.',
-        defaultValue: false,
+        description: '右女仆在思考或工具运行时换成思考造型，一轮结束换成完成造型，本轮出错或被中断换成泄气造型。三种造型随包内置；也可由 window.__dshMaidAtelierArtwork 覆盖。',
+        descriptionEn: 'Swap the right maid for a thinking portrait while she works, a finished one after a turn, and a dejected one when a turn fails or is interrupted. All three portraits ship with the skin, and a host may override them through window.__dshMaidAtelierArtwork.',
+        defaultValue: true,
       },
       {
         key: 'mobileNav',

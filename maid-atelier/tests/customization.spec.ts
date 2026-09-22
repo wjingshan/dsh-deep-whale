@@ -5,6 +5,7 @@ import {
   type SkinCustomizationRegistration,
 } from '../../skin-manager/src/protocol.ts'
 import { installMaidCustomization, modelFamily } from '../src/client/customization.ts'
+import { LEFT_ARTWORK_SETS } from '../src/client/left-artwork.ts'
 import { normalizeSkinValues } from '../../skin-manager/src/client/preferences.ts'
 
 afterEach(() => {
@@ -24,7 +25,7 @@ describe('maid customization declaration', () => {
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
     const dispose = installMaidCustomization()
     const definition = registration!.definition
-    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'sfwMode', 'font', 'modelExit', 'mobileModelExit', 'flashGlasses', 'artworkVariant', 'stateArtwork', 'mobileNav', 'composerMode'])
+    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'sfwMode', 'font', 'modelExit', 'mobileModelExit', 'flashGlasses', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'composerMode'])
     const state = {
       values: normalizeSkinValues(definition, { artwork: true, sfwMode: { enabled: true, outside: 'visible', ranges: [] }, font: 'serif', modelExit: false, mobileNav: 'topbar', composerMode: 'scroll' }),
       visibility: { sfwMode: false },
@@ -57,6 +58,23 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.hasAttribute('data-dsh-whale-maid-art')).toBe(false)
     expect(document.documentElement.hasAttribute('data-maid-composer-mode')).toBe(false)
     expect(document.documentElement.hasAttribute('data-maid-nav-mode')).toBe(false)
+    window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
+  })
+
+  it('offers exactly the outfits the artwork module ships', () => {
+    let registration: SkinCustomizationRegistration | undefined
+    const receive = (event: Event) => { registration = (event as CustomEvent<SkinCustomizationRegistration>).detail }
+    window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
+    const dispose = installMaidCustomization()
+    const outfit = registration!.definition.settings.find(setting => setting.key === 'leftArtworkVariant')
+    expect(outfit?.type).toBe('select')
+    // The dropdown and the sprite sets are two halves of one contract, and the
+    // order differs on purpose (the dropdown leads with the default), so compare
+    // membership: a value the module cannot resolve silently falls back.
+    const values = outfit && outfit.type === 'select' ? outfit.options.map(option => option.value) : []
+    expect([...values].sort()).toEqual(Object.keys(LEFT_ARTWORK_SETS).sort())
+    expect(outfit?.defaultValue).toBe('winter')
+    dispose()
     window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
   })
 

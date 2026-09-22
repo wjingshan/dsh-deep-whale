@@ -29,6 +29,28 @@ chain is credited:
    鲸鱼娘表情原图；保留原图，通过本地脚本抠除浅色背景并处理边缘，等比缩放及
    透明留边生成 PNG / ICO，沿用以上署名链。处理脚本为 scripts/build-maid-icons.py。
 
+   左女仆泳装立绘（assets/maid-atelier-maid-left-swim-{idle,think,tool,write,error}-v1.webp，
+   2026-09-22，WJ 改版新增）：以本皮肤的 assets/maid-atelier-maid-left-v5.webp
+   为身份参考，用 DashScope qwen-image-3.0 图生图逐状态重绘（待机/思考/工具执行/
+   回答中/出错），绿幕（#00FF00）按绿度阈值抠像转透明层并统一到 1400px 高。
+   生成提示词与处理脚本见 scripts/build-maid-left-state-art.py；角色设计沿用
+   以上署名链。
+
+   左女仆冬日洋装立绘（assets/maid-atelier-maid-left-winter-{idle,think,tool,write,error}-v1.webp，
+   2026-09-22，WJ 改版新增）：待机态直接取自右女仆内置的 winter 立绘
+   （session-artwork.ts 中的 BUNDLED.winter，本身即上述署名链下的既有素材），
+   铺纯绿幕抠像；其余四态以该立绘为参考、同样用 DashScope qwen-image-3.0
+   图生图改姿势与表情。处理脚本同上。
+
+   左女仆浴衣立绘（assets/maid-atelier-maid-left-yukata-{idle,think,tool,write,error}-v1.webp，
+   2026-09-22，WJ 改版新增）：分两步生成。第一步以冬日洋装待机态（铺纯绿幕）为
+   参考，用 DashScope qwen-image-3.0 图生图只换衣服——深蓝浴衣配浅蓝鲸鱼与浪花纹样、
+   陶瓷白蕾丝领口与下摆、正前方柔金 obi 腰带，并保留下摆开口使鲸鱼尾完整可见，
+   木屐配深蓝鞋带与白色足袜，手中热可可换为鲸鱼图案团扇；第二步以该浴衣待机态为
+   参考，同样图生图只改姿势与表情，得到其余四态，使服装在生成过程中不再漂移。
+   抠像与统一 1400px 高由同一个处理脚本完成；五态姿势措辞与另外两套保持逐字一致，
+   保证同一工作状态在三套造型下读起来是同一个姿势。
+
 Artwork usage terms (LICENSE-ARTWORK): CC BY-NC-SA 4.0 —— 署名 (attribution) 必须保留以上完整创作链；
 非商业性使用 (non-commercial only)；衍生作品必须以相同方式共享 (share-alike)。
 

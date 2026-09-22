@@ -13,11 +13,11 @@ import {
   MAID_ATELIER_TOP_TRIM_TILE,
 } from './art.ts'
 import {
-  MAID_ATELIER_MAID_LEFT,
   MAID_ATELIER_MAID_RIGHT,
   MAID_ATELIER_PALACE_DARK,
   MAID_ATELIER_PALACE_LIGHT,
 } from './background-art.generated.ts'
+import { MAID_LEFT_ARTWORK } from './left-artwork.ts'
 import {
   MAID_ATELIER_COMPOSER_FRAME_SHELL,
   MAID_ATELIER_COMPOSER_LACE_TILE,
@@ -185,7 +185,9 @@ function createCharacterStage(): HTMLDivElement {
   const left = document.createElement('img')
   left.dataset.maidCharacter = 'left'
   left.alt = ''
-  left.src = MAID_ATELIER_MAID_LEFT
+  // The left maid wears the swimsuit set: `left-artwork.ts` swaps this sprite
+  // for the thinking / tool / writing / startled one as the turn progresses.
+  left.src = MAID_LEFT_ARTWORK.idle
 
   const right = document.createElement('img')
   right.dataset.maidCharacter = 'right'

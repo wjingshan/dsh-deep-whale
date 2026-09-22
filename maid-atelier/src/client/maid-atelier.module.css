@@ -183,6 +183,45 @@ body[data-dsh-maid-atelier-wj][data-ds-dark-theme] [data-maid-character] {
     drop-shadow(0 22px 28px rgba(0, 0, 0, 0.3));
 }
 
+/* Work-state sprite swap (left-artwork.ts). The module projects the state onto
+   the sprite as `data-maid-left-state`, so the stylesheet only has to add the
+   motion the still sprites cannot carry: a short startle when the left maid
+   lands on 'error'. The wobble rides `rotate`, because the model-exit switches
+   own `translate` on this node — an animation there would drag a maid the
+   switches just hid back on screen for the length of the animation. */
+@keyframes maidAtelierLeftStartle {
+  0% {
+    rotate: 0deg;
+  }
+  16% {
+    rotate: -2.4deg;
+  }
+  34% {
+    rotate: 2deg;
+  }
+  52% {
+    rotate: -1.2deg;
+  }
+  72% {
+    rotate: 0.7deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+
+body[data-dsh-maid-atelier-wj]
+  [data-maid-character='left'][data-maid-left-state='error'] {
+  animation: maidAtelierLeftStartle 620ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-dsh-maid-atelier-wj]
+    [data-maid-character='left'][data-maid-left-state='error'] {
+    animation: none;
+  }
+}
+
 /* Chat alone retreats the two figures toward the edges. Inspection views do
    not expose data-chat-flow, so Trajectory and similar canvases stay put. */
 body[data-dsh-maid-atelier-wj][data-maid-chat-active]
