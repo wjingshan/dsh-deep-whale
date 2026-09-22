@@ -54,7 +54,7 @@ declare global {
   }
 }
 
-/** Swimsuit set — the default outfit. */
+/** Swimsuit set (two-piece). */
 export const MAID_LEFT_ARTWORK: LeftArtworkMap = {
   idle: MAID_ATELIER_LEFT_SWIM_IDLE,
   think: MAID_ATELIER_LEFT_SWIM_THINK,
@@ -81,6 +81,18 @@ export const MAID_LEFT_ARTWORK_YUKATA: LeftArtworkMap = {
   error: MAID_ATELIER_LEFT_YUKATA_ERROR,
 }
 
+/**
+ * The outfit worn when nothing selects one.
+ *
+ * Single source of truth: the `leftArtworkVariant` setting declares this as its
+ * `defaultValue` and {@link leftArtworkFor} falls back to it, so an absent or
+ * unrecognised stored value cannot silently dress her in a different outfit than
+ * the dropdown advertises as the default. These two used to disagree -- the
+ * setting defaulted to the winter dress while the resolver fell back to the
+ * swimsuit -- which read as "the outfit setting does nothing".
+ */
+export const DEFAULT_LEFT_ARTWORK_VARIANT: LeftArtworkVariant = 'winter'
+
 /** Every outfit by variant key; the dropdown order is this order. */
 export const LEFT_ARTWORK_SETS: Record<LeftArtworkVariant, LeftArtworkMap> = {
   swimsuit: MAID_LEFT_ARTWORK,
@@ -88,15 +100,20 @@ export const LEFT_ARTWORK_SETS: Record<LeftArtworkVariant, LeftArtworkMap> = {
   yukata: MAID_LEFT_ARTWORK_YUKATA,
 }
 
+/** The outfit the stage starts from, before any setting has been applied. */
+export const DEFAULT_LEFT_ARTWORK: LeftArtworkMap = LEFT_ARTWORK_SETS[DEFAULT_LEFT_ARTWORK_VARIANT]
+
 /**
  * Resolve the outfit a setting value asks for. An unknown value (a manager that
  * stores something this build does not ship, or a value the user typed) falls
- * back to the default outfit instead of leaving the maid without artwork.
+ * back to {@link DEFAULT_LEFT_ARTWORK_VARIANT} -- the same outfit the setting
+ * declares as its default -- instead of leaving the maid without artwork or
+ * contradicting the dropdown.
  */
 export function leftArtworkFor(variant: unknown): LeftArtworkMap {
   return typeof variant === 'string' && variant in LEFT_ARTWORK_SETS
     ? LEFT_ARTWORK_SETS[variant as LeftArtworkVariant]
-    : MAID_LEFT_ARTWORK
+    : DEFAULT_LEFT_ARTWORK
 }
 
 /** The node this module borrows; the skin owns every `[data-maid-character]`. */
@@ -163,10 +180,55 @@ export function installLeftArtwork(options: LeftArtworkOptions = {}): () => void
   const supplied = typeof window === 'undefined' ? undefined : window.__dshMaidAtelierLeftArtwork
   const map: LeftArtworkMap = { ...leftArtworkFor(options.variant), ...supplied, ...options.map }
   const enabled = options.enabled ?? true
+  const portrait = (): HTMLImageElement | null =>
+    document.querySelector<HTMLImageElement>(PORTRAIT_SELECTOR)
+
   if (!enabled) {
-    // Nothing to do: the stage already carries the idle sprite, so a disabled
-    // deployment pays for no observer at all.
-    return () => { /* nothing was observed or written */ }
+    // The switch means "stop following the work state", not "ignore the outfit".
+    // She still has to wear the outfit the user picked -- otherwise turning the
+    // switch off silently pins her to whatever sprite the stage was born with and
+    // the outfit dropdown stops doing anything at all.
+    let image: HTMLImageElement | null = null
+    let originalSrc: string | null = null
+    let originalState: string | null = null
+    let stageWatch: MutationObserver | undefined
+
+    const dress = (): boolean => {
+      const found = portrait()
+      if (found === null) return false
+      if (image !== found) {
+        // First (or a replacement) stage: remember what to restore verbatim.
+        image = found
+        originalSrc = found.getAttribute('src')
+        originalState = found.getAttribute(STATE_ATTRIBUTE)
+      }
+      if (found.getAttribute(STATE_ATTRIBUTE) !== 'idle') found.setAttribute(STATE_ATTRIBUTE, 'idle')
+      if (found.getAttribute('src') !== map.idle) found.setAttribute('src', map.idle)
+      return true
+    }
+
+    if (!dress()) {
+      // The stage is created after the settings first apply, so the first attempt
+      // finds nothing. Watch for the node appearing -- childList only, never the
+      // work-state attributes, so she still cannot follow the session -- and stop
+      // the moment she is dressed.
+      stageWatch = new MutationObserver(() => {
+        if (!dress()) return
+        stageWatch?.disconnect()
+        stageWatch = undefined
+      })
+      stageWatch.observe(root, { childList: true, subtree: true })
+    }
+
+    return () => {
+      stageWatch?.disconnect()
+      stageWatch = undefined
+      if (image === null) return
+      if (originalState === null) image.removeAttribute(STATE_ATTRIBUTE)
+      else image.setAttribute(STATE_ATTRIBUTE, originalState)
+      if (originalSrc === null) image.removeAttribute('src')
+      else image.setAttribute('src', originalSrc)
+    }
   }
 
   let observer: MutationObserver | undefined
@@ -183,9 +245,6 @@ export function installLeftArtwork(options: LeftArtworkOptions = {}): () => void
   let held: 'error' | undefined
   /** The sprite value found before this module first wrote, restored verbatim. */
   let originalSrc: string | null = null
-
-  const portrait = (): HTMLImageElement | null =>
-    document.querySelector<HTMLImageElement>(PORTRAIT_SELECTOR)
 
   const paint = (): void => {
     const image = portrait()

@@ -5,7 +5,7 @@ import {
   type SkinCustomizationRegistration,
 } from '../../skin-manager/src/protocol.ts'
 import { installMaidCustomization, modelFamily } from '../src/client/customization.ts'
-import { LEFT_ARTWORK_SETS } from '../src/client/left-artwork.ts'
+import { DEFAULT_LEFT_ARTWORK_VARIANT, LEFT_ARTWORK_SETS } from '../src/client/left-artwork.ts'
 import { normalizeSkinValues } from '../../skin-manager/src/client/preferences.ts'
 
 afterEach(() => {
@@ -74,6 +74,39 @@ describe('maid customization declaration', () => {
     const values = outfit && outfit.type === 'select' ? outfit.options.map(option => option.value) : []
     expect([...values].sort()).toEqual(Object.keys(LEFT_ARTWORK_SETS).sort())
     expect(outfit?.defaultValue).toBe('winter')
+    dispose()
+    window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
+  })
+
+  it('wears the chosen outfit even with the work-state switch off', () => {
+    // Regression: the outfit used to be applied only inside `installLeftArtwork`,
+    // which the switch short-circuits. With the switch off the maid kept the
+    // sprite the stage was born with, so the outfit dropdown silently did nothing
+    // and she looked permanently stuck in one outfit.
+    let registration: SkinCustomizationRegistration | undefined
+    const receive = (event: Event) => { registration = (event as CustomEvent<SkinCustomizationRegistration>).detail }
+    window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
+    const dispose = installMaidCustomization()
+    const definition = registration!.definition
+
+    const outfit = definition.settings.find(setting => setting.key === 'leftArtworkVariant')
+    expect(outfit?.defaultValue).toBe(DEFAULT_LEFT_ARTWORK_VARIANT)
+
+    document.body.innerHTML = '<img data-maid-character="left" alt="" src="data:image/webp;base64,BORN">'
+    const image = document.querySelector<HTMLImageElement>('img')!
+    definition.apply({
+      values: normalizeSkinValues(definition, { leftStateArtwork: false, leftArtworkVariant: 'yukata' }),
+      visibility: { sfwMode: true },
+    })
+    expect(image.getAttribute('src')).toBe(LEFT_ARTWORK_SETS.yukata.idle)
+
+    // Switching outfits while off must still take effect.
+    definition.apply({
+      values: normalizeSkinValues(definition, { leftStateArtwork: false, leftArtworkVariant: 'swimsuit' }),
+      visibility: { sfwMode: true },
+    })
+    expect(image.getAttribute('src')).toBe(LEFT_ARTWORK_SETS.swimsuit.idle)
+
     dispose()
     window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
   })

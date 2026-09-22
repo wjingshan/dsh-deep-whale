@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  DEFAULT_LEFT_ARTWORK,
+  DEFAULT_LEFT_ARTWORK_VARIANT,
   installLeftArtwork,
   LEFT_ARTWORK_SETS,
   leftArtworkFor,
@@ -191,16 +193,51 @@ describe('left artwork swap', () => {
     expect(image.getAttribute('src')).toBe(IDLE)
   })
 
-  it('observes nothing while switched off', async () => {
+  it('wears the outfit but follows no state while switched off', async () => {
     vi.useFakeTimers()
+    // No `useFakeArt()` here: a window override would replace every sprite and
+    // hide which outfit the resolver actually picked.
     const image = portrait()
-    const dispose = installLeftArtwork({ enabled: false })
+    // The stage is born in the default outfit; the chosen outfit must replace it
+    // even with the switch off, or the outfit dropdown would do nothing at all.
+    expect(image.getAttribute('src')).toBe(IDLE)
+    const dispose = installLeftArtwork({ enabled: false, variant: 'yukata' })
+    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_YUKATA.idle)
+    expect(image.getAttribute('data-maid-left-state')).toBe('idle')
     thinking()
     toolRunning()
     await settle()
+    // Still idle: nothing is observed, so the work state cannot change her.
+    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_YUKATA.idle)
+    expect(image.getAttribute('data-maid-left-state')).toBe('idle')
+    dispose()
     expect(image.getAttribute('src')).toBe(IDLE)
     expect(image.hasAttribute('data-maid-left-state')).toBe(false)
+  })
+
+  it('dresses a stage that only appears after the switched-off install', async () => {
+    vi.useFakeTimers()
+    // The settings apply before the skin builds the character stage, which is the
+    // normal order at activation -- and the reason a switched-off install must not
+    // give up when it finds no portrait on the first attempt.
+    document.body.innerHTML = ''
+    const dispose = installLeftArtwork({ enabled: false, variant: 'yukata' })
+    expect(document.querySelector('[data-maid-character="left"]')).toBeNull()
+    const image = portrait()
+    await settle(0)
+    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_YUKATA.idle)
+    expect(image.getAttribute('data-maid-left-state')).toBe('idle')
     dispose()
+    expect(image.getAttribute('src')).toBe(IDLE)
+    expect(image.hasAttribute('data-maid-left-state')).toBe(false)
+  })
+
+  it('falls back to the outfit the setting declares as its default', () => {
+    // Both halves of one contract: the dropdown's default and the resolver's
+    // fallback. They disagreed once (default winter, fallback swimsuit), which
+    // made the outfit setting look broken.
+    expect(DEFAULT_LEFT_ARTWORK).toBe(MAID_LEFT_ARTWORK_WINTER)
+    expect(leftArtworkFor(DEFAULT_LEFT_ARTWORK_VARIANT)).toBe(MAID_LEFT_ARTWORK_WINTER)
   })
 
   it('leaves the sprite alone when a state has no art, while still reporting the state', async () => {
@@ -241,9 +278,11 @@ describe('left artwork outfits', () => {
     expect(leftArtworkFor('swimsuit')).toBe(MAID_LEFT_ARTWORK)
     expect(leftArtworkFor('winter')).toBe(MAID_LEFT_ARTWORK_WINTER)
     expect(leftArtworkFor('yukata')).toBe(MAID_LEFT_ARTWORK_YUKATA)
-    // An unknown value leaves her dressed rather than blank.
-    expect(leftArtworkFor('nonsense')).toBe(MAID_LEFT_ARTWORK)
-    expect(leftArtworkFor(undefined)).toBe(MAID_LEFT_ARTWORK)
+    // An unknown or absent value leaves her dressed in the *declared default*,
+    // which is the winter dress -- not the swimsuit.
+    expect(leftArtworkFor('nonsense')).toBe(DEFAULT_LEFT_ARTWORK)
+    expect(leftArtworkFor(undefined)).toBe(DEFAULT_LEFT_ARTWORK)
+    expect(DEFAULT_LEFT_ARTWORK).toBe(MAID_LEFT_ARTWORK_WINTER)
   })
 
   it('wears the selected outfit and keeps the work states inside it', async () => {

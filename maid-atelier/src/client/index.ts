@@ -17,7 +17,7 @@ import {
   MAID_ATELIER_PALACE_DARK,
   MAID_ATELIER_PALACE_LIGHT,
 } from './background-art.generated.ts'
-import { MAID_LEFT_ARTWORK } from './left-artwork.ts'
+import { DEFAULT_LEFT_ARTWORK } from './left-artwork.ts'
 import {
   MAID_ATELIER_COMPOSER_FRAME_SHELL,
   MAID_ATELIER_COMPOSER_LACE_TILE,
@@ -185,9 +185,12 @@ function createCharacterStage(): HTMLDivElement {
   const left = document.createElement('img')
   left.dataset.maidCharacter = 'left'
   left.alt = ''
-  // The left maid wears the swimsuit set: `left-artwork.ts` swaps this sprite
-  // for the thinking / tool / writing / startled one as the turn progresses.
-  left.src = MAID_LEFT_ARTWORK.idle
+  // Born in the skin's default outfit, not an arbitrary one: this sprite is what
+  // shows before `left-artwork.ts` installs, and what stays if the stage is ever
+  // rendered without customization. It used to be hard-coded to the swimsuit,
+  // which is why a window with the state switch off looked permanently stuck in
+  // the swimsuit no matter what the outfit setting said.
+  left.src = DEFAULT_LEFT_ARTWORK.idle
 
   const right = document.createElement('img')
   right.dataset.maidCharacter = 'right'

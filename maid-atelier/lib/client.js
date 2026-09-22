@@ -75,7 +75,7 @@ window.__ModuleLoader__.load({
 		*
 		* @module
 		*/
-		/** Swimsuit set — the default outfit. */
+		/** Swimsuit set (two-piece). */
 		const MAID_LEFT_ARTWORK = {
 			idle: MAID_ATELIER_LEFT_SWIM_IDLE,
 			think: MAID_ATELIER_LEFT_SWIM_THINK,
@@ -83,31 +83,50 @@ window.__ModuleLoader__.load({
 			write: MAID_ATELIER_LEFT_SWIM_WRITE,
 			error: MAID_ATELIER_LEFT_SWIM_ERROR
 		};
+		/** Winter dress set — the same coat the right maid wears in her winter portrait. */
+		const MAID_LEFT_ARTWORK_WINTER = {
+			idle: MAID_ATELIER_LEFT_WINTER_IDLE,
+			think: MAID_ATELIER_LEFT_WINTER_THINK,
+			tool: MAID_ATELIER_LEFT_WINTER_TOOL,
+			write: MAID_ATELIER_LEFT_WINTER_WRITE,
+			error: MAID_ATELIER_LEFT_WINTER_ERROR
+		};
+		/** Summer festival yukata set. */
+		const MAID_LEFT_ARTWORK_YUKATA = {
+			idle: MAID_ATELIER_LEFT_YUKATA_IDLE,
+			think: MAID_ATELIER_LEFT_YUKATA_THINK,
+			tool: MAID_ATELIER_LEFT_YUKATA_TOOL,
+			write: MAID_ATELIER_LEFT_YUKATA_WRITE,
+			error: MAID_ATELIER_LEFT_YUKATA_ERROR
+		};
+		/**
+		* The outfit worn when nothing selects one.
+		*
+		* Single source of truth: the `leftArtworkVariant` setting declares this as its
+		* `defaultValue` and {@link leftArtworkFor} falls back to it, so an absent or
+		* unrecognised stored value cannot silently dress her in a different outfit than
+		* the dropdown advertises as the default. These two used to disagree -- the
+		* setting defaulted to the winter dress while the resolver fell back to the
+		* swimsuit -- which read as "the outfit setting does nothing".
+		*/
+		const DEFAULT_LEFT_ARTWORK_VARIANT = "winter";
 		/** Every outfit by variant key; the dropdown order is this order. */
 		const LEFT_ARTWORK_SETS = {
 			swimsuit: MAID_LEFT_ARTWORK,
-			winter: {
-				idle: MAID_ATELIER_LEFT_WINTER_IDLE,
-				think: MAID_ATELIER_LEFT_WINTER_THINK,
-				tool: MAID_ATELIER_LEFT_WINTER_TOOL,
-				write: MAID_ATELIER_LEFT_WINTER_WRITE,
-				error: MAID_ATELIER_LEFT_WINTER_ERROR
-			},
-			yukata: {
-				idle: MAID_ATELIER_LEFT_YUKATA_IDLE,
-				think: MAID_ATELIER_LEFT_YUKATA_THINK,
-				tool: MAID_ATELIER_LEFT_YUKATA_TOOL,
-				write: MAID_ATELIER_LEFT_YUKATA_WRITE,
-				error: MAID_ATELIER_LEFT_YUKATA_ERROR
-			}
+			winter: MAID_LEFT_ARTWORK_WINTER,
+			yukata: MAID_LEFT_ARTWORK_YUKATA
 		};
+		/** The outfit the stage starts from, before any setting has been applied. */
+		const DEFAULT_LEFT_ARTWORK = LEFT_ARTWORK_SETS[DEFAULT_LEFT_ARTWORK_VARIANT];
 		/**
 		* Resolve the outfit a setting value asks for. An unknown value (a manager that
 		* stores something this build does not ship, or a value the user typed) falls
-		* back to the default outfit instead of leaving the maid without artwork.
+		* back to {@link DEFAULT_LEFT_ARTWORK_VARIANT} -- the same outfit the setting
+		* declares as its default -- instead of leaving the maid without artwork or
+		* contradicting the dropdown.
 		*/
 		function leftArtworkFor(variant) {
-			return typeof variant === "string" && variant in LEFT_ARTWORK_SETS ? LEFT_ARTWORK_SETS[variant] : MAID_LEFT_ARTWORK;
+			return typeof variant === "string" && variant in LEFT_ARTWORK_SETS ? LEFT_ARTWORK_SETS[variant] : DEFAULT_LEFT_ARTWORK;
 		}
 		/** The node this module borrows; the skin owns every `[data-maid-character]`. */
 		const PORTRAIT_SELECTOR$1 = "[data-maid-character=\"left\"]";
@@ -156,7 +175,46 @@ window.__ModuleLoader__.load({
 				...supplied,
 				...options.map
 			};
-			if (!(options.enabled ?? true)) return () => {};
+			const enabled = options.enabled ?? true;
+			const portrait = () => document.querySelector(PORTRAIT_SELECTOR$1);
+			if (!enabled) {
+				let image = null;
+				let originalSrc = null;
+				let originalState = null;
+				let stageWatch;
+				const dress = () => {
+					const found = portrait();
+					if (found === null) return false;
+					if (image !== found) {
+						image = found;
+						originalSrc = found.getAttribute("src");
+						originalState = found.getAttribute(STATE_ATTRIBUTE);
+					}
+					if (found.getAttribute(STATE_ATTRIBUTE) !== "idle") found.setAttribute(STATE_ATTRIBUTE, "idle");
+					if (found.getAttribute("src") !== map.idle) found.setAttribute("src", map.idle);
+					return true;
+				};
+				if (!dress()) {
+					stageWatch = new MutationObserver(() => {
+						if (!dress()) return;
+						stageWatch?.disconnect();
+						stageWatch = void 0;
+					});
+					stageWatch.observe(root, {
+						childList: true,
+						subtree: true
+					});
+				}
+				return () => {
+					stageWatch?.disconnect();
+					stageWatch = void 0;
+					if (image === null) return;
+					if (originalState === null) image.removeAttribute(STATE_ATTRIBUTE);
+					else image.setAttribute(STATE_ATTRIBUTE, originalState);
+					if (originalSrc === null) image.removeAttribute("src");
+					else image.setAttribute("src", originalSrc);
+				};
+			}
 			let observer;
 			let tick;
 			let hold;
@@ -171,7 +229,6 @@ window.__ModuleLoader__.load({
 			let held;
 			/** The sprite value found before this module first wrote, restored verbatim. */
 			let originalSrc = null;
-			const portrait = () => document.querySelector(PORTRAIT_SELECTOR$1);
 			const paint = () => {
 				const image = portrait();
 				if (image === null) return;
@@ -1446,7 +1503,7 @@ window.__ModuleLoader__.load({
 		* A deterministic id for the sources inside this bundle. It is shown in the
 		* skin's settings panel so an out-of-date window is visible instead of silent.
 		*/
-		const MAID_ATELIER_BUILD_ID = "7d26eff0b378";
+		const MAID_ATELIER_BUILD_ID = "c526e8db7ea0";
 		//#endregion
 		//#region src/client/customization.ts
 		const ATTR_ART = "data-dsh-whale-maid-art";
@@ -1559,13 +1616,27 @@ window.__ModuleLoader__.load({
 			* Install or retract the left maid's work-state sprite swap. Idempotent, so
 			* `apply()` can drive it on every settings change without bookkeeping.
 			*/
-			const synchronizeLeftArtwork = (enabled, variant) => {
+			/** Retract the left maid's sprite swap and put back whatever was there. */
+			const releaseLeftArtwork = () => {
 				if (disposeLeftArtwork !== void 0) {
 					disposeLeftArtwork();
 					disposeLeftArtwork = void 0;
 				}
-				if (enabled) disposeLeftArtwork = installLeftArtwork({
-					enabled: true,
+			};
+			/**
+			* Install or retract the left maid's outfit and work-state sprite swap.
+			*
+			* Always installs, even with the switch off: the switch decides whether she
+			* *follows the work state*, not whether she wears the chosen outfit. Gating the
+			* whole installation on the switch is what made the outfit dropdown do nothing
+			* -- she kept whatever sprite the stage was created with, which read as "the
+			* outfit setting is broken". The module handles the switched-off case by
+			* painting the chosen outfit's idle sprite and observing nothing.
+			*/
+			const synchronizeLeftArtwork = (enabled, variant) => {
+				releaseLeftArtwork();
+				disposeLeftArtwork = installLeftArtwork({
+					enabled,
 					variant
 				});
 			};
@@ -1575,7 +1646,7 @@ window.__ModuleLoader__.load({
 					activeState = null;
 					stopModelObserver();
 					synchronizeSessionArtwork(false);
-					synchronizeLeftArtwork(false, void 0);
+					releaseLeftArtwork();
 					projector.release();
 					return;
 				}
@@ -1723,7 +1794,7 @@ window.__ModuleLoader__.load({
 						labelEn: "Left maid outfit",
 						description: "左女仆当前穿的整套造型；每套都带上述五种工作状态立绘。默认冬日洋装（与右女仆同套）。",
 						descriptionEn: "The outfit the left maid wears; every outfit carries the five work-state sprites above. Defaults to the winter dress that matches the right maid.",
-						defaultValue: "winter",
+						defaultValue: DEFAULT_LEFT_ARTWORK_VARIANT,
 						options: [
 							{
 								value: "winter",
@@ -2483,7 +2554,7 @@ window.__ModuleLoader__.load({
 			const left = document.createElement("img");
 			left.dataset.maidCharacter = "left";
 			left.alt = "";
-			left.src = MAID_LEFT_ARTWORK.idle;
+			left.src = DEFAULT_LEFT_ARTWORK.idle;
 			const right = document.createElement("img");
 			right.dataset.maidCharacter = "right";
 			right.alt = "";

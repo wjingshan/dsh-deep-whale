@@ -4,4 +4,4 @@
  * A deterministic id for the sources inside this bundle. It is shown in the
  * skin's settings panel so an out-of-date window is visible instead of silent.
  */
-export const MAID_ATELIER_BUILD_ID = '7d26eff0b378'
+export const MAID_ATELIER_BUILD_ID = 'c526e8db7ea0'

@@ -5,7 +5,7 @@ import {
   type SkinCustomizationState,
 } from '../../../skin-manager/src/protocol.ts'
 import { installSessionArtwork } from './session-artwork.ts'
-import { installLeftArtwork, LEFT_ARTWORK_SETS } from './left-artwork.ts'
+import { installLeftArtwork, DEFAULT_LEFT_ARTWORK_VARIANT, LEFT_ARTWORK_SETS } from './left-artwork.ts'
 import { MAID_ATELIER_BUILD_ID } from './build-id.generated.ts'
 
 const ATTR_ART = 'data-dsh-whale-maid-art'
@@ -129,12 +129,27 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
    * Install or retract the left maid's work-state sprite swap. Idempotent, so
    * `apply()` can drive it on every settings change without bookkeeping.
    */
-  const synchronizeLeftArtwork = (enabled: boolean, variant: unknown): void => {
+  /** Retract the left maid's sprite swap and put back whatever was there. */
+  const releaseLeftArtwork = (): void => {
     if (disposeLeftArtwork !== undefined) {
       disposeLeftArtwork()
       disposeLeftArtwork = undefined
     }
-    if (enabled) disposeLeftArtwork = installLeftArtwork({ enabled: true, variant })
+  }
+
+  /**
+   * Install or retract the left maid's outfit and work-state sprite swap.
+   *
+   * Always installs, even with the switch off: the switch decides whether she
+   * *follows the work state*, not whether she wears the chosen outfit. Gating the
+   * whole installation on the switch is what made the outfit dropdown do nothing
+   * -- she kept whatever sprite the stage was created with, which read as "the
+   * outfit setting is broken". The module handles the switched-off case by
+   * painting the chosen outfit's idle sprite and observing nothing.
+   */
+  const synchronizeLeftArtwork = (enabled: boolean, variant: unknown): void => {
+    releaseLeftArtwork()
+    disposeLeftArtwork = installLeftArtwork({ enabled, variant })
   }
 
   const apply = (state: SkinCustomizationState | null): void => {
@@ -143,7 +158,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
       activeState = null
       stopModelObserver()
       synchronizeSessionArtwork(false)
-      synchronizeLeftArtwork(false, undefined)
+      releaseLeftArtwork()
       projector.release()
       return
     }
@@ -274,7 +289,9 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
         labelEn: 'Left maid outfit',
         description: '左女仆当前穿的整套造型；每套都带上述五种工作状态立绘。默认冬日洋装（与右女仆同套）。',
         descriptionEn: 'The outfit the left maid wears; every outfit carries the five work-state sprites above. Defaults to the winter dress that matches the right maid.',
-        defaultValue: 'winter',
+        // Same constant the resolver falls back to, so the advertised default and
+        // the outfit actually worn for a missing/unknown value cannot drift apart.
+        defaultValue: DEFAULT_LEFT_ARTWORK_VARIANT,
         options: [
           { value: 'winter', label: '冬日洋装（与右女仆同套）', labelEn: 'Winter dress (matches the right maid)' },
           { value: 'swimsuit', label: '泳装（分体）', labelEn: 'Swimsuit (two-piece)' },
