@@ -124,7 +124,9 @@ describe('maid customization declaration', () => {
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
     const dispose = installMaidCustomization()
     const definition = registration!.definition
-    expect(definition.titleEn).toBe('Abyssal Maid Atelier')
+    // The heading carries the build badge, so match the name it starts with
+    // rather than the whole string (tests/build-id.spec.ts covers the badge).
+    expect(definition.titleEn).toMatch(/^Abyssal Maid Atelier · /)
     for (const setting of definition.settings) {
       expect(setting.labelEn, `${setting.key} labelEn`).toBeTypeOf('string')
       if (setting.description !== undefined) expect(setting.descriptionEn, `${setting.key} descriptionEn`).toBeTypeOf('string')

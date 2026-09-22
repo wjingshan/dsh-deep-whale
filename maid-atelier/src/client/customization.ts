@@ -5,7 +5,8 @@ import {
   type SkinCustomizationState,
 } from '../../../skin-manager/src/protocol.ts'
 import { installSessionArtwork } from './session-artwork.ts'
-import { installLeftArtwork } from './left-artwork.ts'
+import { installLeftArtwork, LEFT_ARTWORK_SETS } from './left-artwork.ts'
+import { MAID_ATELIER_BUILD_ID } from './build-id.generated.ts'
 
 const ATTR_ART = 'data-dsh-whale-maid-art'
 const ATTR_FONT = 'data-dsh-whale-maid-font'
@@ -164,11 +165,20 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     synchronizeLeftArtwork(state.values.leftStateArtwork !== false, state.values.leftArtworkVariant)
   }
 
+  // Derived rather than hard-coded, so the badge cannot drift from the outfits
+  // this bundle actually ships.
+  const outfitCount = Object.keys(LEFT_ARTWORK_SETS).length
+
   return exposeSkinCustomization({
     protocol: SKIN_CUSTOMIZATION_PROTOCOL,
     skinId: 'maid-atelier-wj',
-    title: '深海女仆工坊',
-    titleEn: 'Abyssal Maid Atelier',
+    // The build badge rides the panel heading. A window running an older, still
+    // cached revision cannot be told apart from a current one by looking at it —
+    // the skin renders fine either way — so both the source id and the number of
+    // outfits this build actually carries are shown where a user already looks.
+    // An old build reads e.g. "1 套造型" / a stale id; instructions in the README.
+    title: `深海女仆工坊 · ${outfitCount} 套造型 · ${MAID_ATELIER_BUILD_ID}`,
+    titleEn: `Abyssal Maid Atelier · ${outfitCount} outfits · ${MAID_ATELIER_BUILD_ID}`,
     settings: [
       {
         key: 'artwork',

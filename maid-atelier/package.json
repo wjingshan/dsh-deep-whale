@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "tsdown && node ../scripts/write-skin-build.mjs . wjingshan/dsh-deep-whale",
+    "build": "node ../scripts/write-skin-build-id.mjs . && tsdown && node ../scripts/write-skin-build.mjs . wjingshan/dsh-deep-whale",
     "test": "vitest run"
   },
   "license": "SEE LICENSE IN LICENSE",
