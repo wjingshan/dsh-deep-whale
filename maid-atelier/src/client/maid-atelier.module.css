@@ -531,6 +531,24 @@ body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] > heade
   text-shadow: 0 1px 3px rgba(4, 11, 35, 0.55);
 }
 
+/* The slot itself carries the band colour, not only its `> header` child: a probe
+   over the text descendants of that child found none, so the session title does
+   not live inside it and a rule anchored there can never reach the title. */
+body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] {
+  color: #f8f3e8;
+}
+
+/* Text descendants take the band's colour instead of the host's.
+   Removing the old blanket `color: inherit` over every div/span/button was right --
+   it also reached popovers mounted inside this header -- but it was the only thing
+   setting the session *title*, which carries the host's own dark colour and so
+   came back invisible on this navy band. Restored, guarded, and anchored at the
+   slot so that depth stops mattering. */
+body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header']
+  :is(h1, h2, h3, p, div, span):not(:where([role='dialog'] *, [role='menu'] *, [data-radix-popper-content-wrapper] *)) {
+  color: inherit;
+}
+
 body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] > header
   button:not(:where([role='dialog'] *, [role='menu'] *, [data-radix-popper-content-wrapper] *)) {
   text-shadow: inherit;
@@ -717,10 +735,13 @@ body[data-dsh-maid-atelier-wj] [data-skin-chrome='sidebar-mascot'] {
   object-fit: contain;
   object-position: center bottom;
   pointer-events: none;
-  opacity: 0.92;
+  /* Kept deliberately faint. She sits behind the conversation list, and at the
+     old 0.92 -- with a brightness boost on top -- the list text was hard to read
+     through her. Being the decorative layer, she yields to the text. */
+  opacity: 0.35;
   filter:
     saturate(1)
-    brightness(1.08)
+    brightness(1)
     contrast(1.04)
     drop-shadow(0 5px 12px rgba(2, 7, 24, 0.24));
   transform: translateX(-50%) translateZ(0);

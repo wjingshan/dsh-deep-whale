@@ -5,7 +5,8 @@ import {
   type SkinCustomizationRegistration,
 } from '../../skin-manager/src/protocol.ts'
 import { installMaidCustomization, modelFamily } from '../src/client/customization.ts'
-import { DEFAULT_LEFT_ARTWORK_VARIANT, LEFT_ARTWORK_SETS } from '../src/client/left-artwork.ts'
+import { DEFAULT_LEFT_ARTWORK_VARIANT, rebuildLeftArtwork } from '../src/client/left-artwork.ts'
+import { COMMITTED_OUTFITS, seedTestArtwork, testSprite } from './artwork-fixture.ts'
 import { normalizeSkinValues } from '../../skin-manager/src/client/preferences.ts'
 
 afterEach(() => {
@@ -65,6 +66,8 @@ describe('maid customization declaration', () => {
     let registration: SkinCustomizationRegistration | undefined
     const receive = (event: Event) => { registration = (event as CustomEvent<SkinCustomizationRegistration>).detail }
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
+    seedTestArtwork()
+    rebuildLeftArtwork()
     const dispose = installMaidCustomization()
     const outfit = registration!.definition.settings.find(setting => setting.key === 'leftArtworkVariant')
     expect(outfit?.type).toBe('select')
@@ -72,7 +75,10 @@ describe('maid customization declaration', () => {
     // order differs on purpose (the dropdown leads with the default), so compare
     // membership: a value the module cannot resolve silently falls back.
     const values = outfit && outfit.type === 'select' ? outfit.options.map(option => option.value) : []
-    expect([...values].sort()).toEqual(Object.keys(LEFT_ARTWORK_SETS).sort())
+    expect([...values].sort()).toEqual([...COMMITTED_OUTFITS].sort())
+    // The default still leads, which is the one ordering guarantee this dropdown
+    // has kept across the move from constants to a discovered listing.
+    expect(values[0]).toBe('winter')
     expect(outfit?.defaultValue).toBe('winter')
     dispose()
     window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
@@ -86,6 +92,8 @@ describe('maid customization declaration', () => {
     let registration: SkinCustomizationRegistration | undefined
     const receive = (event: Event) => { registration = (event as CustomEvent<SkinCustomizationRegistration>).detail }
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
+    seedTestArtwork()
+    rebuildLeftArtwork()
     const dispose = installMaidCustomization()
     const definition = registration!.definition
 
@@ -98,14 +106,14 @@ describe('maid customization declaration', () => {
       values: normalizeSkinValues(definition, { leftStateArtwork: false, leftArtworkVariant: 'yukata' }),
       visibility: { sfwMode: true },
     })
-    expect(image.getAttribute('src')).toBe(LEFT_ARTWORK_SETS.yukata.idle)
+    expect(image.getAttribute('src')).toBe(testSprite('yukata', 'idle'))
 
     // Switching outfits while off must still take effect.
     definition.apply({
       values: normalizeSkinValues(definition, { leftStateArtwork: false, leftArtworkVariant: 'swimsuit' }),
       visibility: { sfwMode: true },
     })
-    expect(image.getAttribute('src')).toBe(LEFT_ARTWORK_SETS.swimsuit.idle)
+    expect(image.getAttribute('src')).toBe(testSprite('swimsuit', 'idle'))
 
     dispose()
     window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)

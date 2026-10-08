@@ -10,6 +10,8 @@ import { Context, type Fiber } from '@deepseek-ai/cordis'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { apply } from '../src/client/index.ts'
+import { rebuildLeftArtwork } from '../src/client/left-artwork.ts'
+import { seedTestArtwork } from './artwork-fixture.ts'
 
 const CSS = readFileSync(resolve(process.cwd(), 'src/client/maid-atelier.module.css'), 'utf8')
 const TURN_MARK_SELECTOR = "[data-phase='active'] :has(+ [data-chat-flow]) > nav button[type='button'][aria-label]"
@@ -527,6 +529,10 @@ describe('Maid Atelier skin apply', () => {
 
   it('keeps all original-resolution character variants independent from the palace backdrop', async () => {
     document.body.innerHTML = '<div class="fixture_centerCol"></div>'
+    // The three single-layer portraits come from the host listing now rather than
+    // from the bundle, so a listing has to exist for them to have a source at all.
+    seedTestArtwork()
+    rebuildLeftArtwork()
     fiber = await mount()
     const stage = document.querySelector("[data-skin-chrome='character-stage']")
     const characters = stage?.querySelectorAll<HTMLImageElement>('[data-maid-character]')
@@ -534,7 +540,11 @@ describe('Maid Atelier skin apply', () => {
     expect(characters?.[0]?.dataset.maidCharacter).toBe('left')
     expect(characters?.[1]?.dataset.maidCharacter).toBe('right')
     expect(characters?.[2]?.dataset.maidCharacter).toBe('vision')
-    expect([...characters ?? []].every(character => character.src.startsWith('data:image/webp;base64,'))).toBe(true)
+    // Served from the artwork route, and three genuinely different images -- the
+    // failure this guards is every role resolving to one sprite.
+    const sources = [...characters ?? []].map(character => character.getAttribute('src'))
+    expect(sources.every(source => source?.startsWith('/maid-atelier/art/') === true)).toBe(true)
+    expect(new Set(sources).size).toBe(3)
     await fiber.dispose()
     expect(document.querySelector("[data-skin-chrome='character-stage']")).toBeNull()
   }, 10_000)
@@ -2276,9 +2286,37 @@ describe('Maid Atelier skin apply', () => {
     expect(mascotRule).toContain('width: var(--maid-sidebar-mascot-width)')
     expect(mascotRule).toContain('max-height: 38%')
     expect(mascotRule).toContain('z-index: 0')
-    expect(mascotRule).toContain('opacity: 0.92')
+    // Faint on purpose: she sits behind the conversation list, so she must not
+    // compete with the text. The old 0.92 plus a brightness boost is exactly what
+    // made the list hard to read through her, so the invariant is asserted rather
+    // than a magic number.
+    const opacity = Number(/opacity:\s*([\d.]+)/.exec(mascotRule)?.[1])
+    expect(opacity).toBeLessThanOrEqual(0.4)
     expect(mascotRule).toContain('saturate(1)')
-    expect(mascotRule).toContain('brightness(1.08)')
+    expect(mascotRule).not.toContain('brightness(1.08)')
+  })
+
+  it('makes the session header text descendants take the band colour', () => {
+    // Regression: removing the old blanket `color: inherit` over the header's
+    // div/span/button was right -- it also reached popovers mounted inside the
+    // header -- but it was the only thing recolouring the session *title*. The
+    // title then kept the host's own dark colour and vanished on the navy band.
+    // Anchored at the slot, not at its `> header` child: a probe over that child's
+    // text descendants found none, so the title is not inside it. The `> header`
+    // arm stays optional in the pattern so the test still passes if the host ever
+    // moves the title back where it started.
+    const inheritRule = CSS.match(
+      /\[data-slot='conversation\.session\.header'\](?:\s*>\s*header)?\s+:is\(([^)]*)\):not\(([^{]*)\)\s*\{([^}]*)\}/s,
+    )
+    expect(inheritRule, 'header text-descendant rule').not.toBeNull()
+
+    // The guard has to name the overlay containers, or it reaches into them again.
+    const guard = inheritRule?.[2] ?? ''
+    expect(guard).toContain("[role='dialog']")
+    expect(guard).toContain("[role='menu']")
+    expect(guard).toContain('data-radix-popper-content-wrapper')
+
+    expect(inheritRule?.[3]).toContain('color: inherit')
   })
 
   it('keeps independently sized landing and workspace trim layers', () => {

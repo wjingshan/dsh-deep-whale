@@ -1,17 +1,17 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  DEFAULT_LEFT_ARTWORK,
   DEFAULT_LEFT_ARTWORK_VARIANT,
+  defaultLeftArtwork,
   installLeftArtwork,
-  LEFT_ARTWORK_SETS,
   leftArtworkFor,
-  MAID_LEFT_ARTWORK,
-  MAID_LEFT_ARTWORK_WINTER,
-  MAID_LEFT_ARTWORK_YUKATA,
+  leftArtworkSets,
+  leftArtworkVariants,
   readLeftArtworkState,
+  rebuildLeftArtwork,
   type LeftArtworkState,
 } from '../src/client/left-artwork.ts'
+import { COMMITTED_OUTFITS, seedTestArtwork, testSprite } from './artwork-fixture.ts'
 
 const IDLE = 'data:image/webp;base64,IDLE'
 const THINK = 'data:image/webp;base64,THINK'
@@ -62,6 +62,14 @@ async function settle(ms = 400): Promise<void> {
 function useFakeArt(map: Record<string, string> = {}): void {
   window.__dshMaidAtelierLeftArtwork = { idle: IDLE, think: THINK, tool: TOOL, write: WRITE, error: ERROR, ...map }
 }
+
+beforeEach(() => {
+  // Outfits are discovered at runtime now, so every case needs a listing before a
+  // sprite can resolve. Tests that want the real sprites simply do not call
+  // `useFakeArt`, whose window override still wins over the listing.
+  seedTestArtwork()
+  rebuildLeftArtwork()
+})
 
 afterEach(() => {
   delete window.__dshMaidAtelierLeftArtwork
@@ -202,13 +210,13 @@ describe('left artwork swap', () => {
     // even with the switch off, or the outfit dropdown would do nothing at all.
     expect(image.getAttribute('src')).toBe(IDLE)
     const dispose = installLeftArtwork({ enabled: false, variant: 'yukata' })
-    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_YUKATA.idle)
+    expect(image.getAttribute('src')).toBe(testSprite('yukata', 'idle'))
     expect(image.getAttribute('data-maid-left-state')).toBe('idle')
     thinking()
     toolRunning()
     await settle()
     // Still idle: nothing is observed, so the work state cannot change her.
-    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_YUKATA.idle)
+    expect(image.getAttribute('src')).toBe(testSprite('yukata', 'idle'))
     expect(image.getAttribute('data-maid-left-state')).toBe('idle')
     dispose()
     expect(image.getAttribute('src')).toBe(IDLE)
@@ -225,7 +233,7 @@ describe('left artwork swap', () => {
     expect(document.querySelector('[data-maid-character="left"]')).toBeNull()
     const image = portrait()
     await settle(0)
-    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_YUKATA.idle)
+    expect(image.getAttribute('src')).toBe(testSprite('yukata', 'idle'))
     expect(image.getAttribute('data-maid-left-state')).toBe('idle')
     dispose()
     expect(image.getAttribute('src')).toBe(IDLE)
@@ -236,8 +244,16 @@ describe('left artwork swap', () => {
     // Both halves of one contract: the dropdown's default and the resolver's
     // fallback. They disagreed once (default winter, fallback swimsuit), which
     // made the outfit setting look broken.
-    expect(DEFAULT_LEFT_ARTWORK).toBe(MAID_LEFT_ARTWORK_WINTER)
-    expect(leftArtworkFor(DEFAULT_LEFT_ARTWORK_VARIANT)).toBe(MAID_LEFT_ARTWORK_WINTER)
+    expect(defaultLeftArtwork()).toBe(leftArtworkSets()[DEFAULT_LEFT_ARTWORK_VARIANT])
+    expect(leftArtworkFor(DEFAULT_LEFT_ARTWORK_VARIANT)).toBe(leftArtworkSets()[DEFAULT_LEFT_ARTWORK_VARIANT])
+  })
+
+  it('falls back to the first discovered outfit when the default folder is gone', () => {
+    // A renamed or deleted default must not leave her undressed, and must not
+    // resurrect the old hard-coded swimsuit either.
+    seedTestArtwork(['yukata', 'swimsuit'])
+    rebuildLeftArtwork()
+    expect(leftArtworkFor('winter')).toBe(leftArtworkSets()[leftArtworkVariants()[0]])
   })
 
   it('leaves the sprite alone when a state has no art, while still reporting the state', async () => {
@@ -258,31 +274,42 @@ describe('left artwork outfits', () => {
   /** Every state a sprite set has to cover. */
   const STATES: LeftArtworkState[] = ['idle', 'think', 'tool', 'write', 'error']
 
-  it('ships every outfit with all five states, and no two outfits share a sprite', () => {
+  it('points every outfit at all five states, and no two outfits share a sprite', () => {
     const seen = new Map<string, string>()
-    for (const [outfit, sprites] of Object.entries(LEFT_ARTWORK_SETS)) {
+    for (const [outfit, sprites] of Object.entries(leftArtworkSets())) {
       for (const state of STATES) {
         const sprite = sprites[state]
-        // A missing or mistyped constant would leave the maid blank, and a
-        // copy-paste slip would silently reuse another outfit's pose.
-        expect(sprite, `${outfit}.${state}`).toMatch(/^data:image\/webp;base64,[A-Za-z0-9+/=]+$/)
-        const owner = seen.get(sprite)
+        // A missing or mistyped file would leave the maid blank, and a copy-paste
+        // slip would silently point two states at one sprite.
+        expect(sprite, `${outfit}.${state}`).toBe(testSprite(outfit, state))
+        const owner = seen.get(sprite!)
         expect(owner, `${outfit}.${state} duplicates ${owner}`).toBeUndefined()
-        seen.set(sprite, `${outfit}.${state}`)
+        seen.set(sprite!, `${outfit}.${state}`)
       }
     }
-    expect(seen.size).toBe(Object.keys(LEFT_ARTWORK_SETS).length * STATES.length)
+    expect(seen.size).toBe(COMMITTED_OUTFITS.length * STATES.length)
+  })
+
+  it('picks up an outfit that appears after activation, once the listing changes', () => {
+    // The whole point of moving outfits out of the source: a new folder must
+    // become a usable outfit with no edit and no rebuild.
+    const before = leftArtworkVariants()
+    seedTestArtwork([...COMMITTED_OUTFITS, 'newoutfit'])
+    rebuildLeftArtwork()
+
+    expect(leftArtworkVariants()).toEqual([...before, 'newoutfit'])
+    expect(leftArtworkFor('newoutfit').idle).toBe(testSprite('newoutfit', 'idle'))
   })
 
   it('resolves the outfit the setting asks for, falling back to the default', () => {
-    expect(leftArtworkFor('swimsuit')).toBe(MAID_LEFT_ARTWORK)
-    expect(leftArtworkFor('winter')).toBe(MAID_LEFT_ARTWORK_WINTER)
-    expect(leftArtworkFor('yukata')).toBe(MAID_LEFT_ARTWORK_YUKATA)
+    expect(leftArtworkFor('swimsuit')).toBe(leftArtworkSets().swimsuit)
+    expect(leftArtworkFor('winter')).toBe(leftArtworkSets().winter)
+    expect(leftArtworkFor('yukata')).toBe(leftArtworkSets().yukata)
     // An unknown or absent value leaves her dressed in the *declared default*,
     // which is the winter dress -- not the swimsuit.
-    expect(leftArtworkFor('nonsense')).toBe(DEFAULT_LEFT_ARTWORK)
-    expect(leftArtworkFor(undefined)).toBe(DEFAULT_LEFT_ARTWORK)
-    expect(DEFAULT_LEFT_ARTWORK).toBe(MAID_LEFT_ARTWORK_WINTER)
+    expect(leftArtworkFor('nonsense')).toBe(defaultLeftArtwork())
+    expect(leftArtworkFor(undefined)).toBe(defaultLeftArtwork())
+    expect(defaultLeftArtwork()).toBe(leftArtworkSets()[DEFAULT_LEFT_ARTWORK_VARIANT])
   })
 
   it('wears the selected outfit and keeps the work states inside it', async () => {
@@ -290,21 +317,21 @@ describe('left artwork outfits', () => {
     const image = portrait()
 
     const swimsuit = installLeftArtwork({ variant: 'swimsuit' })
-    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK.idle)
+    expect(image.getAttribute('src')).toBe(testSprite('swimsuit', 'idle'))
     swimsuit()
     expect(image.getAttribute('src')).toBe(IDLE)
 
     const winter = installLeftArtwork({ variant: 'winter' })
-    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_WINTER.idle)
+    expect(image.getAttribute('src')).toBe(testSprite('winter', 'idle'))
 
     thinking()
     await settle()
-    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_WINTER.think)
+    expect(image.getAttribute('src')).toBe(testSprite('winter', 'think'))
 
     settleThinking()
     toolRunning()
     await settle()
-    expect(image.getAttribute('src')).toBe(MAID_LEFT_ARTWORK_WINTER.tool)
+    expect(image.getAttribute('src')).toBe(testSprite('winter', 'tool'))
 
     winter()
     expect(image.getAttribute('src')).toBe(IDLE)

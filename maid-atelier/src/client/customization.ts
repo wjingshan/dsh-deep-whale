@@ -5,7 +5,8 @@ import {
   type SkinCustomizationState,
 } from '../../../skin-manager/src/protocol.ts'
 import { installSessionArtwork } from './session-artwork.ts'
-import { installLeftArtwork, DEFAULT_LEFT_ARTWORK_VARIANT, LEFT_ARTWORK_SETS } from './left-artwork.ts'
+import { installLeftArtwork, DEFAULT_LEFT_ARTWORK_VARIANT, leftArtworkVariants, rebuildLeftArtwork } from './left-artwork.ts'
+import { onArtworkChange } from './artwork-source.ts'
 import { MAID_ATELIER_BUILD_ID } from './build-id.generated.ts'
 
 const ATTR_ART = 'data-dsh-whale-maid-art'
@@ -17,6 +18,20 @@ const ATTR_COMPOSER_MODE = 'data-maid-composer-mode'
 const ATTR_NAV_MODE = 'data-maid-nav-mode'
 /** Navigation layouts the stylesheet implements; anything else falls back to the default. */
 const NAV_MODES = new Set(['corner', 'topbar', 'rail'])
+
+/**
+ * Display names for the outfits that ship with the skin.
+ *
+ * An outfit the host discovers but this table does not know shows its folder
+ * name instead. That fallback is the point: adding an outfit is adding a folder,
+ * so a missing display name must never be able to hide it from the dropdown.
+ */
+const OUTFIT_LABELS: Record<string, { label: string; labelEn: string }> = {
+  winter: { label: '冬日洋装（与右女仆同套）', labelEn: 'Winter dress (matches the right maid)' },
+  swimsuit: { label: '泳装（分体）', labelEn: 'Swimsuit (two-piece)' },
+  yukata: { label: '浴衣（夏日祭）', labelEn: 'Yukata (summer festival)' },
+  maid: { label: '女仆装', labelEn: 'Maid dress' },
+}
 
 /**
  * The lineup is DeepSeek Flash and DeepSeek Pro, so the display name only
@@ -180,11 +195,26 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     synchronizeLeftArtwork(state.values.leftStateArtwork !== false, state.values.leftArtworkVariant)
   }
 
-  // Derived rather than hard-coded, so the badge cannot drift from the outfits
-  // this bundle actually ships.
-  const outfitCount = Object.keys(LEFT_ARTWORK_SETS).length
+  /**
+   * The outfit choices are part of the declaration the manager renders, so they
+   * are rebuilt from the listing on every registration rather than being a
+   * hard-coded three. The object is mutated in place so the declaration below can
+   * keep referencing it while a re-registration picks up the new options.
+   */
+  const outfitSetting = {
+    key: 'leftArtworkVariant',
+    type: 'select' as const,
+    label: '左女仆造型',
+    labelEn: 'Left maid outfit',
+    description: '左女仆当前穿的整套造型；每套都带上述五种工作状态立绘。默认冬日洋装（与右女仆同套）。',
+    descriptionEn: 'The outfit the left maid wears; every outfit carries the five work-state sprites above. Defaults to the winter dress that matches the right maid.',
+    // Same constant the resolver falls back to, so the advertised default and
+    // the outfit actually worn for a missing/unknown value cannot drift apart.
+    defaultValue: DEFAULT_LEFT_ARTWORK_VARIANT,
+    options: [] as { value: string; label: string; labelEn: string }[],
+  }
 
-  return exposeSkinCustomization({
+  const declaration: Parameters<typeof exposeSkinCustomization>[0] = {
     protocol: SKIN_CUSTOMIZATION_PROTOCOL,
     skinId: 'maid-atelier-wj',
     // The build badge rides the panel heading. A window running an older, still
@@ -192,8 +222,11 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     // the skin renders fine either way — so both the source id and the number of
     // outfits this build actually carries are shown where a user already looks.
     // An old build reads e.g. "1 套造型" / a stale id; instructions in the README.
-    title: `深海女仆工坊 · ${outfitCount} 套造型 · ${MAID_ATELIER_BUILD_ID}`,
-    titleEn: `Abyssal Maid Atelier · ${outfitCount} outfits · ${MAID_ATELIER_BUILD_ID}`,
+    // Replaced by `refreshDeclaration` from the live listing before the first
+    // registration, so the count in the badge is the number of outfits the host
+    // actually published rather than a number baked into this source file.
+    title: '',
+    titleEn: '',
     settings: [
       {
         key: 'artwork',
@@ -282,22 +315,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
         descriptionEn: 'The left maid changes pose and expression with the work state: thinking, running a tool, answering, or startled after an error. Switched off she keeps the idle sprite.',
         defaultValue: true,
       },
-      {
-        key: 'leftArtworkVariant',
-        type: 'select',
-        label: '左女仆造型',
-        labelEn: 'Left maid outfit',
-        description: '左女仆当前穿的整套造型；每套都带上述五种工作状态立绘。默认冬日洋装（与右女仆同套）。',
-        descriptionEn: 'The outfit the left maid wears; every outfit carries the five work-state sprites above. Defaults to the winter dress that matches the right maid.',
-        // Same constant the resolver falls back to, so the advertised default and
-        // the outfit actually worn for a missing/unknown value cannot drift apart.
-        defaultValue: DEFAULT_LEFT_ARTWORK_VARIANT,
-        options: [
-          { value: 'winter', label: '冬日洋装（与右女仆同套）', labelEn: 'Winter dress (matches the right maid)' },
-          { value: 'swimsuit', label: '泳装（分体）', labelEn: 'Swimsuit (two-piece)' },
-          { value: 'yukata', label: '浴衣（夏日祭）', labelEn: 'Yukata (summer festival)' },
-        ],
-      },
+      outfitSetting,
       {
         key: 'stateArtwork',
         type: 'boolean',
@@ -337,5 +355,45 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
       },
     ],
     apply,
+  }
+
+  /** Re-read the listing into the declaration the manager will render. */
+  const refreshDeclaration = (): boolean => {
+    const changed = rebuildLeftArtwork()
+    const ids = leftArtworkVariants()
+    // Lead with the declared default, as this dropdown always has: the outfit a
+    // user gets without choosing anything should be the first one they read.
+    const ordered = [
+      ...ids.filter((id) => id === DEFAULT_LEFT_ARTWORK_VARIANT),
+      ...ids.filter((id) => id !== DEFAULT_LEFT_ARTWORK_VARIANT),
+    ]
+    outfitSetting.options = ordered.map((id) => ({
+      value: id,
+      label: OUTFIT_LABELS[id]?.label ?? id,
+      labelEn: OUTFIT_LABELS[id]?.labelEn ?? id,
+    }))
+    const count = outfitSetting.options.length
+    declaration.title = `深海女仆工坊 · ${count} 套造型 · ${MAID_ATELIER_BUILD_ID}`
+    declaration.titleEn = `Abyssal Maid Atelier · ${count} outfits · ${MAID_ATELIER_BUILD_ID}`
+    return changed
+  }
+
+  refreshDeclaration()
+  let disposeRegistration = exposeSkinCustomization(declaration)
+
+  // An outfit added while the window is open has to reach the panel, and the
+  // panel renders whichever declaration it was registered with -- so a changed
+  // listing means a fresh registration. This is the only lever the protocol
+  // offers: it has a register/unregister handshake but no "panel opened" event,
+  // and the panel belongs to the manager, so there is nothing stable to observe.
+  const unwatchArtwork = onArtworkChange(() => {
+    if (!refreshDeclaration()) return
+    disposeRegistration()
+    disposeRegistration = exposeSkinCustomization(declaration)
   })
+
+  return () => {
+    unwatchArtwork()
+    disposeRegistration()
+  }
 }

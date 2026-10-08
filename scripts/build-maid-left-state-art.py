@@ -3,13 +3,13 @@
 
 Three outfits ship for the left maid, each with five work states:
 
-  swim   — 分体泳装（默认造型），以 assets/maid-atelier-maid-left-v5.webp 为身份参考重绘
+  swim   — 分体泳装（默认造型），以 assets/maid-left/maid/maid-atelier-maid-left-v5.webp 为身份参考重绘
   winter — 冬日洋装，与右女仆内置的 winter 立绘同套；以该立绘（铺上绿幕）为参考
   yukata — 夏日祭浴衣；以 winter 待机态（铺上绿幕）为参考换装成浴衣，再以该浴衣待机态
            为参考换四个姿势
 
 Every render comes out of the image-edit model on a flat green chroma-key screen
-(see assets/maid-atelier-maid-left-{swim,winter}-*-v1.webp). The screen is very
+(see assets/maid-left/{swimsuit,winter}/*.webp). The screen is very
 uniform (border std ~1.5/255), so keying is done in green-dominance space rather
 than by connectivity: a border-connected flood leaves the background *pockets*
 enclosed by hair strands behind (they are the same colour as the screen), while
@@ -25,7 +25,7 @@ Pipeline per render:
      cast from hair strands instead of leaving a fringe;
   4. crop to the figure and normalise every state to the same pixel height, so
      `height: N%` in the skin CSS renders all five at the same body scale;
-  5. write WebP with alpha and emit src/client/left-state-art.generated.ts.
+  5. write WebP with alpha into the outfit's own folder under assets/maid-left/.
 
 The `--prep-green` mode flattens an existing transparent sprite onto the same
 green screen, which is how the winter *and* yukata references were produced (the
@@ -43,20 +43,32 @@ it was asked for, so every new set should be reviewed there before wiring.
 from __future__ import annotations
 
 import argparse
-import base64
 from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 REPO = Path(__file__).resolve().parent.parent
-OUT_DIR = REPO / "maid-atelier" / "assets"
-MODULE = REPO / "maid-atelier" / "src" / "client" / "left-state-art.generated.ts"
+# The left-maid artwork is grouped one folder per outfit; the folder name is the
+# outfit id the skin lists in its settings panel, so it is a contract, not a
+# convenience. `maid/` instead holds the identity reference the other sets are
+# redrawn from -- it has no work states.
+OUT_DIR = REPO / "maid-atelier" / "assets" / "maid-left"
 
 # The green screen the edit model is asked for; --prep-green uses the same colour.
 SCREEN_COLOUR = (0, 255, 0)
 
 # set -> state -> (source file name, output file name, exported constant)
+#
+# The first key is the `--set` name, which is not always the folder name: the
+# swimsuit set is spelled `swim` on the command line for historical reasons but
+# lives in `swimsuit/`. SET_DIRS is the single place that mapping is stated.
+SET_DIRS = {
+    "swim": "swimsuit",
+    "winter": "winter",
+    "yukata": "yukata",
+}
+
 SOURCES = {
     "swim": {
         "idle": ("image-9f1c2def.png", "maid-atelier-maid-left-swim-idle-v1.webp", "MAID_ATELIER_LEFT_SWIM_IDLE"),
@@ -84,7 +96,7 @@ DEFAULT_SRC = Path(r"H:\DeepSeek-Harness-Plugin\dsh-image-gen")
 
 # Prompt template used for every state (DashScope qwen-image-3.0 image edit):
 #
-#   swim, from assets/maid-atelier-maid-left-v5.webp as the identity reference:
+#   swim, from assets/maid-left/maid/maid-atelier-maid-left-v5.webp as the identity reference:
 #   "Keep this exact anime character: same face, blue eyes, long wavy deep-blue
 #    hair with light-blue gradient tips, whale-fin headdress, whale tail, white
 #    lace headpiece, same cel-shaded style and line weight, identical full-body
@@ -224,29 +236,12 @@ def prep_green(source: Path, target: Path) -> None:
     print(f"green screen -> {target} ({sprite.width}x{sprite.height}, {screen.size[0]}x{screen.size[1]})")
 
 
-def emit_module(data_urls: dict[str, dict[str, str]], sets: list[str]) -> None:
-    """Write the committed art module (same shape as the other generated ones)."""
-    lines = [
-        "/**",
-        " * Generated left-maid work-state layers (WJ edition outfits).",
-        " * Rebuild from the committed WebP assets:",
-        " *   python scripts/build-maid-left-state-art.py",
-        " */",
-    ]
-    for name in sets:
-        for state, (_, _, constant) in SOURCES[name].items():
-            lines.append(f"export const {constant} = '{data_urls[name][state]}'")
-    MODULE.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"module -> {MODULE} ({MODULE.stat().st_size / 1024:.0f} KB)")
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--src", type=Path, default=DEFAULT_SRC)
     parser.add_argument("--set", default="all", choices=[*SOURCES, "all"], help="which outfit set to build")
     parser.add_argument("--sheet", type=Path, default=None)
     parser.add_argument("--prep-green", nargs=2, metavar=("IN", "OUT"), help="flatten a sprite onto the green screen and exit")
-    parser.add_argument("--no-module", action="store_true", help="skip left-state-art.generated.ts")
     args = parser.parse_args()
 
     if args.prep_green:
@@ -254,18 +249,18 @@ def main() -> None:
         return
 
     sets = list(SOURCES) if args.set == "all" else [args.set]
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    data_urls: dict[str, dict[str, str]] = {}
+    for name in sets:
+        (OUT_DIR / SET_DIRS[name]).mkdir(parents=True, exist_ok=True)
+    written = 0
     for name in sets:
         sprites: dict[str, Image.Image] = {}
-        data_urls[name] = {}
         print(f"--- {name} ---")
         for state, (source_name, out_name, _) in SOURCES[name].items():
             sprite, stats = build(args.src / source_name)
-            target = OUT_DIR / out_name
+            target = OUT_DIR / SET_DIRS[name] / out_name
             sprite.save(target, "WEBP", quality=82, method=6)
             sprites[state] = sprite
-            data_urls[name][state] = "data:image/webp;base64," + base64.b64encode(target.read_bytes()).decode("ascii")
+            written += target.stat().st_size
             print(
                 f"{state:5s} {stats['source']} {stats['source_size'][0]}x{stats['source_size'][1]}"
                 f" screen={stats['screen']} clear={stats['clear_pct']}% mixed={stats['mixed_pct']}%"
@@ -274,10 +269,10 @@ def main() -> None:
             )
         if args.sheet:
             contact_sheet(sprites, args.sheet.with_name(f"{args.sheet.stem}-{name}{args.sheet.suffix}"))
-    if not args.no_module:
-        emit_module(data_urls, sets)
-    total = sum(len(url) for group in data_urls.values() for url in group.values())
-    print(f"embedded data URLs {total / 1024 / 1024:.2f} MB (base64 of {sum(len(g) for g in data_urls.values())} sprites)")
+    # No art module is emitted any more. The skin serves these files from the host
+    # half and discovers the folders at runtime, so there is nothing to embed in
+    # the bundle and no constant table to keep in sync with the assets.
+    print(f"wrote {written / 1024 / 1024:.2f} MB of WebP into {OUT_DIR} across {len(sets)} outfit folder(s)")
 
 
 if __name__ == "__main__":

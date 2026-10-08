@@ -55,6 +55,8 @@
     "skin.build.json",
     "preview",
     "assets/icons/*.ico",
+    "assets/maid-left",
+    "assets/maid-right",
     "LICENSE",
     "LICENSE-ARTWORK",
     "NOTICE",

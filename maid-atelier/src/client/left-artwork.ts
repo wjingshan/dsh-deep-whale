@@ -13,39 +13,38 @@
  * renames every one of these selectors simply keeps the idle sprite — this
  * module never writes unless a signal actually matches.
  *
- * Three outfits ship inside the package, five sprites each (see
- * `left-state-art.generated.ts`); the `leftArtworkVariant` setting picks which
- * one she wears, and a host may override any sprite of the active outfit by
- * setting `window.__dshMaidAtelierLeftArtwork` before the skin activates.
+ * Outfits are folders, not source. The host half lists `assets/maid-left/*` and
+ * this module turns that listing into the sprite table, so a new outfit is a new
+ * folder and nothing else; `leftArtworkVariant` picks which one she wears, and a
+ * host may still override any sprite of the active outfit by setting
+ * `window.__dshMaidAtelierLeftArtwork` before the skin activates.
  *
  * @module
  */
-import {
-  MAID_ATELIER_LEFT_SWIM_ERROR,
-  MAID_ATELIER_LEFT_SWIM_IDLE,
-  MAID_ATELIER_LEFT_SWIM_THINK,
-  MAID_ATELIER_LEFT_SWIM_TOOL,
-  MAID_ATELIER_LEFT_SWIM_WRITE,
-  MAID_ATELIER_LEFT_WINTER_ERROR,
-  MAID_ATELIER_LEFT_WINTER_IDLE,
-  MAID_ATELIER_LEFT_WINTER_THINK,
-  MAID_ATELIER_LEFT_WINTER_TOOL,
-  MAID_ATELIER_LEFT_WINTER_WRITE,
-  MAID_ATELIER_LEFT_YUKATA_ERROR,
-  MAID_ATELIER_LEFT_YUKATA_IDLE,
-  MAID_ATELIER_LEFT_YUKATA_THINK,
-  MAID_ATELIER_LEFT_YUKATA_TOOL,
-  MAID_ATELIER_LEFT_YUKATA_WRITE,
-} from './left-state-art.generated.ts'
+import { artworkManifest, artworkUrl, onArtworkChange } from './artwork-source.ts'
 
 /** The work states the left maid can wear. */
 export type LeftArtworkState = 'idle' | 'think' | 'tool' | 'write' | 'error'
 
-/** One sprite per state; every value is a webp data URL. */
-export type LeftArtworkMap = Record<LeftArtworkState, string>
+/**
+ * One sprite per state, as a URL the host half serves.
+ *
+ * Partial because a discovered outfit may supply fewer than every state: a set
+ * that omits one simply keeps the previous sprite for it rather than breaking.
+ */
+export type LeftArtworkMap = Partial<Record<LeftArtworkState, string>>
 
-/** Outfits the `leftArtworkVariant` setting can select. */
-export type LeftArtworkVariant = 'swimsuit' | 'winter' | 'yukata'
+/**
+ * Outfits the `leftArtworkVariant` setting can select.
+ *
+ * Deliberately `string` and not a union: the ids are folder names discovered at
+ * runtime, so a union would re-introduce exactly the source edit that dropping a
+ * folder is meant to avoid.
+ */
+export type LeftArtworkVariant = string
+
+/** Every work state, in the order a set is expected to supply them. */
+const WORK_STATES: readonly LeftArtworkState[] = ['idle', 'think', 'tool', 'write', 'error']
 
 declare global {
   interface Window {
@@ -54,66 +53,77 @@ declare global {
   }
 }
 
-/** Swimsuit set (two-piece). */
-export const MAID_LEFT_ARTWORK: LeftArtworkMap = {
-  idle: MAID_ATELIER_LEFT_SWIM_IDLE,
-  think: MAID_ATELIER_LEFT_SWIM_THINK,
-  tool: MAID_ATELIER_LEFT_SWIM_TOOL,
-  write: MAID_ATELIER_LEFT_SWIM_WRITE,
-  error: MAID_ATELIER_LEFT_SWIM_ERROR,
-}
-
-/** Winter dress set — the same coat the right maid wears in her winter portrait. */
-export const MAID_LEFT_ARTWORK_WINTER: LeftArtworkMap = {
-  idle: MAID_ATELIER_LEFT_WINTER_IDLE,
-  think: MAID_ATELIER_LEFT_WINTER_THINK,
-  tool: MAID_ATELIER_LEFT_WINTER_TOOL,
-  write: MAID_ATELIER_LEFT_WINTER_WRITE,
-  error: MAID_ATELIER_LEFT_WINTER_ERROR,
-}
-
-/** Summer festival yukata set. */
-export const MAID_LEFT_ARTWORK_YUKATA: LeftArtworkMap = {
-  idle: MAID_ATELIER_LEFT_YUKATA_IDLE,
-  think: MAID_ATELIER_LEFT_YUKATA_THINK,
-  tool: MAID_ATELIER_LEFT_YUKATA_TOOL,
-  write: MAID_ATELIER_LEFT_YUKATA_WRITE,
-  error: MAID_ATELIER_LEFT_YUKATA_ERROR,
-}
-
 /**
  * The outfit worn when nothing selects one.
  *
- * Single source of truth: the `leftArtworkVariant` setting declares this as its
- * `defaultValue` and {@link leftArtworkFor} falls back to it, so an absent or
- * unrecognised stored value cannot silently dress her in a different outfit than
- * the dropdown advertises as the default. These two used to disagree -- the
- * setting defaulted to the winter dress while the resolver fell back to the
- * swimsuit -- which read as "the outfit setting does nothing".
+ * Still a plain id rather than a live lookup: it is the setting's declared
+ * `defaultValue`, so it has to be knowable before any listing has arrived. When
+ * the listing does not carry it, {@link leftArtworkFor} falls back to the first
+ * outfit that was discovered, which is what keeps a renamed folder working
+ * instead of leaving her undressed.
  */
 export const DEFAULT_LEFT_ARTWORK_VARIANT: LeftArtworkVariant = 'winter'
 
-/** Every outfit by variant key; the dropdown order is this order. */
-export const LEFT_ARTWORK_SETS: Record<LeftArtworkVariant, LeftArtworkMap> = {
-  swimsuit: MAID_LEFT_ARTWORK,
-  winter: MAID_LEFT_ARTWORK_WINTER,
-  yukata: MAID_LEFT_ARTWORK_YUKATA,
+/** Sprite table per outfit id, rebuilt whenever the listing changes. */
+let registry: Record<string, LeftArtworkMap> = {}
+
+/** Outfit ids in listing order; the settings dropdown offers them in this order. */
+let registryOrder: string[] = []
+
+/**
+ * Rebuild the sprite table from the current listing.
+ *
+ * Called on activation and again whenever the listing changes, so the ids the
+ * dropdown advertises and the sprites actually painted cannot drift apart.
+ * @returns true when an id or a sprite URL differed from the last build.
+ */
+export function rebuildLeftArtwork(): boolean {
+  const manifest = artworkManifest()
+  const next: Record<string, LeftArtworkMap> = {}
+  for (const outfit of manifest?.outfits ?? []) {
+    const sprites: LeftArtworkMap = {}
+    for (const state of WORK_STATES) {
+      const relative = outfit.states[state]
+      if (typeof relative === 'string') sprites[state] = artworkUrl(relative)
+    }
+    next[outfit.id] = sprites
+  }
+  const order = Object.keys(next)
+  const changed = order.join('\u0000') !== registryOrder.join('\u0000')
+    || JSON.stringify(next) !== JSON.stringify(registry)
+  registry = next
+  registryOrder = order
+  return changed
+}
+
+/** Every outfit by id. */
+export function leftArtworkSets(): Record<string, LeftArtworkMap> {
+  return registry
+}
+
+/** Outfit ids the settings dropdown offers, in listing order. */
+export function leftArtworkVariants(): string[] {
+  return registryOrder
 }
 
 /** The outfit the stage starts from, before any setting has been applied. */
-export const DEFAULT_LEFT_ARTWORK: LeftArtworkMap = LEFT_ARTWORK_SETS[DEFAULT_LEFT_ARTWORK_VARIANT]
+export function defaultLeftArtwork(): LeftArtworkMap {
+  return leftArtworkFor(DEFAULT_LEFT_ARTWORK_VARIANT)
+}
 
 /**
- * Resolve the outfit a setting value asks for. An unknown value (a manager that
- * stores something this build does not ship, or a value the user typed) falls
- * back to {@link DEFAULT_LEFT_ARTWORK_VARIANT} -- the same outfit the setting
- * declares as its default -- instead of leaving the maid without artwork or
- * contradicting the dropdown.
+ * Resolve the outfit a setting value asks for.
+ *
+ * Three steps, because a stored value can outlive what it named: the requested
+ * id when the listing carries it, then the declared default, then whatever was
+ * discovered first. A manager holding an id from a folder that has since been
+ * renamed therefore lands on a real outfit instead of on no artwork at all.
  */
 export function leftArtworkFor(variant: unknown): LeftArtworkMap {
-  return typeof variant === 'string' && variant in LEFT_ARTWORK_SETS
-    ? LEFT_ARTWORK_SETS[variant as LeftArtworkVariant]
-    : DEFAULT_LEFT_ARTWORK
+  if (typeof variant === 'string' && variant in registry) return registry[variant]
+  if (DEFAULT_LEFT_ARTWORK_VARIANT in registry) return registry[DEFAULT_LEFT_ARTWORK_VARIANT]
+  const first = registryOrder[0]
+  return first === undefined ? {} : registry[first]
 }
 
 /** The node this module borrows; the skin owns every `[data-maid-character]`. */
@@ -178,7 +188,12 @@ export interface LeftArtworkOptions {
 export function installLeftArtwork(options: LeftArtworkOptions = {}): () => void {
   const root = options.root ?? document.body
   const supplied = typeof window === 'undefined' ? undefined : window.__dshMaidAtelierLeftArtwork
-  const map: LeftArtworkMap = { ...leftArtworkFor(options.variant), ...supplied, ...options.map }
+  // A live view rather than a snapshot. The listing is fetched asynchronously, so
+  // at install time the registry may still be empty; reading through the accessor
+  // means the first paint after the listing lands already has real URLs. Host
+  // overrides stay merged on top of whatever the listing supplies.
+  const overrides: Partial<LeftArtworkMap> = { ...supplied, ...options.map }
+  const map = (): LeftArtworkMap => ({ ...leftArtworkFor(options.variant), ...overrides })
   const enabled = options.enabled ?? true
   const portrait = (): HTMLImageElement | null =>
     document.querySelector<HTMLImageElement>(PORTRAIT_SELECTOR)
@@ -192,10 +207,15 @@ export function installLeftArtwork(options: LeftArtworkOptions = {}): () => void
     let originalSrc: string | null = null
     let originalState: string | null = null
     let stageWatch: MutationObserver | undefined
+    let unwatchArtwork: (() => void) | undefined
 
     const dress = (): boolean => {
       const found = portrait()
       if (found === null) return false
+      const idle = map().idle
+      // No listing yet: leave the stage untouched and let the artwork listener
+      // retry, rather than writing the string "undefined" into `src`.
+      if (typeof idle !== 'string') return false
       if (image !== found) {
         // First (or a replacement) stage: remember what to restore verbatim.
         image = found
@@ -203,26 +223,37 @@ export function installLeftArtwork(options: LeftArtworkOptions = {}): () => void
         originalState = found.getAttribute(STATE_ATTRIBUTE)
       }
       if (found.getAttribute(STATE_ATTRIBUTE) !== 'idle') found.setAttribute(STATE_ATTRIBUTE, 'idle')
-      if (found.getAttribute('src') !== map.idle) found.setAttribute('src', map.idle)
+      if (found.getAttribute('src') !== idle) found.setAttribute('src', idle)
       return true
     }
 
+    const settle = (): void => {
+      if (!dress()) return
+      stageWatch?.disconnect()
+      stageWatch = undefined
+      unwatchArtwork?.()
+      unwatchArtwork = undefined
+    }
+
     if (!dress()) {
-      // The stage is created after the settings first apply, so the first attempt
-      // finds nothing. Watch for the node appearing -- childList only, never the
-      // work-state attributes, so she still cannot follow the session -- and stop
-      // the moment she is dressed.
-      stageWatch = new MutationObserver(() => {
-        if (!dress()) return
-        stageWatch?.disconnect()
-        stageWatch = undefined
-      })
+      // Two things can be missing and they arrive in either order: the stage is
+      // created after the settings first apply, and the listing is fetched
+      // asynchronously. Watch for both -- childList only, never the work-state
+      // attributes, so she still cannot follow the session -- and stop the moment
+      // she is dressed.
+      stageWatch = new MutationObserver(() => settle())
       stageWatch.observe(root, { childList: true, subtree: true })
+      unwatchArtwork = onArtworkChange(() => {
+        rebuildLeftArtwork()
+        settle()
+      })
     }
 
     return () => {
       stageWatch?.disconnect()
       stageWatch = undefined
+      unwatchArtwork?.()
+      unwatchArtwork = undefined
       if (image === null) return
       if (originalState === null) image.removeAttribute(STATE_ATTRIBUTE)
       else image.setAttribute(STATE_ATTRIBUTE, originalState)
@@ -252,7 +283,7 @@ export function installLeftArtwork(options: LeftArtworkOptions = {}): () => void
     const state = live ?? held ?? 'idle'
     if (originalSrc === null) originalSrc = image.getAttribute('src')
     if (image.getAttribute(STATE_ATTRIBUTE) !== state) image.setAttribute(STATE_ATTRIBUTE, state)
-    const next = map[state]
+    const next = map()[state]
     if (typeof next !== 'string' || image.getAttribute('src') === next) return
     image.setAttribute('src', next)
   }
@@ -310,8 +341,17 @@ export function installLeftArtwork(options: LeftArtworkOptions = {}): () => void
   })
   recount()
 
+  // The listing arrives after the first paint, and an outfit can be added while
+  // the window is open. Neither shows up unless we repaint, so re-read the
+  // registry and paint whenever it changes.
+  const unwatchArtwork = onArtworkChange(() => {
+    rebuildLeftArtwork()
+    paint()
+  })
+
   return () => {
     disposed = true
+    unwatchArtwork()
     observer?.disconnect()
     observer = undefined
     if (tick !== undefined) clearTimeout(tick)

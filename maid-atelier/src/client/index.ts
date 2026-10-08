@@ -12,12 +12,9 @@ import {
   MAID_ATELIER_SIDEBAR_SWAG,
   MAID_ATELIER_TOP_TRIM_TILE,
 } from './art.ts'
-import {
-  MAID_ATELIER_MAID_RIGHT,
-  MAID_ATELIER_PALACE_DARK,
-  MAID_ATELIER_PALACE_LIGHT,
-} from './background-art.generated.ts'
-import { DEFAULT_LEFT_ARTWORK } from './left-artwork.ts'
+import { MAID_ATELIER_PALACE_DARK, MAID_ATELIER_PALACE_LIGHT } from './background-art.generated.ts'
+import { defaultLeftArtwork, rebuildLeftArtwork } from './left-artwork.ts'
+import { artworkLayers, onArtworkChange, refreshArtwork, watchArtwork } from './artwork-source.ts'
 import {
   MAID_ATELIER_COMPOSER_FRAME_SHELL,
   MAID_ATELIER_COMPOSER_LACE_TILE,
@@ -26,7 +23,6 @@ import {
   MAID_ATELIER_COMPOSER_RIBBON_RIGHT_CAP,
   MAID_ATELIER_COMPOSER_RIBBON_RIGHT_FILL,
 } from './composer-art.generated.ts'
-import { MAID_ATELIER_MAID_RIGHT_VISION } from './vision-art.generated.ts'
 import {
   MAID_ATELIER_BOTTOM_CREST,
   MAID_ATELIER_BOTTOM_TRIM_TILE,
@@ -185,25 +181,47 @@ function createCharacterStage(): HTMLDivElement {
   const left = document.createElement('img')
   left.dataset.maidCharacter = 'left'
   left.alt = ''
-  // Born in the skin's default outfit, not an arbitrary one: this sprite is what
-  // shows before `left-artwork.ts` installs, and what stays if the stage is ever
-  // rendered without customization. It used to be hard-coded to the swimsuit,
-  // which is why a window with the state switch off looked permanently stuck in
-  // the swimsuit no matter what the outfit setting said.
-  left.src = DEFAULT_LEFT_ARTWORK.idle
 
   const right = document.createElement('img')
   right.dataset.maidCharacter = 'right'
   right.alt = ''
-  right.src = MAID_ATELIER_MAID_RIGHT
 
   const vision = document.createElement('img')
   vision.dataset.maidCharacter = 'vision'
   vision.alt = ''
-  vision.src = MAID_ATELIER_MAID_RIGHT_VISION
 
   stage.append(left, right, vision)
+  paintStageLayers(stage)
   return stage
+}
+
+/**
+ * Point the three single-layer portraits at whatever the listing resolves.
+ *
+ * Called when the stage is created and again on every listing change. That second
+ * call is not an optimisation: the bytes now come from the host rather than the
+ * bundle, so a stage built before the first fetch would otherwise stay blank
+ * forever.
+ *
+ * The left maid is born in the skin's default outfit rather than an arbitrary
+ * one: it used to be hard-coded to the swimsuit, which is why a window with the
+ * state switch off looked permanently stuck in the swimsuit no matter what the
+ * outfit setting said.
+ */
+function paintStageLayers(stage: ParentNode): void {
+  const find = (character: string): HTMLImageElement | null =>
+    stage.querySelector<HTMLImageElement>(`[data-maid-character="${character}"]`)
+
+  const set = (image: HTMLImageElement | null, url: string | undefined): void => {
+    if (image === null || url === undefined) return
+    if (image.getAttribute('src') !== url) image.setAttribute('src', url)
+  }
+
+  const idle = defaultLeftArtwork().idle
+  set(find('left'), typeof idle === 'string' ? idle : undefined)
+  const layers = artworkLayers()
+  set(find('right'), layers.rightPortrait)
+  set(find('vision'), layers.rightVision)
 }
 
 /**
@@ -441,7 +459,22 @@ function decorateWorkspaceTree(decoratedElements: Set<HTMLElement>): void {
  */
 export function apply(ctx: Context): void {
   const body = document.body
-  ctx.effect(() => installMaidCustomization(), 'ui-skin-maid-atelier-wj: customization declaration')
+  // Started first: the artwork listing is fetched asynchronously, so the sooner it
+  // is in flight the sooner the stage and the outfit dropdown can be filled in.
+  ctx.effect(() => watchArtwork(), 'ui-skin-maid-atelier-wj: artwork listing')
+  // The declaration advertises the outfits the host published, so it must not be
+  // built from an empty registry. One listing read is awaited first; leaning on a
+  // later re-registration instead would make the whole feature depend on the
+  // manager accepting a second declaration for a skinId it already knows.
+  ctx.effect(() => {
+    let dispose: (() => void) | undefined
+    void (async () => {
+      await refreshArtwork()
+      rebuildLeftArtwork()
+      dispose = installMaidCustomization()
+    })()
+    return () => dispose?.()
+  }, 'ui-skin-maid-atelier-wj: customization declaration')
   ctx.effect(() => installMaidBootError(), 'ui-skin-maid-atelier-wj: boot failure presentation')
   const originalTitle = document.title
   const layoutResizeLease = createBodyAttributeLease(body, 'data-maid-layout-resizing')
@@ -459,6 +492,12 @@ export function apply(ctx: Context): void {
   const decoratedElements = new Set<HTMLElement>()
   const characterStage = createCharacterStage()
   ownedNodes.add(characterStage)
+  // The stage outlives any single listing: a folder dropped in while the window is
+  // open, and the very first fetch after a cold boot, both arrive here.
+  ctx.effect(() => onArtworkChange(() => {
+    rebuildLeftArtwork()
+    paintStageLayers(characterStage)
+  }), 'ui-skin-maid-atelier-wj: artwork layers')
   const composerLaceRail = createComposerLaceRail()
   ownedNodes.add(composerLaceRail)
   let themeColorMeta: HTMLMetaElement | null = null

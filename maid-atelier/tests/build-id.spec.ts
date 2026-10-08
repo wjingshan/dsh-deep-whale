@@ -9,7 +9,8 @@ import {
 } from '../../skin-manager/src/protocol.ts'
 import { installMaidCustomization } from '../src/client/customization.ts'
 import { MAID_ATELIER_BUILD_ID } from '../src/client/build-id.generated.ts'
-import { LEFT_ARTWORK_SETS } from '../src/client/left-artwork.ts'
+import { leftArtworkVariants, rebuildLeftArtwork } from '../src/client/left-artwork.ts'
+import { seedTestArtwork } from './artwork-fixture.ts'
 
 const SKIN_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -39,9 +40,14 @@ describe('maid build id', () => {
       registration = (event as CustomEvent<SkinCustomizationRegistration>).detail
     }
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
+    // The heading counts the outfits the *host* published, so the listing has to
+    // exist before the declaration is built.
+    seedTestArtwork()
+    rebuildLeftArtwork()
     const dispose = installMaidCustomization()
     const definition = registration!.definition
-    const outfits = Object.keys(LEFT_ARTWORK_SETS).length
+    const outfits = leftArtworkVariants().length
+    expect(outfits).toBeGreaterThan(0)
     for (const title of [definition.title, definition.titleEn]) {
       expect(title).toContain(MAID_ATELIER_BUILD_ID)
       expect(title).toContain(String(outfits))
