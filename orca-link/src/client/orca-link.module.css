@@ -190,8 +190,12 @@ body[data-dsh-orca-link-wj] [data-slot='conversation.session.header.utilities']
 }
 
 /* Reading panes need their own opaque floor: the page's translucent base
-   intentionally reveals the scene and is unsuitable for fullscreen content. */
-body[data-dsh-orca-link-wj] [data-sidebar-right-panel],
+   intentionally reveals the scene and is unsuitable for fullscreen content.
+   The floor follows the open state only. Since DSH 0.1.7 the panel container
+   stays mounted and visible while collapsed — only the docked items inside it
+   slide out — so an unconditional opaque floor would paint a full-height band
+   over the conversation's right edge and hide the scene art behind it. */
+body[data-dsh-orca-link-wj] [data-sidebar-right-panel][data-sidebar-right-open],
 body[data-dsh-orca-link-wj] [data-sidebar-right-float-host] [data-dockkit-float] {
   background: var(--dsw-input-solid);
   color: var(--orca-ink);
