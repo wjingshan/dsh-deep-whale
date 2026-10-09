@@ -51,6 +51,14 @@ chain is credited:
    抠像与统一 1400px 高由同一个处理脚本完成；五态姿势措辞与另外两套保持逐字一致，
    保证同一工作状态在三套造型下读起来是同一个姿势。
 
+   左女仆新增三套造型（assets/maid-left/成熟-和服/、assets/maid-left/成熟版-泳装1/、
+   assets/maid-left/竞速泳衣/，2026-10-09，维护者新增）：各含
+   maid-atelier-maid-left-swim-{idle,think,tool,write,error}-v1 五态立绘（文件名前缀为
+   对应造型名），沿用本皮肤左女仆的角色形象，身份参考为
+   assets/maid-left/maid/maid-atelier-maid-left-v5.webp，用 DashScope
+   Qwen image 2.1 逐状态生成，保留透明通道输出为 RGBA PNG（768×1312–800×1376）。
+   角色设计沿用以上署名链；生成提示词由维护者保管。
+
 Artwork usage terms (LICENSE-ARTWORK): CC BY-NC-SA 4.0 —— 署名 (attribution) 必须保留以上完整创作链；
 非商业性使用 (non-commercial only)；衍生作品必须以相同方式共享 (share-alike)。
 
