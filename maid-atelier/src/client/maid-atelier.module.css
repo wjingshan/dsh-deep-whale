@@ -737,8 +737,10 @@ body[data-dsh-maid-atelier-wj] [data-skin-chrome='sidebar-mascot'] {
   pointer-events: none;
   /* Kept deliberately faint. She sits behind the conversation list, and at the
      old 0.92 -- with a brightness boost on top -- the list text was hard to read
-     through her. Being the decorative layer, she yields to the text. */
-  opacity: 0.35;
+     through her; 0.35 still competed with it. At 0.08 she is a watermark rather
+     than a second focal point. Being the decorative layer, she yields to the
+     text. */
+  opacity: 0.08;
   filter:
     saturate(1)
     brightness(1)
