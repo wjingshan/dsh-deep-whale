@@ -91,7 +91,9 @@ describe('scanArtwork', () => {
   it('gives every outfit all five work states pointing at real files', async () => {
     const manifest = await scanArtwork()
 
-    for (const outfit of manifest.outfits) {
+    // A right-maid theme folder is listed with its own group and may carry as few
+    // expressions as its author wanted, so the five-state contract is the outfit's.
+    for (const outfit of manifest.outfits.filter((entry) => entry.group === 'maid-left')) {
       expect(Object.keys(outfit.states).sort()).toEqual(['error', 'idle', 'think', 'tool', 'write'])
       for (const relative of Object.values(outfit.states)) {
         expect(existsSync(join(PACKAGE_ROOT, 'assets', relative))).toBe(true)
@@ -107,11 +109,11 @@ describe('scanArtwork', () => {
       .toContain('maid-left/maid/maid-atelier-maid-left-v5.webp')
   })
 
-  it('lists the right-maid artwork as files', async () => {
+  it('lists the right-maid artwork as files under its theme folder', async () => {
     const manifest = await scanArtwork()
 
-    expect(manifest.files.map((file) => file.path)).toContain('maid-right/maid-atelier-maid-right-v7.webp')
-    expect(manifest.files.map((file) => file.path)).toContain('maid-right/maid-atelier-maid-right-vision-v1.webp')
+    expect(manifest.files.map((file) => file.path)).toContain('maid-right/default/maid-atelier-maid-right-v7.webp')
+    expect(manifest.files.map((file) => file.path)).toContain('maid-right/default/maid-atelier-maid-right-vision-v1.webp')
   })
 
   it('picks up a folder added at runtime with no source change', async () => {
