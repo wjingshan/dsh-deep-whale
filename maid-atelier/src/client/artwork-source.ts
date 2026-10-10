@@ -184,6 +184,32 @@ export function seedArtwork(manifest: ArtworkManifest | undefined): void {
   signature = manifest === undefined ? undefined : signatureOf(manifest)
 }
 
+/** A named right-maid portrait the session-state module can swap to. */
+export type RightArtworkSlot = 'thinking' | 'done' | 'failed' | 'winter'
+
+/** Named right-maid portraits; a slot is absent until the listing offers one. */
+export type RightArtworkStates = Partial<Record<RightArtworkSlot, string>>
+
+/**
+ * File-name hints that fill a named right-maid slot, checked in order.
+ *
+ * The left maid's slots come from the host's own `state` field, but these four
+ * are behaviour the skin drives rather than work states the host reports, so the
+ * file name is the contract here — the same shape the vision layer already used.
+ */
+const RIGHT_ARTWORK_SLOTS: readonly (readonly [RightArtworkSlot, RegExp])[] = [
+  ['thinking', /think/i],
+  ['done', /done|delight/i],
+  ['failed', /fail|error|deject/i],
+  ['winter', /winter/i],
+]
+
+/** The named slot a right-maid file fills, or undefined when it is the portrait. */
+function rightSlotOf(path: string): RightArtworkSlot | undefined {
+  const name = path.slice(path.lastIndexOf('/') + 1)
+  return RIGHT_ARTWORK_SLOTS.find(([, pattern]) => pattern.test(name))?.[0]
+}
+
 /** The single-layer portraits the stage paints, as URLs. */
 export interface ArtworkLayers {
   /** The left maid's identity reference, painted as the backdrop layer. */
@@ -192,28 +218,50 @@ export interface ArtworkLayers {
   rightPortrait?: string
   /** The right maid's Flash-Vision portrait. */
   rightVision?: string
+  /** The right maid's named portraits, when the listing carries them. */
+  rightStates?: RightArtworkStates
 }
 
 /**
- * Resolve the three single-layer portraits.
+ * Resolve the right maid's single-layer portraits and named slots.
  *
  * These carry a *role*, not an outfit, so unlike an outfit folder they cannot be
  * discovered by shape alone and something has to name them. Matching stays
- * tolerant of renames: the vision layer is whichever right-maid file says so and
- * the portrait is the one that does not, so dropping in a newer `-v8` keeps
- * working without an edit.
+ * tolerant of renames: the vision layer is whichever right-maid file says so, a
+ * named slot is whichever file says `think` / `done` / `failed` / `winter`, and
+ * the portrait is the first file that says none of those, so dropping in a newer
+ * `-v8` keeps working without an edit.
  * @returns whatever the current listing can resolve; fields are absent before the
  *   first successful read.
  */
 export function artworkLayers(): ArtworkLayers {
   const files = current?.files.map((file) => file.path) ?? []
-  const right = files.filter((path) => path.startsWith('maid-right/'))
   const leftIdentity = files.find((path) => path.startsWith('maid-left/maid/'))
-  const rightVision = right.find((path) => /vision/i.test(path))
-  const rightPortrait = right.find((path) => !/vision/i.test(path))
+  const right = files.filter((path) => path.startsWith('maid-right/')).sort()
+  const rightStates: RightArtworkStates = {}
+  let rightPortrait: string | undefined
+  let rightVision: string | undefined
+  for (const path of right) {
+    if (/vision/i.test(path)) {
+      if (rightVision === undefined) rightVision = path
+      continue
+    }
+    const slot = rightSlotOf(path)
+    if (slot === undefined) {
+      if (rightPortrait === undefined) rightPortrait = path
+      continue
+    }
+    if (rightStates[slot] === undefined) rightStates[slot] = artworkUrl(path)
+  }
   return {
     ...(leftIdentity === undefined ? {} : { leftIdentity: artworkUrl(leftIdentity) }),
     ...(rightPortrait === undefined ? {} : { rightPortrait: artworkUrl(rightPortrait) }),
     ...(rightVision === undefined ? {} : { rightVision: artworkUrl(rightVision) }),
+    ...(Object.keys(rightStates).length === 0 ? {} : { rightStates }),
   }
+}
+
+/** The listing's named right-maid portraits; empty before the first successful read. */
+export function artworkRightStates(): RightArtworkStates {
+  return artworkLayers().rightStates ?? {}
 }

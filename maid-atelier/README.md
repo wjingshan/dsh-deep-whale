@@ -33,9 +33,13 @@ PowerShell 版本见仓库 README（用 `;` 分隔命令，spec 需单引号包�
 
 Windows 快捷方式可下载独立 ICO：[困困](assets/icons/sleepy.ico)、[托腮](assets/icons/delighted.ico)、[认真](assets/icons/determined.ico)。每份包含 16、24、32、48、64、128、256 像素尺寸。
 
-## 会话状态立绘（内置，默认开启）
+## 会话状态立绘（目录驱动 + 内置兜底，默认开启）
 
-皮肤可以从宿主自身的 `data-state` 信号判断会话此刻在做什么——思考行与工具行都带这个属性——进而在「思考/工具运行中」「一轮结束」「本轮出错或被中断」三种时机换掉**右女仆**的立绘。三种造型（思考 / 完成·开心 / 出错·泄气）**随包内置**，默认就开着；使用方也可以用自己的数据 URI 覆盖任意一态：
+皮肤可以从宿主自身的 `data-state` 信号判断会话此刻在做什么——思考行与工具行都带这个属性——进而在「思考/工具运行中」「一轮结束」「本轮出错或被中断」三种时机换掉**右女仆**的立绘。
+
+四张状态图按**文件名**从 `assets/maid-right/` 取：名字含 `think` 的是思考态，含 `done`（或 `delight`）的是完成态，含 `fail` / `error` / `deject` 的是出错态，含 `winter` 的是「右女仆立绘造型」选冬日洋装时的待机图；名字含 `vision` 的是眼镜造型；一个都没含的那张就是**基准立绘**。丢文件进去、刷新页面即生效，不用改代码——和左女仆造型是同一套目录驱动机制。
+
+随包的 `lib/client.js` 里仍内嵌着这四张图作为**兜底**：某个用途在 `assets/maid-right/` 里找不到文件时就用内置那张。使用方还可以在皮肤激活前用自己的数据 URI 覆盖任意一态（优先级最高）：
 
 ```js
 window.__dshMaidAtelierArtwork = {
@@ -123,7 +127,11 @@ maid-atelier/assets/
 │   ├── 成熟-和服/          2026-10-09 新增
 │   ├── 成熟版-泳装1/       2026-10-09 新增
 │   └── 竞速泳衣/           2026-10-09 新增
-└── maid-right/             右女仆图层（主图 / vision）
+└── maid-right/             右女仆图层（扁平文件，文件名决定用途）
+    ├── maid-atelier-maid-right-v6.webp         基准立绘（排序第一张不含用途词的）
+    ├── maid-atelier-maid-right-v7.webp         排在其后，所以当前未被使用
+    ├── maid-atelier-maid-right-vision-v1.webp  眼镜造型（名字含 vision）
+    └── {think,done,failed,winter}.webp         可选：覆盖对应状态的内置图
 ```
 
 每个造型文件夹放五张图，**文件名里带工作状态即可**：
@@ -140,6 +148,10 @@ maid-atelier/assets/
 `maid-atelier-maid-left-winter-idle-v1.webp` 这种冗长形式。扫描按 `-` 分隔的
 **整词**匹配，所以 `toolbox.webp` 不会被误认成 `tool`；`maid/` 因为没有五态，
 不会被当成造型。
+
+`maid-right/` 是另一套规则：那里只认 `think` / `done` / `failed` / `winter` / `vision`
+这几个用途词（见上一节），**不认工作状态词**。在 `maid-right/` 下建子文件夹不会给右女仆
+换图——宿主会把子文件夹当成一个 outfit，于是它以「左女仆造型」的身份出现在下拉里。
 
 新增一套造型：
 

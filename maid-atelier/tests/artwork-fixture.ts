@@ -18,9 +18,15 @@ export const COMMITTED_OUTFITS = ['swimsuit', 'winter', 'yukata'] as const
 /**
  * Publish a listing shaped like the host's.
  * @param ids - outfit folder names to publish; defaults to the committed three.
+ * @param rightSlots - extra `maid-right/` file names keyed by the slot their name
+ *   encodes. The default listing ships none, so specs that do not ask for a
+ *   file-backed right maid keep resolving the bundled portraits.
  * @returns the listing that was seeded.
  */
-export function seedTestArtwork(ids: readonly string[] = COMMITTED_OUTFITS): ArtworkManifest {
+export function seedTestArtwork(
+  ids: readonly string[] = COMMITTED_OUTFITS,
+  rightSlots: Partial<Record<'thinking' | 'done' | 'failed' | 'winter', string>> = {},
+): ArtworkManifest {
   const outfits = ids.map((id) => ({
     id,
     states: Object.fromEntries(
@@ -35,6 +41,7 @@ export function seedTestArtwork(ids: readonly string[] = COMMITTED_OUTFITS): Art
       { path: 'maid-left/maid/maid-atelier-maid-left-v5.webp' },
       { path: 'maid-right/maid-atelier-maid-right-v7.webp' },
       { path: 'maid-right/maid-atelier-maid-right-vision-v1.webp' },
+      ...Object.values(rightSlots).map((name) => ({ path: `maid-right/${name}` })),
     ],
   }
   seedArtwork(manifest)
@@ -48,4 +55,12 @@ export function seedTestArtwork(ids: readonly string[] = COMMITTED_OUTFITS): Art
  */
 export function testSprite(id: string, state: string): string {
   return `/maid-atelier/art/maid-left/${id}/${id}-${state}.webp`
+}
+
+/**
+ * The URL a seeded right-maid file resolves to.
+ * @param name - file name inside `maid-right/`.
+ */
+export function testRightArt(name: string): string {
+  return `/maid-atelier/art/maid-right/${name}`
 }

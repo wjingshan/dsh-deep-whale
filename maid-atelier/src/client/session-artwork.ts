@@ -12,8 +12,16 @@
  * artwork while a turn is in flight. A host may override any state portrait by
  * setting `window.__dshMaidAtelierArtwork` before the skin activates.
  *
+ * The artwork listing wins over the bundle: dropping `think.webp`, `done.webp`,
+ * `failed.webp` or `winter.webp` into `assets/maid-right/` replaces that portrait
+ * on the next listing read, exactly as an `assets/maid-left/` folder replaces an
+ * outfit. The bundled URLs stay as the fallback for every slot the listing does
+ * not fill, and the window override still wins over both.
+ *
  * @module
  */
+
+import { artworkRightStates, type RightArtworkSlot } from './artwork-source.ts'
 
 export type SessionArtworkState = 'thinking' | 'done' | 'failed'
 
@@ -65,10 +73,10 @@ const HOLD_MS = 4200
  */
 const TICK_MS = 280
 
-/** The bundled portrait a variant name selects, or undefined for `default`. */
-function idleArtwork(variant: unknown): string | undefined {
+/** The slot a variant name selects, or undefined for `default`. */
+function slotOfVariant(variant: unknown): RightArtworkSlot | undefined {
   if (variant === 'thinking' || variant === 'done' || variant === 'failed' || variant === 'winter') {
-    return BUNDLED[variant]
+    return variant
   }
   return undefined
 }
@@ -89,12 +97,19 @@ export interface SessionArtworkOptions {
  */
 export function installSessionArtwork(options: SessionArtworkOptions = {}): () => void {
   const supplied = window.__dshMaidAtelierArtwork
-  const thinking = supplied?.thinking ?? BUNDLED.thinking
-  const done = supplied?.done ?? BUNDLED.done
-  const failed = supplied?.failed ?? BUNDLED.failed
-  const idle = idleArtwork(options.variant)
+
+  /**
+   * Resolve one portrait at the moment it is written: the window override wins,
+   * then whatever `assets/maid-right/` offers, then the bundle — so a listing
+   * that arrives after install is picked up on the next swap.
+   */
+  const portraitFor = (slot: RightArtworkSlot): string =>
+    (slot === 'winter' ? undefined : supplied?.[slot]) ?? artworkRightStates()[slot] ?? BUNDLED[slot]
+
+  const idle = slotOfVariant(options.variant)
   // 显式传入以开关为准；未传时按“宿主是否提供了立绘”推断（保持旧调用语义）。
-  const stateEnabled = options.stateEnabled ?? supplied !== undefined
+  const stateEnabled =
+    options.stateEnabled ?? (supplied !== undefined || Object.keys(artworkRightStates()).length > 0)
   if (!stateEnabled && idle === undefined) {
     // Nothing to show: never observe, so a deployment that wants the stock
     // artwork pays nothing at all.
@@ -123,7 +138,7 @@ export function installSessionArtwork(options: SessionArtworkOptions = {}): () =
     const image = portrait()
     if (image === null) return
     if (originalSrc === null) originalSrc = image.getAttribute('src')
-    const next = live ?? held ?? idle ?? originalSrc
+    const next = live ?? held ?? (idle === undefined ? undefined : portraitFor(idle)) ?? originalSrc
     if (next === null || image.getAttribute('src') === next) return
     image.setAttribute('src', next)
   }
@@ -142,12 +157,12 @@ export function installSessionArtwork(options: SessionArtworkOptions = {}): () =
       if (hold !== undefined) clearTimeout(hold)
       hold = undefined
       held = undefined
-      live = failures > errorBaseline ? failed : thinking
+      live = failures > errorBaseline ? portraitFor('failed') : portraitFor('thinking')
     } else {
       live = undefined
       if (working) {
         working = false
-        held = failures > errorBaseline ? failed : done
+        held = failures > errorBaseline ? portraitFor('failed') : portraitFor('done')
         if (hold !== undefined) clearTimeout(hold)
         hold = setTimeout(() => {
           hold = undefined
