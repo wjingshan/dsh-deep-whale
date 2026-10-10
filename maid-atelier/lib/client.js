@@ -159,6 +159,61 @@ window.__ModuleLoader__.load({
 				clearInterval(timer);
 			};
 		}
+		/** The theme the flat `maid-right/` files form, and the id its dropdown entry uses. */
+		const DEFAULT_RIGHT_THEME = "default";
+		/** The theme a right-maid path belongs to: its folder, or `default` for a flat file. */
+		function rightThemeOf(path) {
+			const rest = path.slice(11);
+			const slash = rest.indexOf("/");
+			return slash < 0 ? DEFAULT_RIGHT_THEME : rest.slice(0, slash);
+		}
+		/**
+		* One theme's files, in listing order.
+		*
+		* A theme is a folder under `maid-right/`, and its files carry the expressions —
+		* `think.webp`, `done.webp` and so on. The files flat in `maid-right/` are the
+		* `default` theme: that is the layout the package ships, so an install which
+		* never adds a folder keeps working, and the shipped portraits keep answering.
+		* @param theme - theme id, as {@link rightThemes} reports it.
+		*/
+		function rightThemeFiles(theme) {
+			return (current?.files.map((file) => file.path) ?? []).filter((path) => path.startsWith("maid-right/") && rightThemeOf(path) === theme).sort();
+		}
+		/**
+		* Theme ids the listing offers, `default` first.
+		*
+		* Derived from the file paths rather than from the outfit entries: the host
+		* classifies a folder's sprites with the left maid's work-state vocabulary, so a
+		* theme named only `done.webp` / `failed.webp` would never be listed as an outfit
+		* even though it is a perfectly good theme.
+		*/
+		function rightThemes() {
+			const ids = /* @__PURE__ */ new Set([DEFAULT_RIGHT_THEME]);
+			for (const path of current?.files.map((file) => file.path) ?? []) if (path.startsWith("maid-right/")) ids.add(rightThemeOf(path));
+			return [...ids].sort((left, right) => {
+				if (left === "default") return -1;
+				if (right === "default") return 1;
+				return left.localeCompare(right);
+			});
+		}
+		/** The theme the right maid resolves against; `default` until a setting says otherwise. */
+		let activeRightTheme = DEFAULT_RIGHT_THEME;
+		/**
+		* Point the right maid at one of the listing's themes.
+		*
+		* Notifies the listing's subscribers when the selection actually changes, because
+		* a theme switch repaints the same single-layer portraits a listing change does —
+		* the base and vision layers come from whichever theme is in play.
+		* @param theme - a theme id from {@link rightThemes}; anything else means `default`.
+		* @returns true when the selection changed.
+		*/
+		function setRightTheme(theme) {
+			const next = typeof theme === "string" && theme.length > 0 ? theme : DEFAULT_RIGHT_THEME;
+			if (next === activeRightTheme) return false;
+			activeRightTheme = next;
+			for (const listener of [...listeners]) listener();
+			return true;
+		}
 		/**
 		* File-name hints that fill a named right-maid slot, checked in order.
 		*
@@ -186,17 +241,18 @@ window.__ModuleLoader__.load({
 		* named slot is whichever file says `think` / `done` / `failed` / `winter`, and
 		* the portrait is the first file that says none of those, so dropping in a newer
 		* `-v8` keeps working without an edit.
+		* @param theme - theme id to resolve against; defaults to the active one.
 		* @returns whatever the current listing can resolve; fields are absent before the
 		*   first successful read.
 		*/
-		function artworkLayers() {
-			const files = current?.files.map((file) => file.path) ?? [];
-			const leftIdentity = files.find((path) => path.startsWith("maid-left/maid/"));
-			const right = files.filter((path) => path.startsWith("maid-right/")).sort();
+		function artworkLayers(theme = activeRightTheme) {
+			const leftIdentity = (current?.files.map((file) => file.path) ?? []).find((path) => path.startsWith("maid-left/maid/"));
+			const selected = typeof theme === "string" && theme.length > 0 ? theme : DEFAULT_RIGHT_THEME;
+			const wanted = rightThemes().includes(selected) ? selected : DEFAULT_RIGHT_THEME;
 			const rightStates = {};
 			let rightPortrait;
 			let rightVision;
-			for (const path of right) {
+			for (const path of rightThemeFiles(wanted)) {
 				if (/vision/i.test(path)) {
 					if (rightVision === void 0) rightVision = path;
 					continue;
@@ -215,9 +271,18 @@ window.__ModuleLoader__.load({
 				...Object.keys(rightStates).length === 0 ? {} : { rightStates }
 			};
 		}
-		/** The listing's named right-maid portraits; empty before the first successful read. */
-		function artworkRightStates() {
-			return artworkLayers().rightStates ?? {};
+		/** The active theme's named right-maid portraits; empty before the first successful read. */
+		function artworkRightStates(theme = activeRightTheme) {
+			return artworkLayers(theme).rightStates ?? {};
+		}
+		/**
+		* The active theme's base portrait — what the right maid wears while idle.
+		*
+		* `undefined` when the theme carries no plain portrait, which is the signal to
+		* leave whatever the stage painted alone.
+		*/
+		function artworkRightBase(theme = activeRightTheme) {
+			return artworkLayers(theme).rightPortrait;
 		}
 		//#endregion
 		//#region src/client/left-artwork.ts
@@ -277,6 +342,7 @@ window.__ModuleLoader__.load({
 			const manifest = artworkManifest();
 			const next = {};
 			for (const outfit of manifest?.outfits ?? []) {
+				if ((outfit.group ?? "maid-left") !== "maid-left") continue;
 				const sprites = {};
 				for (const state of WORK_STATES) {
 					const relative = outfit.states[state];
@@ -1655,7 +1721,7 @@ window.__ModuleLoader__.load({
 				const image = portrait();
 				if (image === null) return;
 				if (originalSrc === null) originalSrc = image.getAttribute("src");
-				const next = live ?? held ?? (idle === void 0 ? void 0 : portraitFor(idle)) ?? originalSrc;
+				const next = live ?? held ?? (idle === void 0 ? artworkRightBase() : portraitFor(idle)) ?? originalSrc;
 				if (next === null || image.getAttribute("src") === next) return;
 				image.setAttribute("src", next);
 			};
@@ -1725,7 +1791,7 @@ window.__ModuleLoader__.load({
 		* A deterministic id for the sources inside this bundle. It is shown in the
 		* skin's settings panel so an out-of-date window is visible instead of silent.
 		*/
-		const MAID_ATELIER_BUILD_ID = "fee50782a90d";
+		const MAID_ATELIER_BUILD_ID = "94ee66955513";
 		//#endregion
 		//#region src/client/customization.ts
 		const ATTR_ART = "data-dsh-whale-maid-art";
@@ -1909,6 +1975,7 @@ window.__ModuleLoader__.load({
 				projector.set(ATTR_COMPOSER_MODE, typeof state.values.composerMode === "string" ? state.values.composerMode : "persistent");
 				const navMode = state.values.mobileNav;
 				projector.set(ATTR_NAV_MODE, typeof navMode === "string" && NAV_MODES.has(navMode) ? navMode : "corner");
+				setRightTheme(state.values.rightTheme);
 				synchronizeSessionArtwork(state.values.stateArtwork === true, state.values.artworkVariant);
 				synchronizeLeftArtwork(state.values.leftStateArtwork !== false, state.values.leftArtworkVariant);
 			};
@@ -1926,6 +1993,21 @@ window.__ModuleLoader__.load({
 				description: "左女仆当前穿的整套造型；每套都带上述五种工作状态立绘。默认冬日洋装（与右女仆同套）。",
 				descriptionEn: "The outfit the left maid wears; every outfit carries the five work-state sprites above. Defaults to the winter dress that matches the right maid.",
 				defaultValue: DEFAULT_LEFT_ARTWORK_VARIANT,
+				options: []
+			};
+			/**
+			* The right maid's theme choices, rebuilt from the listing for the same reason
+			* the outfit choices are: a folder is a theme, so the dropdown has to follow
+			* what is on disk instead of a list baked into this file.
+			*/
+			const themeSetting = {
+				key: "rightTheme",
+				type: "select",
+				label: "右女仆主题",
+				labelEn: "Right maid theme",
+				description: "右女仆整套立绘（基准图与各状态表情）取自 assets/maid-right/ 下的哪个文件夹；「默认」用平铺在 maid-right/ 里的那几张。",
+				descriptionEn: "Which folder under assets/maid-right/ supplies the right maid: the base portrait plus her per-state expressions. Default uses the files sitting flat in maid-right/.",
+				defaultValue: DEFAULT_RIGHT_THEME,
 				options: []
 			};
 			const declaration = {
@@ -2004,6 +2086,7 @@ window.__ModuleLoader__.load({
 							}]
 						}
 					},
+					themeSetting,
 					{
 						key: "artworkVariant",
 						type: "select",
@@ -2123,6 +2206,11 @@ window.__ModuleLoader__.load({
 					value: id,
 					label: OUTFIT_LABELS[id]?.label ?? id,
 					labelEn: OUTFIT_LABELS[id]?.labelEn ?? id
+				}));
+				themeSetting.options = rightThemes().map((id) => ({
+					value: id,
+					label: id === "default" ? "默认（平铺文件）" : id,
+					labelEn: id === "default" ? "Default (flat files)" : id
 				}));
 				const count = outfitSetting.options.length;
 				declaration.title = `深海女仆工坊 · ${count} 套造型 · ${MAID_ATELIER_BUILD_ID}`;

@@ -1,8 +1,18 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { artworkLayers, artworkRightStates, seedArtwork } from '../src/client/artwork-source.ts'
+import {
+  DEFAULT_RIGHT_THEME,
+  artworkLayers,
+  artworkRightStates,
+  onArtworkChange,
+  rightTheme,
+  rightThemes,
+  seedArtwork,
+  setRightTheme,
+} from '../src/client/artwork-source.ts'
+import { leftArtworkVariants, rebuildLeftArtwork } from '../src/client/left-artwork.ts'
 import { installSessionArtwork } from '../src/client/session-artwork.ts'
-import { seedTestArtwork, testRightArt } from './artwork-fixture.ts'
+import { COMMITTED_OUTFITS, seedTestArtwork, testRightArt } from './artwork-fixture.ts'
 
 const BASE = 'data:image/webp;base64,BASE'
 const OVERRIDE = 'data:image/webp;base64,OVERRIDE'
@@ -31,6 +41,7 @@ function running(): void {
 }
 
 afterEach(() => {
+  setRightTheme(DEFAULT_RIGHT_THEME)
   delete window.__dshMaidAtelierArtwork
   seedArtwork(undefined)
   document.body.innerHTML = ''
@@ -69,9 +80,9 @@ describe('right-maid artwork from the listing', () => {
     await settle()
     expect(image.getAttribute('src')).toBe(testRightArt(FILES.done))
 
-    // The held portrait still gives way to the baseline the stage painted.
+    // The held portrait gives way to the theme's own base portrait.
     await settle(4300)
-    expect(image.getAttribute('src')).toBe(BASE)
+    expect(image.getAttribute('src')).toBe(testRightArt('maid-atelier-maid-right-v7.webp'))
     dispose()
   })
 
@@ -108,5 +119,65 @@ describe('right-maid artwork from the listing', () => {
     // Nothing in the listing names `think`, so the bundled data URL answers.
     expect(image.getAttribute('src')).toMatch(/^data:image\/webp;base64,/)
     dispose()
+  })
+})
+
+describe('right-maid themes', () => {
+  /** Two theme folders, the second one deliberately partial. */
+  const THEMES = {
+    和服: FILES,
+    泳装: { thinking: 'think-b.webp', failed: 'failed-b.webp' },
+  }
+
+  it('lists the flat default first and every theme folder after it', () => {
+    seedTestArtwork(undefined, {}, THEMES)
+    expect(rightThemes()).toEqual([DEFAULT_RIGHT_THEME, '和服', '泳装'])
+  })
+
+  it('resolves against the selected theme and falls back to default for an unknown one', () => {
+    seedTestArtwork(undefined, {}, THEMES)
+
+    setRightTheme('和服')
+    expect(rightTheme()).toBe('和服')
+    expect(artworkRightStates().thinking).toBe(testRightArt(FILES.thinking, '和服'))
+
+    setRightTheme('nope')
+    // The value is kept as the manager stored it...
+    expect(rightTheme()).toBe('nope')
+    // ...but a folder the listing does not carry resolves against `default`,
+    // which in this listing ships no expression of its own.
+    expect(artworkRightStates().thinking).toBeUndefined()
+  })
+
+  it('notifies subscribers on a real switch only', () => {
+    seedTestArtwork(undefined, {}, THEMES)
+    const seen = vi.fn()
+    const off = onArtworkChange(seen)
+
+    setRightTheme(DEFAULT_RIGHT_THEME)
+    expect(seen).not.toHaveBeenCalled()
+
+    setRightTheme('泳装')
+    expect(seen).toHaveBeenCalledTimes(1)
+    off()
+  })
+
+  it('uses the active theme expression while a turn runs', async () => {
+    vi.useFakeTimers()
+    seedTestArtwork(undefined, {}, THEMES)
+    setRightTheme('和服')
+    const image = stage()
+    const dispose = installSessionArtwork({ stateEnabled: true })
+
+    running()
+    await settle()
+    expect(image.getAttribute('src')).toBe(testRightArt(FILES.thinking, '和服'))
+    dispose()
+  })
+
+  it('keeps theme folders out of the left outfit dropdown', () => {
+    seedTestArtwork(undefined, {}, THEMES)
+    rebuildLeftArtwork()
+    expect(leftArtworkVariants()).toEqual([...COMMITTED_OUTFITS])
   })
 })

@@ -133,6 +133,7 @@ async function scanArtwork() {
 				}
 				if (Object.keys(states).length > 0) outfits.push({
 					id: dirent.name,
+					group,
 					states
 				});
 				continue;

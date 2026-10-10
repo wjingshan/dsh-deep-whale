@@ -35,6 +35,8 @@ const POLL_MS = 5000
 /** One outfit folder, keyed by its folder name. */
 export interface ArtworkOutfit {
   id: string
+  /** Character group the folder sits under; absent on a listing that predates it. */
+  group?: string
   /** Work state -> artwork-root-relative file path. */
   states: Record<string, string>
 }
@@ -184,8 +186,79 @@ export function seedArtwork(manifest: ArtworkManifest | undefined): void {
   signature = manifest === undefined ? undefined : signatureOf(manifest)
 }
 
+/** The theme the flat `maid-right/` files form, and the id its dropdown entry uses. */
+export const DEFAULT_RIGHT_THEME = 'default'
+
 /** A named right-maid portrait the session-state module can swap to. */
 export type RightArtworkSlot = 'thinking' | 'done' | 'failed' | 'winter'
+
+/** The theme a right-maid path belongs to: its folder, or `default` for a flat file. */
+function rightThemeOf(path: string): string {
+  const rest = path.slice('maid-right/'.length)
+  const slash = rest.indexOf('/')
+  return slash < 0 ? DEFAULT_RIGHT_THEME : rest.slice(0, slash)
+}
+
+/**
+ * One theme's files, in listing order.
+ *
+ * A theme is a folder under `maid-right/`, and its files carry the expressions —
+ * `think.webp`, `done.webp` and so on. The files flat in `maid-right/` are the
+ * `default` theme: that is the layout the package ships, so an install which
+ * never adds a folder keeps working, and the shipped portraits keep answering.
+ * @param theme - theme id, as {@link rightThemes} reports it.
+ */
+function rightThemeFiles(theme: string): string[] {
+  const files = current?.files.map((file) => file.path) ?? []
+  return files
+    .filter((path) => path.startsWith('maid-right/') && rightThemeOf(path) === theme)
+    .sort()
+}
+
+/**
+ * Theme ids the listing offers, `default` first.
+ *
+ * Derived from the file paths rather than from the outfit entries: the host
+ * classifies a folder's sprites with the left maid's work-state vocabulary, so a
+ * theme named only `done.webp` / `failed.webp` would never be listed as an outfit
+ * even though it is a perfectly good theme.
+ */
+export function rightThemes(): string[] {
+  const ids = new Set<string>([DEFAULT_RIGHT_THEME])
+  for (const path of current?.files.map((file) => file.path) ?? []) {
+    if (path.startsWith('maid-right/')) ids.add(rightThemeOf(path))
+  }
+  return [...ids].sort((left, right) => {
+    if (left === DEFAULT_RIGHT_THEME) return -1
+    if (right === DEFAULT_RIGHT_THEME) return 1
+    return left.localeCompare(right)
+  })
+}
+
+/** The theme the right maid resolves against; `default` until a setting says otherwise. */
+let activeRightTheme: string = DEFAULT_RIGHT_THEME
+
+/** The theme the right maid resolves against. */
+export function rightTheme(): string {
+  return activeRightTheme
+}
+
+/**
+ * Point the right maid at one of the listing's themes.
+ *
+ * Notifies the listing's subscribers when the selection actually changes, because
+ * a theme switch repaints the same single-layer portraits a listing change does —
+ * the base and vision layers come from whichever theme is in play.
+ * @param theme - a theme id from {@link rightThemes}; anything else means `default`.
+ * @returns true when the selection changed.
+ */
+export function setRightTheme(theme: unknown): boolean {
+  const next = typeof theme === 'string' && theme.length > 0 ? theme : DEFAULT_RIGHT_THEME
+  if (next === activeRightTheme) return false
+  activeRightTheme = next
+  for (const listener of [...listeners]) listener()
+  return true
+}
 
 /** Named right-maid portraits; a slot is absent until the listing offers one. */
 export type RightArtworkStates = Partial<Record<RightArtworkSlot, string>>
@@ -214,11 +287,11 @@ function rightSlotOf(path: string): RightArtworkSlot | undefined {
 export interface ArtworkLayers {
   /** The left maid's identity reference, painted as the backdrop layer. */
   leftIdentity?: string
-  /** The right maid's default portrait. */
+  /** The right maid's default portrait, from the theme in play. */
   rightPortrait?: string
-  /** The right maid's Flash-Vision portrait. */
+  /** The right maid's Flash-Vision portrait, from the theme in play. */
   rightVision?: string
-  /** The right maid's named portraits, when the listing carries them. */
+  /** The right maid's named portraits, when the theme in play carries them. */
   rightStates?: RightArtworkStates
 }
 
@@ -231,17 +304,22 @@ export interface ArtworkLayers {
  * named slot is whichever file says `think` / `done` / `failed` / `winter`, and
  * the portrait is the first file that says none of those, so dropping in a newer
  * `-v8` keeps working without an edit.
+ * @param theme - theme id to resolve against; defaults to the active one.
  * @returns whatever the current listing can resolve; fields are absent before the
  *   first successful read.
  */
-export function artworkLayers(): ArtworkLayers {
+export function artworkLayers(theme: unknown = activeRightTheme): ArtworkLayers {
   const files = current?.files.map((file) => file.path) ?? []
   const leftIdentity = files.find((path) => path.startsWith('maid-left/maid/'))
-  const right = files.filter((path) => path.startsWith('maid-right/')).sort()
+  // A stored value can outlive the folder it named — a theme can be deleted, or
+  // the setting can arrive before the first listing — so an id the listing does
+  // not carry resolves against `default` instead of leaving her with no art.
+  const selected = typeof theme === 'string' && theme.length > 0 ? theme : DEFAULT_RIGHT_THEME
+  const wanted = rightThemes().includes(selected) ? selected : DEFAULT_RIGHT_THEME
   const rightStates: RightArtworkStates = {}
   let rightPortrait: string | undefined
   let rightVision: string | undefined
-  for (const path of right) {
+  for (const path of rightThemeFiles(wanted)) {
     if (/vision/i.test(path)) {
       if (rightVision === undefined) rightVision = path
       continue
@@ -261,7 +339,17 @@ export function artworkLayers(): ArtworkLayers {
   }
 }
 
-/** The listing's named right-maid portraits; empty before the first successful read. */
-export function artworkRightStates(): RightArtworkStates {
-  return artworkLayers().rightStates ?? {}
+/** The active theme's named right-maid portraits; empty before the first successful read. */
+export function artworkRightStates(theme: unknown = activeRightTheme): RightArtworkStates {
+  return artworkLayers(theme).rightStates ?? {}
+}
+
+/**
+ * The active theme's base portrait — what the right maid wears while idle.
+ *
+ * `undefined` when the theme carries no plain portrait, which is the signal to
+ * leave whatever the stage painted alone.
+ */
+export function artworkRightBase(theme: unknown = activeRightTheme): string | undefined {
+  return artworkLayers(theme).rightPortrait
 }

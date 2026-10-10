@@ -81,6 +81,8 @@ export function rebuildLeftArtwork(): boolean {
   const manifest = artworkManifest()
   const next: Record<string, LeftArtworkMap> = {}
   for (const outfit of manifest?.outfits ?? []) {
+    // Right-maid theme folders are listed in the same array; they are not outfits.
+    if ((outfit.group ?? 'maid-left') !== 'maid-left') continue
     const sprites: LeftArtworkMap = {}
     for (const state of WORK_STATES) {
       const relative = outfit.states[state]

@@ -104,9 +104,18 @@ interface HttpResponseLike {
   end(body?: string | Uint8Array): void
 }
 
-/** One outfit discovered on disk: its id is the folder name. */
+/** One outfit or theme discovered on disk: its id is the folder name. */
 export interface OutfitEntry {
   id: string
+  /**
+   * Which character group the folder sits under.
+   *
+   * `maid-left` folders are outfits the skin wears; `maid-right` folders are
+   * themes the right maid resolves her portraits from. Both are listed, because
+   * the listing is one flat list — the field is what keeps the two dropdowns
+   * from advertising each other's folders.
+   */
+  group: string
   /** Work state -> artwork-root-relative file path. */
   states: Record<string, string>
 }
@@ -175,7 +184,7 @@ export async function scanArtwork(): Promise<Manifest> {
           files.push(state === undefined ? { path: relative } : { path: relative, state })
           if (state !== undefined && states[state] === undefined) states[state] = relative
         }
-        if (Object.keys(states).length > 0) outfits.push({ id: dirent.name, states })
+        if (Object.keys(states).length > 0) outfits.push({ id: dirent.name, group, states })
         continue
       }
 

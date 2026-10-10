@@ -6,7 +6,7 @@ import {
 } from '../../../skin-manager/src/protocol.ts'
 import { installSessionArtwork } from './session-artwork.ts'
 import { installLeftArtwork, DEFAULT_LEFT_ARTWORK_VARIANT, leftArtworkVariants, rebuildLeftArtwork } from './left-artwork.ts'
-import { onArtworkChange } from './artwork-source.ts'
+import { DEFAULT_RIGHT_THEME, onArtworkChange, rightThemes, setRightTheme } from './artwork-source.ts'
 import { MAID_ATELIER_BUILD_ID } from './build-id.generated.ts'
 
 const ATTR_ART = 'data-dsh-whale-maid-art'
@@ -189,6 +189,9 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     projector.set(ATTR_COMPOSER_MODE, typeof state.values.composerMode === 'string' ? state.values.composerMode : 'persistent')
     const navMode = state.values.mobileNav
     projector.set(ATTR_NAV_MODE, typeof navMode === 'string' && NAV_MODES.has(navMode) ? navMode : 'corner')
+    // A theme switch repaints the base and vision portraits (the setter notifies
+    // the stage), so it has to land before the session module installs on top.
+    setRightTheme(state.values.rightTheme)
     synchronizeSessionArtwork(state.values.stateArtwork === true, state.values.artworkVariant)
     // The outfits are the left maid's own artwork, so the swap is on unless the
     // manager explicitly stores it off (an older manager has no key at all).
@@ -211,6 +214,24 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     // Same constant the resolver falls back to, so the advertised default and
     // the outfit actually worn for a missing/unknown value cannot drift apart.
     defaultValue: DEFAULT_LEFT_ARTWORK_VARIANT,
+    options: [] as { value: string; label: string; labelEn: string }[],
+  }
+
+  /**
+   * The right maid's theme choices, rebuilt from the listing for the same reason
+   * the outfit choices are: a folder is a theme, so the dropdown has to follow
+   * what is on disk instead of a list baked into this file.
+   */
+  const themeSetting = {
+    key: 'rightTheme',
+    type: 'select' as const,
+    label: '右女仆主题',
+    labelEn: 'Right maid theme',
+    description:
+      '右女仆整套立绘（基准图与各状态表情）取自 assets/maid-right/ 下的哪个文件夹；「默认」用平铺在 maid-right/ 里的那几张。',
+    descriptionEn:
+      'Which folder under assets/maid-right/ supplies the right maid: the base portrait plus her per-state expressions. Default uses the files sitting flat in maid-right/.',
+    defaultValue: DEFAULT_RIGHT_THEME,
     options: [] as { value: string; label: string; labelEn: string }[],
   }
 
@@ -290,6 +311,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
           ],
         },
       },
+      themeSetting,
       {
         key: 'artworkVariant',
         type: 'select',
@@ -371,6 +393,11 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
       value: id,
       label: OUTFIT_LABELS[id]?.label ?? id,
       labelEn: OUTFIT_LABELS[id]?.labelEn ?? id,
+    }))
+    themeSetting.options = rightThemes().map((id) => ({
+      value: id,
+      label: id === DEFAULT_RIGHT_THEME ? '默认（平铺文件）' : id,
+      labelEn: id === DEFAULT_RIGHT_THEME ? 'Default (flat files)' : id,
     }))
     const count = outfitSetting.options.length
     declaration.title = `深海女仆工坊 · ${count} 套造型 · ${MAID_ATELIER_BUILD_ID}`

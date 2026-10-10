@@ -21,7 +21,7 @@
  * @module
  */
 
-import { artworkRightStates, type RightArtworkSlot } from './artwork-source.ts'
+import { artworkRightBase, artworkRightStates, type RightArtworkSlot } from './artwork-source.ts'
 
 export type SessionArtworkState = 'thinking' | 'done' | 'failed'
 
@@ -138,7 +138,10 @@ export function installSessionArtwork(options: SessionArtworkOptions = {}): () =
     const image = portrait()
     if (image === null) return
     if (originalSrc === null) originalSrc = image.getAttribute('src')
-    const next = live ?? held ?? (idle === undefined ? undefined : portraitFor(idle)) ?? originalSrc
+    // Idle is the variant the setting names, or the active theme's own base
+    // portrait; `originalSrc` stays the last resort for an empty listing.
+    const next =
+      live ?? held ?? (idle === undefined ? artworkRightBase() : portraitFor(idle)) ?? originalSrc
     if (next === null || image.getAttribute('src') === next) return
     image.setAttribute('src', next)
   }
