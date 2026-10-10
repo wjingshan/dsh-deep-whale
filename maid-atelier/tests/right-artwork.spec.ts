@@ -108,7 +108,7 @@ describe('right-maid artwork from the listing', () => {
     dispose()
   })
 
-  it('falls back to the bundled portrait when the listing names no state file', async () => {
+  it('leaves the theme base portrait alone when no expression file matches', async () => {
     vi.useFakeTimers()
     seedTestArtwork()
     const image = stage()
@@ -116,8 +116,9 @@ describe('right-maid artwork from the listing', () => {
 
     running()
     await settle()
-    // Nothing in the listing names `think`, so the bundled data URL answers.
-    expect(image.getAttribute('src')).toMatch(/^data:image\/webp;base64,/)
+    // Nothing in the listing names `think`, so she keeps the theme's base portrait
+    // rather than blanking the node.
+    expect(image.getAttribute('src')).toBe(testRightArt('maid-atelier-maid-right-v7.webp'))
     dispose()
   })
 })

@@ -33,13 +33,13 @@ PowerShell 版本见仓库 README（用 `;` 分隔命令，spec 需单引号包�
 
 Windows 快捷方式可下载独立 ICO：[困困](assets/icons/sleepy.ico)、[托腮](assets/icons/delighted.ico)、[认真](assets/icons/determined.ico)。每份包含 16、24、32、48、64、128、256 像素尺寸。
 
-## 会话状态立绘（目录驱动 + 内置兜底，默认开启）
+## 会话状态立绘（目录驱动，默认开启）
 
 皮肤可以从宿主自身的 `data-state` 信号判断会话此刻在做什么——思考行与工具行都带这个属性——进而在「思考/工具运行中」「一轮结束」「本轮出错或被中断」三种时机换掉**右女仆**的立绘。
 
 一整套右女仆立绘叫一个**主题**：`assets/maid-right/` 下的一个文件夹就是一个主题，文件夹里的图按**文件名**决定用途——含 `think` 的是思考态，含 `done`（或 `delight`）的是完成态，含 `fail` / `error` / `deject` 的是出错态，含 `winter` 的是冬日待机图，含 `vision` 的是眼镜造型，一个都没含的那张是**基准立绘**。主题在「设置 → 皮肤管理 → 深海女仆工坊 → 右女仆主题」里切换；丢一个文件夹进去、刷新页面就会出现。随包的图放在 `maid-right/default/`，也就是主题「默认」；根目录上平铺的文件仍按同一个「默认」主题处理，兼容旧布局。
 
-随包的 `lib/client.js` 里仍内嵌着那四张状态图作为**兜底**：主题里少了哪个用途，就用内置那张。优先级是 `window.__dshMaidAtelierArtwork` > 当前主题的文件 > 包内兜底。使用方可以在皮肤激活前用自己的数据 URI 覆盖任意一态：
+这四张图**不再内嵌在 bundle 里**，随包的默认主题就把它们放在 `assets/maid-right/default/`：`think.webp` / `done.webp` / `failed.webp` / `winter.webp`。优先级是 `window.__dshMaidAtelierArtwork` > 当前主题的文件；某个用途在主题里没有对应文件时，她保持当前立绘不变（不会变成空白节点）。使用方可以在皮肤激活前用自己的数据 URI 覆盖任意一态：
 
 ```js
 window.__dshMaidAtelierArtwork = {
@@ -132,7 +132,11 @@ maid-atelier/assets/
     ├── default/            随包主题「默认」
     │   ├── maid-atelier-maid-right-v6.webp        基准立绘（排序第一张不含用途词的）
     │   ├── maid-atelier-maid-right-v7.webp        排在其后，所以当前未被使用
-    │   └── maid-atelier-maid-right-vision-v1.webp 眼镜造型（名字含 vision）
+    │   ├── maid-atelier-maid-right-vision-v1.webp 眼镜造型（名字含 vision）
+    │   ├── think.webp                             思考 / 工具运行中
+    │   ├── done.webp                              一轮结束
+    │   ├── failed.webp                            本轮出错或被中断
+    │   └── winter.webp                            「右女仆立绘造型」选冬日洋装时
     └── 和服/               自定义主题，文件夹名＝下拉里的主题名
         ├── idle.webp       基准立绘
         ├── think.webp / done.webp / failed.webp / winter.webp
