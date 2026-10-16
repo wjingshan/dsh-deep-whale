@@ -139,6 +139,34 @@ body[data-dsh-maid-atelier-wj] :is([data-pane='conversation'], [class*='centerCo
   position: relative;
 }
 
+/* Any main panel that is not the conversation — Plugins, Automations, and every
+   panel a third-party plugin registers under the `main` slot — shares this
+   column with the stage but carries no `[data-phase]` hook of its own. As plain
+   in-flow content it paints UNDER the stage's `z-index: 0` artwork, so its text
+   ends up behind a full-strength palace. Two rules fix that, and neither one
+   guesses how the panel is nested (its own wrapper, surface, stacking or
+   scroll): the direct children the skin does not own are lifted into the
+   positioned band, exactly as the ConversationRoot rule above does for the chat,
+   and the stage itself is faded on those pages, so whatever still paints above
+   the panel is a whisper rather than a wall.
+   `[data-phase]` is the discriminator — the chat column always has it, a panel
+   page never does — so the chat keeps its artwork at full strength. The faded
+   value comes from the skin manager's own "panel backdrop" slider; the fallback
+   here matches that setting's default. */
+body[data-dsh-maid-atelier-wj]
+  :is([data-pane='conversation'], [class*='centerCol']):has(
+    > [data-skin-chrome='character-stage']
+  )
+  > :not([data-skin-owner]) {
+  position: relative;
+}
+
+body[data-dsh-maid-atelier-wj]
+  :is([data-pane='conversation'], [class*='centerCol']):not(:has([data-phase]))
+  [data-skin-chrome='character-stage'] {
+  opacity: calc(var(--maid-panel-backdrop, 12) / 100);
+}
+
 body[data-dsh-maid-atelier-wj] [data-maid-character] {
   position: absolute;
   display: block;

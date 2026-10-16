@@ -20,6 +20,17 @@ const ATTR_NAV_MODE = 'data-maid-nav-mode'
 const NAV_MODES = new Set(['corner', 'topbar', 'rail'])
 
 /**
+ * Percent of the stage's own opacity while a non-conversation main panel owns
+ * the column. The chat keeps the artwork at full strength; a panel page shows it
+ * only as far as this value allows. The stylesheet reads the same variable and
+ * carries the same fallback, so a window whose manager never applies a value
+ * still renders the documented default.
+ */
+const PANEL_BACKDROP_VAR = '--maid-panel-backdrop'
+const PANEL_BACKDROP_DEFAULT = 12
+const PANEL_BACKDROP_MAX = 60
+
+/**
  * Display names for the outfits that ship with the skin.
  *
  * An outfit the host discovers but this table does not know shows its folder
@@ -58,6 +69,25 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
   let disposeSessionArtwork: (() => void) | undefined
   /** Live work-state swimsuit swap for the left maid; on unless switched off. */
   let disposeLeftArtwork: (() => void) | undefined
+
+  /**
+   * Publish the panel-backdrop strength as a CSS variable.
+   *
+   * The projector owns attributes only, and a continuous percentage cannot be
+   * expressed as one, so this value rides a custom property on the same root
+   * element instead. It is written here and removed on release, so a hot switch
+   * cannot leave a stale value behind and no other activation's value is
+   * touched.
+   */
+  const applyPanelBackdrop = (value: unknown): void => {
+    const numeric = typeof value === 'number' && Number.isFinite(value) ? Math.round(value) : PANEL_BACKDROP_DEFAULT
+    const clamped = Math.min(PANEL_BACKDROP_MAX, Math.max(0, numeric))
+    root.style.setProperty(PANEL_BACKDROP_VAR, String(clamped))
+  }
+
+  const releasePanelBackdrop = (): void => {
+    root.style.removeProperty(PANEL_BACKDROP_VAR)
+  }
 
   const synchronizeModel = (): void => {
     let family: ReturnType<typeof modelFamily> = null
@@ -174,6 +204,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
       stopModelObserver()
       synchronizeSessionArtwork(false)
       releaseLeftArtwork()
+      releasePanelBackdrop()
       projector.release()
       return
     }
@@ -196,6 +227,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     // The outfits are the left maid's own artwork, so the swap is on unless the
     // manager explicitly stores it off (an older manager has no key at all).
     synchronizeLeftArtwork(state.values.leftStateArtwork !== false, state.values.leftArtworkVariant)
+    applyPanelBackdrop(state.values.panelBackdrop)
   }
 
   /**
@@ -374,6 +406,19 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
           { value: 'capsule', label: '空态胶囊（点击展开）', labelEn: 'Idle capsule (click to expand)' },
           { value: 'scroll', label: '上滚隐去 · 下滚渐现', labelEn: 'Hide on scroll up · show on scroll down' },
         ],
+      },
+      {
+        key: 'panelBackdrop',
+        type: 'range',
+        label: '插件 / 自动化页的背景浓淡',
+        labelEn: 'Backdrop strength on panel pages',
+        description: '非会话页面（插件、自动化任务等）背后宫殿与立绘的可见度。0 = 完全看不见，数字越大越明显；聊天区不受影响。',
+        descriptionEn: 'How visible the palace and the maids are behind a non-conversation page (Plugins, Automations, \u2026). 0 hides them completely; higher values show more. The chat column is never affected.',
+        defaultValue: PANEL_BACKDROP_DEFAULT,
+        min: 0,
+        max: PANEL_BACKDROP_MAX,
+        step: 1,
+        unit: '%',
       },
     ],
     apply,

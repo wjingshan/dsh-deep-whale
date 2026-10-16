@@ -17,6 +17,7 @@ afterEach(() => {
       document.documentElement.removeAttribute(attribute.name)
     }
   }
+  document.documentElement.style.removeProperty('--maid-panel-backdrop')
 })
 
 describe('maid customization declaration', () => {
@@ -26,7 +27,11 @@ describe('maid customization declaration', () => {
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
     const dispose = installMaidCustomization()
     const definition = registration!.definition
-    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'sfwMode', 'font', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'composerMode'])
+    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'sfwMode', 'font', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'composerMode', 'panelBackdrop'])
+    // The panel backdrop is the one continuous control: the manager renders it as
+    // a slider, and the skin publishes it as a CSS variable because the attribute
+    // projector cannot carry a percentage.
+    expect(definition.settings.at(-1)).toMatchObject({ key: 'panelBackdrop', type: 'range', defaultValue: 12, min: 0, max: 60, unit: '%' })
     const state = {
       values: normalizeSkinValues(definition, { artwork: true, sfwMode: { enabled: true, outside: 'visible', ranges: [] }, font: 'serif', modelExit: false, mobileNav: 'topbar', composerMode: 'scroll' }),
       visibility: { sfwMode: false },
@@ -38,6 +43,16 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.getAttribute('data-dsh-whale-maid-font')).toBe('serif')
     expect(document.documentElement.getAttribute('data-maid-composer-mode')).toBe('scroll')
     expect(document.documentElement.getAttribute('data-maid-nav-mode')).toBe('topbar')
+    // An unset value falls back to the declared default, and a stored number is
+    // clamped to the slider's own range at both ends.
+    expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('12')
+    definition.apply({ ...state, values: { ...state.values, panelBackdrop: 42 } })
+    expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('42')
+    definition.apply({ ...state, values: { ...state.values, panelBackdrop: 999 } })
+    expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('60')
+    definition.apply({ ...state, values: { ...state.values, panelBackdrop: -5 } })
+    expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('0')
+    definition.apply(state)
     expect(document.documentElement.getAttribute('data-dsh-whale-maid-model-exit')).toBe('disabled')
     width.mockReturnValue(420)
     window.dispatchEvent(new Event('resize'))
@@ -59,6 +74,7 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.hasAttribute('data-dsh-whale-maid-art')).toBe(false)
     expect(document.documentElement.hasAttribute('data-maid-composer-mode')).toBe(false)
     expect(document.documentElement.hasAttribute('data-maid-nav-mode')).toBe(false)
+    expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('')
     window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
   })
 
