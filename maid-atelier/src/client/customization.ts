@@ -31,6 +31,24 @@ const PANEL_BACKDROP_DEFAULT = 12
 const PANEL_BACKDROP_MAX = 60
 
 /**
+ * Percent of the character stage's height each maid draws at, riding a custom
+ * property per side so the slider rescales a portrait without repainting the
+ * stage. The stylesheet multiplies its own baseline percentages by these, and
+ * carries the same `100` fallback, so a window whose manager never applies a
+ * value still renders the documented size.
+ *
+ * The range is deliberately asymmetric: shrinking is always safe, while past
+ * 100% the figure grows upward into the stage's `overflow: hidden` and its head
+ * gets clipped by the top of the conversation column.
+ */
+const LEFT_SCALE_VAR = '--maid-left-scale'
+const RIGHT_SCALE_VAR = '--maid-right-scale'
+const SCALE_DEFAULT = 100
+const SCALE_MIN = 40
+const SCALE_MAX = 150
+const SCALE_STEP = 5
+
+/**
  * Display names for the outfits that ship with the skin.
  *
  * An outfit the host discovers but this table does not know shows its folder
@@ -87,6 +105,27 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
 
   const releasePanelBackdrop = (): void => {
     root.style.removeProperty(PANEL_BACKDROP_VAR)
+  }
+
+  /**
+   * Publish one maid's size multiplier as a CSS variable.
+   *
+   * Same mechanism as the panel backdrop: the projector only speaks attributes,
+   * and a continuous percentage is not one. Every write is paired with the
+   * release below, so a hot switch cannot strand a value from an earlier
+   * activation on the root element.
+   * @param variable - custom property owning that side's baseline.
+   * @param value - stored percentage; anything unusable means the default.
+   */
+  const applyMaidScale = (variable: string, value: unknown): void => {
+    const numeric = typeof value === 'number' && Number.isFinite(value) ? Math.round(value) : SCALE_DEFAULT
+    const clamped = Math.min(SCALE_MAX, Math.max(SCALE_MIN, numeric))
+    root.style.setProperty(variable, String(clamped))
+  }
+
+  const releaseMaidScales = (): void => {
+    root.style.removeProperty(LEFT_SCALE_VAR)
+    root.style.removeProperty(RIGHT_SCALE_VAR)
   }
 
   const synchronizeModel = (): void => {
@@ -205,6 +244,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
       synchronizeSessionArtwork(false)
       releaseLeftArtwork()
       releasePanelBackdrop()
+      releaseMaidScales()
       projector.release()
       return
     }
@@ -228,6 +268,8 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     // manager explicitly stores it off (an older manager has no key at all).
     synchronizeLeftArtwork(state.values.leftStateArtwork !== false, state.values.leftArtworkVariant)
     applyPanelBackdrop(state.values.panelBackdrop)
+    applyMaidScale(LEFT_SCALE_VAR, state.values.leftMaidScale)
+    applyMaidScale(RIGHT_SCALE_VAR, state.values.rightMaidScale)
   }
 
   /**
@@ -287,6 +329,32 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
         label: '显示双女仆立绘',
         labelEn: 'Show the twin maid artwork',
         defaultValue: true,
+      },
+      {
+        key: 'leftMaidScale',
+        type: 'range',
+        label: '左女仆大小',
+        labelEn: 'Left maid size',
+        description: '左女仆立绘相对对话区高度的大小。100 = 原始大小；调小可让出更多对话空间。超过 100 时她向上长出对话区，头顶会被上沿裁掉。',
+        descriptionEn: 'How tall the left maid draws against the conversation column. 100 is the original size; smaller values free up chat space. Past 100 she grows upward past the column and her head is clipped by its top edge.',
+        defaultValue: SCALE_DEFAULT,
+        min: SCALE_MIN,
+        max: SCALE_MAX,
+        step: SCALE_STEP,
+        unit: '%',
+      },
+      {
+        key: 'rightMaidScale',
+        type: 'range',
+        label: '右女仆大小',
+        labelEn: 'Right maid size',
+        description: '右女仆立绘相对对话区高度的大小。100 = 原始大小；只改高度，宽度按图片自身宽高比跟随，所以各状态立绘观感一致。超过 100 时头顶会被对话区上沿裁掉。',
+        descriptionEn: 'How tall the right maid draws against the conversation column. 100 is the original size; only the height is scaled, so the width follows each portrait\u2019s own aspect ratio. Past 100 her head is clipped by the column\u2019s top edge.',
+        defaultValue: SCALE_DEFAULT,
+        min: SCALE_MIN,
+        max: SCALE_MAX,
+        step: SCALE_STEP,
+        unit: '%',
       },
       {
         key: 'sfwMode',

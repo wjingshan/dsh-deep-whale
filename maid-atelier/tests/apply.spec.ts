@@ -1412,18 +1412,23 @@ describe('Maid Atelier skin apply', () => {
     // both sized against the chat area's height (percentages of the stage).
     expect(baseLeftRule).toContain('left: clamp(8px, 1.5%, 24px)')
     expect(baseLeftRule).toContain('bottom: 0')
-    expect(baseLeftRule).toContain('height: 96%')
+    // Each side's height is its own baseline percentage multiplied by that
+    // side's slider variable, so one maid can be resized without moving the other.
+    expect(baseLeftRule).toContain('height: calc(96% * var(--maid-left-scale, 100) / 100)')
     expect(baseRightRule).toContain('right: clamp(8px, 1.5%, 24px)')
     expect(baseRightRule).toContain('bottom: 0')
-    expect(baseRightRule).toContain('height: 92%')
+    expect(baseRightRule).toContain('height: calc(92% * var(--maid-right-scale, 100) / 100)')
+    // No character rule may keep an unscaled percentage height: it would silently
+    // ignore the size slider and reintroduce a second source of truth.
+    expect(CSS).not.toMatch(/\[data-maid-character[^{]*\{[^}]*height:\s*\d+%/s)
     // Left and right maids share the same corner layout: no asymmetric
     // sidebar-offset translate, no viewport units in the edge offsets.
     expect(baseLeftRule).not.toContain('var(--maid-sidebar-width)')
     expect(baseLeftRule).not.toContain('vw')
     expect(baseRightRule).not.toContain('var(--maid-sidebar-width)')
     expect(baseRightRule).not.toContain('vw')
-    expect(chatLeftRule).toContain('height: 64%')
-    expect(chatRightRule).toContain('height: 62%')
+    expect(chatLeftRule).toContain('height: calc(64% * var(--maid-left-scale, 100) / 100)')
+    expect(chatRightRule).toContain('height: calc(62% * var(--maid-right-scale, 100) / 100)')
     expect(chatLeftRule).not.toContain('translate:')
     expect(chatRightRule).not.toContain('translate:')
     expect(CSS).not.toMatch(/\[data-maid-character='(?:left|right)'\]\s*\{[^}]*(?:left|right):\s*-/s)

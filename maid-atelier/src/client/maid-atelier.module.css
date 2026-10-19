@@ -189,14 +189,14 @@ body[data-dsh-maid-atelier-wj] [data-maid-character] {
 body[data-dsh-maid-atelier-wj] [data-maid-character='left'] {
   bottom: 0;
   left: clamp(8px, 1.5%, 24px);
-  height: 96%;
+  height: calc(96% * var(--maid-left-scale, 100) / 100);
 }
 
 body[data-dsh-maid-atelier-wj]
   :is([data-maid-character='right'], [data-maid-character='vision']) {
   right: clamp(8px, 1.5%, 24px);
   bottom: 0;
-  height: 92%;
+  height: calc(92% * var(--maid-right-scale, 100) / 100);
 }
 
 body[data-dsh-maid-atelier-wj] [data-maid-character='vision'] {
@@ -254,13 +254,13 @@ body[data-dsh-maid-atelier-wj]
    not expose data-chat-flow, so Trajectory and similar canvases stay put. */
 body[data-dsh-maid-atelier-wj][data-maid-chat-active]
   [data-maid-character='left'] {
-  height: 64%;
+  height: calc(64% * var(--maid-left-scale, 100) / 100);
   opacity: 0.9;
 }
 
 body[data-dsh-maid-atelier-wj][data-maid-chat-active]
   :is([data-maid-character='right'], [data-maid-character='vision']) {
-  height: 62%;
+  height: calc(62% * var(--maid-right-scale, 100) / 100);
   opacity: 0.9;
 }
 
@@ -280,12 +280,12 @@ body[data-dsh-maid-atelier-wj][data-maid-chat-active]
 
   body[data-dsh-maid-atelier-wj][data-maid-chat-active]
     [data-maid-character='left'] {
-    height: 46%;
+    height: calc(46% * var(--maid-left-scale, 100) / 100);
   }
 
   body[data-dsh-maid-atelier-wj][data-maid-chat-active]
     :is([data-maid-character='right'], [data-maid-character='vision']) {
-    height: 44%;
+    height: calc(44% * var(--maid-right-scale, 100) / 100);
   }
 
 }
@@ -294,8 +294,14 @@ body[data-dsh-maid-atelier-wj][data-maid-chat-active]
    composer. Active conversations include inspection views as well as chat. */
 @media (max-width: 700px) and (orientation: portrait) {
   body[data-dsh-maid-atelier-wj]:not([data-maid-conversation-active])
-    [data-maid-character] {
-    height: 62%;
+    [data-maid-character='left'] {
+    height: calc(62% * var(--maid-left-scale, 100) / 100);
+    opacity: 0.66;
+  }
+
+  body[data-dsh-maid-atelier-wj]:not([data-maid-conversation-active])
+    :is([data-maid-character='right'], [data-maid-character='vision']) {
+    height: calc(62% * var(--maid-right-scale, 100) / 100);
     opacity: 0.66;
   }
 }

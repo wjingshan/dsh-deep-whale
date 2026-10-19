@@ -18,6 +18,8 @@ afterEach(() => {
     }
   }
   document.documentElement.style.removeProperty('--maid-panel-backdrop')
+  document.documentElement.style.removeProperty('--maid-left-scale')
+  document.documentElement.style.removeProperty('--maid-right-scale')
 })
 
 describe('maid customization declaration', () => {
@@ -27,11 +29,18 @@ describe('maid customization declaration', () => {
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
     const dispose = installMaidCustomization()
     const definition = registration!.definition
-    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'sfwMode', 'font', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'composerMode', 'panelBackdrop'])
+    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'leftMaidScale', 'rightMaidScale', 'sfwMode', 'font', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'composerMode', 'panelBackdrop'])
     // The panel backdrop is the one continuous control: the manager renders it as
     // a slider, and the skin publishes it as a CSS variable because the attribute
     // projector cannot carry a percentage.
     expect(definition.settings.at(-1)).toMatchObject({ key: 'panelBackdrop', type: 'range', defaultValue: 12, min: 0, max: 60, unit: '%' })
+    // Each maid's size is a second continuous control, published the same way:
+    // a percentage cannot ride the attribute projector, so it becomes a custom
+    // property the stylesheet multiplies its own baseline height by.
+    expect(definition.settings.slice(1, 3)).toMatchObject([
+      { key: 'leftMaidScale', type: 'range', defaultValue: 100, min: 40, max: 150, step: 5, unit: '%' },
+      { key: 'rightMaidScale', type: 'range', defaultValue: 100, min: 40, max: 150, step: 5, unit: '%' },
+    ])
     const state = {
       values: normalizeSkinValues(definition, { artwork: true, sfwMode: { enabled: true, outside: 'visible', ranges: [] }, font: 'serif', modelExit: false, mobileNav: 'topbar', composerMode: 'scroll' }),
       visibility: { sfwMode: false },
@@ -52,6 +61,17 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('60')
     definition.apply({ ...state, values: { ...state.values, panelBackdrop: -5 } })
     expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('0')
+    // Both size sliders default to 100, then move independently of each other.
+    expect(document.documentElement.style.getPropertyValue('--maid-left-scale')).toBe('100')
+    expect(document.documentElement.style.getPropertyValue('--maid-right-scale')).toBe('100')
+    definition.apply({ ...state, values: { ...state.values, leftMaidScale: 60, rightMaidScale: 130 } })
+    expect(document.documentElement.style.getPropertyValue('--maid-left-scale')).toBe('60')
+    expect(document.documentElement.style.getPropertyValue('--maid-right-scale')).toBe('130')
+    // Clamped per side: an out-of-range stored value cannot collapse or blow up
+    // one maid while the other keeps its own setting.
+    definition.apply({ ...state, values: { ...state.values, leftMaidScale: 5, rightMaidScale: 400 } })
+    expect(document.documentElement.style.getPropertyValue('--maid-left-scale')).toBe('40')
+    expect(document.documentElement.style.getPropertyValue('--maid-right-scale')).toBe('150')
     definition.apply(state)
     expect(document.documentElement.getAttribute('data-dsh-whale-maid-model-exit')).toBe('disabled')
     width.mockReturnValue(420)
@@ -75,6 +95,8 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.hasAttribute('data-maid-composer-mode')).toBe(false)
     expect(document.documentElement.hasAttribute('data-maid-nav-mode')).toBe(false)
     expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('')
+    expect(document.documentElement.style.getPropertyValue('--maid-left-scale')).toBe('')
+    expect(document.documentElement.style.getPropertyValue('--maid-right-scale')).toBe('')
     window.removeEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
   })
 
