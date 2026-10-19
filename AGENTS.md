@@ -2,15 +2,14 @@
 
 <!-- dsh-agent-scaffold:v1 -->
 
-## 落地即提交（用户明确要求，2026-10-19）
+## 落地即提交
 
-**每次改动落地后就提交**，不要攒着等用户提醒，也不要等"下一轮再说"。适用于源码、测试、构建产物、文档的任意组合。
+总规则见工作区根 `../AGENTS.md`（**约束本工作区所有项目**）：一次改动一个 commit，落地即提交，`git add` 只用显式路径。本仓库的具体落法：
 
-- 提交粒度是"一次改动"，不是"一次对话"：一个功能点配一个 commit，标题沿用仓库现有的 `type(scope): ...` 格式（英文）。
-- `git add` 必须用**显式路径**，禁止 `git add -A` / `git add .`。工作区里经常有用户正在试的素材（`assets/maid-right/**`、临时目录）、以及运行时产物（`maid-atelier/.dsh-wiring/`、`orca-link/.dsh-wiring/`、`skin-manager/.dsh-wiring/`）；一把梭会把半成品和本机状态带进历史。
 - 改了 `src/**` 就先 `npm run build`，把 `lib/`、`skin.build.json`、`src/client/build-id.generated.ts` 与源码放进**同一个** commit —— `tests/build-id.spec.ts` 会因不一致而红，且浏览器加载的是 `lib/`。
-- 提交前跑 `npm test`。红的不提交；如果红来自用户正在改的素材而不是本次改动，先查清并把原因写出来，绝不改断言迁就当前磁盘状态。
+- `git add` 还要排除 `maid-atelier/.dsh-wiring/`、`orca-link/.dsh-wiring/`、`skin-manager/.dsh-wiring/` 这些运行时产物。
 - 素材（`assets/**`）由用户自己整理，默认不随功能提交带走；用户明确要求时再单独提交。
+- 提交前跑 `npm test`。红的不提交；如果红来自用户正在改的素材而不是本次改动，先查清并把原因写出来，绝不改断言迁就当前磁盘状态。
 
 ## Code Review Rules
 
