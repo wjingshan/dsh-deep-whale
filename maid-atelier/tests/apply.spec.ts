@@ -87,8 +87,25 @@ const SETTINGS_CARRIER_FADE_RULE = CSS.match(
 
 let fiber: Fiber | undefined
 
+let activePanelId: string | null = null
+const panelListeners = new Set<() => void>()
+function selectPanel(id: string | null): void {
+  activePanelId = id
+  for (const listener of panelListeners) listener()
+}
+
 async function mount(): Promise<Fiber> {
-  const f = new Context().plugin({ apply })
+  const ctx = new Context()
+  ctx.reflect.provide('layout', {
+    panelInfo: {
+      getSnapshot: () => ({ activePanelId }),
+      subscribe: (listener: () => void) => {
+        panelListeners.add(listener)
+        return () => { panelListeners.delete(listener) }
+      },
+    },
+  })
+  const f = ctx.plugin({ apply })
   await f.await()
   return f
 }
@@ -101,6 +118,8 @@ async function flushMutations(): Promise<void> {
 afterEach(async () => {
   await fiber?.dispose()
   fiber = undefined
+  activePanelId = null
+  panelListeners.clear()
   vi.unstubAllGlobals()
   document.body.innerHTML = ''
   document.title = ''
@@ -148,7 +167,7 @@ describe('Maid Atelier skin apply', () => {
 
   it('declares only the public rc.6 client manifest', () => {
     const manifest = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'))
-    expect(manifest.dsh.client).toEqual({ inject: [], platform: 'web' })
+    expect(manifest.dsh.client).toEqual({ inject: ['@deepseek-ai/dsh-client-ui-layout'], platform: 'web' })
     expect(manifest).not.toHaveProperty('dshClient')
     expect(manifest.peerDependencies).toHaveProperty('@deepseek-ai/cordis', '^4.0.1')
   })
@@ -160,13 +179,32 @@ describe('Maid Atelier skin apply', () => {
     expect(document.body.hasAttribute('data-dsh-maid-atelier-wj')).toBe(false)
   })
 
+  it('projects the official panel selection onto the body attribute', async () => {
+    fiber = await mount()
+    expect(document.body.hasAttribute('data-maid-panel-page')).toBe(false)
+    // The layout service is authoritative even while the rendered outlet still
+    // looks like a conversation tree, which is the case this replaces.
+    selectPanel('plugins')
+    await flushMutations()
+    expect(document.body.hasAttribute('data-maid-panel-page')).toBe(true)
+    selectPanel(null)
+    await flushMutations()
+    expect(document.body.hasAttribute('data-maid-panel-page')).toBe(false)
+  })
+
   it('registers cleanup before a later CSSOM initialization failure', () => {
     const disposers: Array<() => void> = []
     const ctx = {
       effect(factory: () => () => void): void {
         disposers.push(factory())
       },
-    } as unknown as Context
+      layout: {
+        panelInfo: {
+          getSnapshot: () => ({ activePanelId: null }),
+          subscribe: () => () => {},
+        },
+      },
+    } as unknown as Parameters<typeof apply>[0]
     const insertRule = vi.spyOn(CSSStyleSheet.prototype, 'insertRule')
       .mockImplementationOnce(() => {
         throw new Error('fixture CSSOM failure')

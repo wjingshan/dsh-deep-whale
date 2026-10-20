@@ -4,7 +4,7 @@
  * independent layers. The sidebar keeps the product's native vector
  * wordmark; every skin-owned write is restored by the Cordis effect disposer.
  */
-import type { Context } from '@deepseek-ai/cordis'
+import { installPanelPageState, type PanelContext } from '../../../shared/panel-page-state.ts'
 import {
   MAID_ATELIER_BOW_CLEAN,
   MAID_ATELIER_CHIBI,
@@ -453,12 +453,18 @@ function decorateWorkspaceTree(decoratedElements: Set<HTMLElement>): void {
   }
 }
 
+export const inject = ['layout']
+
 /**
  * Apply the skin-owned background and independently retractable chrome.
  * @param ctx - owning context whose effect retracts every DOM and CSS write.
  */
-export function apply(ctx: Context): void {
+export function apply(ctx: PanelContext): void {
   const body = document.body
+  // Official selection is authoritative: the layout service reports which panel
+  // owns the main outlet, so the stylesheet never infers it from the rendered
+  // tree (the old `:not(:has([data-phase]))` probe is gone).
+  installPanelPageState(ctx, body, 'data-maid-panel-page')
   // Started first: the artwork listing is fetched asynchronously, so the sooner it
   // is in flight the sooner the stage and the outfit dropdown can be filled in.
   ctx.effect(() => watchArtwork(), 'ui-skin-maid-atelier-wj: artwork listing')

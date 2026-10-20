@@ -167,8 +167,8 @@ body[data-dsh-maid-atelier-wj]
   position: relative;
 }
 
-body[data-dsh-maid-atelier-wj]
-  :is([data-pane='conversation'], [class*='centerCol']):not(:has([data-phase]))
+body[data-dsh-maid-atelier-wj][data-maid-panel-page]
+  :is([data-pane='conversation'], [class*='centerCol'])
   [data-skin-chrome='character-stage'] {
   opacity: calc(var(--maid-panel-backdrop, 12) / 100);
 }
