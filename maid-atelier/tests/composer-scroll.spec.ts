@@ -5,6 +5,7 @@ import { installMaidComposerScroll } from '../src/client/composer-scroll.ts'
 const SCROLLPORT_HEIGHT = 300
 const SCROLLPORT_CONTENT_HEIGHT = 800
 const SWITCH = 'data-maid-composer-mode'
+const BOTTOM_ONLY = 'data-maid-composer-bottom-only'
 
 interface Fixture {
   root: HTMLElement
@@ -76,10 +77,12 @@ function nextMicrotask(): Promise<void> {
 beforeEach(() => {
   document.body.innerHTML = ''
   document.documentElement.removeAttribute(SWITCH)
+  document.documentElement.removeAttribute(BOTTOM_ONLY)
 })
 
 afterEach(() => {
   document.documentElement.removeAttribute(SWITCH)
+  document.documentElement.removeAttribute(BOTTOM_ONLY)
 })
 
 describe('maid composer scroll-intent', () => {
@@ -246,6 +249,80 @@ describe('maid composer scroll-intent', () => {
     wheel(scrollport, 120)
     expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
     disposeNewer()
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
+  })
+})
+
+describe('maid composer bottom-only visibility', () => {
+  function backToBottom(): HTMLElement {
+    const control = document.createElement('button')
+    control.className = 'toBottomButton'
+    return control
+  }
+
+  it('shows the seat at the tail and hides it while reading back', () => {
+    const { scrollport, seat, dispose } = mount('persistent')
+    document.documentElement.setAttribute(BOTTOM_ONLY, 'on')
+
+    scrollTo(scrollport, 500) // distance 0: at the tail
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
+
+    // The host renders its back-to-bottom control only after leaving the tail.
+    const control = backToBottom()
+    scrollport.append(control)
+    scrollTo(scrollport, 300)
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(true)
+
+    control.remove()
+    scrollTo(scrollport, 500)
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
+    dispose()
+  })
+
+  it('hides as soon as the back-to-bottom control is committed, without a scroll', async () => {
+    const { scrollport, seat, dispose } = mount('persistent')
+    document.documentElement.setAttribute(BOTTOM_ONLY, 'on')
+    scrollTo(scrollport, 400)
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
+
+    scrollport.append(backToBottom())
+    await nextMicrotask()
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(true)
+    dispose()
+  })
+
+  it('takes over the scroll mode: direction stops driving the seat', () => {
+    const { scrollport, seat, dispose } = mount('scroll')
+    document.documentElement.setAttribute(BOTTOM_ONLY, 'on')
+    scrollTo(scrollport, 300)
+    scrollTo(scrollport, 200) // scroll mode would hide on this upward move
+    // No back-to-bottom control, so the host still considers this the tail.
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
+    dispose()
+  })
+
+  it('returns to the scroll mode once the switch is turned off', async () => {
+    const { scrollport, seat, dispose } = mount('scroll')
+    document.documentElement.setAttribute(BOTTOM_ONLY, 'on')
+    scrollTo(scrollport, 300)
+    scrollTo(scrollport, 200)
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
+
+    document.documentElement.setAttribute(BOTTOM_ONLY, 'off')
+    await nextMicrotask()
+    scrollTo(scrollport, 150)
+    expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(true)
+    dispose()
+  })
+
+  it('dispose releases the back-to-bottom observers', async () => {
+    const { scrollport, seat, dispose } = mount('persistent')
+    document.documentElement.setAttribute(BOTTOM_ONLY, 'on')
+    scrollTo(scrollport, 400)
+    dispose()
+
+    scrollport.append(backToBottom())
+    await nextMicrotask()
     expect(seat.hasAttribute('data-maid-composer-hidden')).toBe(false)
   })
 })

@@ -30,7 +30,7 @@ describe('maid customization declaration', () => {
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
     const dispose = installMaidCustomization()
     const definition = registration!.definition
-    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'leftMaidScale', 'rightMaidScale', 'sfwMode', 'font', 'workspaceFont', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'workspaceRowHeight', 'composerMode', 'panelBackdrop'])
+    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'leftMaidScale', 'rightMaidScale', 'sfwMode', 'font', 'workspaceFont', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'workspaceRowHeight', 'composerMode', 'composerBottomOnly', 'panelBackdrop'])
     // Workspace appearance: the sidebar has its own typography switch and a row
     // height slider, both independent of the conversation font above.
     expect(definition.settings.find(setting => setting.key === 'workspaceFont')).toMatchObject({
@@ -45,6 +45,12 @@ describe('maid customization declaration', () => {
       max: 44,
       step: 1,
       unit: 'px',
+    })
+    // Bottom-only composer visibility is an independent switch, off by default,
+    // so the scroll mode above keeps its own behaviour until it is turned on.
+    expect(definition.settings.find(setting => setting.key === 'composerBottomOnly')).toMatchObject({
+      type: 'boolean',
+      defaultValue: false,
     })
     // The panel backdrop is the one continuous control: the manager renders it as
     // a slider, and the skin publishes it as a CSS variable because the attribute
@@ -67,7 +73,12 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.getAttribute('data-dsh-whale-maid-art')).toBe('hidden')
     expect(document.documentElement.getAttribute('data-dsh-whale-maid-font')).toBe('serif')
     expect(document.documentElement.getAttribute('data-maid-composer-mode')).toBe('scroll')
+    expect(document.documentElement.getAttribute('data-maid-composer-bottom-only')).toBe('off')
     expect(document.documentElement.getAttribute('data-maid-nav-mode')).toBe('topbar')
+    // The bottom-only switch projects independently of the mode above.
+    definition.apply({ ...state, values: { ...state.values, composerBottomOnly: true } })
+    expect(document.documentElement.getAttribute('data-maid-composer-bottom-only')).toBe('on')
+    definition.apply(state)
     // Workspace defaults: serif stack and the compact 22px row.
     expect(document.documentElement.getAttribute('data-dsh-whale-maid-workspace-font')).toBe('serif')
     expect(document.documentElement.style.getPropertyValue('--maid-workspace-row-height')).toBe('22px')
