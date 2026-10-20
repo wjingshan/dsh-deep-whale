@@ -11,6 +11,7 @@ import { MAID_ATELIER_BUILD_ID } from './build-id.generated.ts'
 
 const ATTR_ART = 'data-dsh-whale-maid-art'
 const ATTR_FONT = 'data-dsh-whale-maid-font'
+const ATTR_WORKSPACE_FONT = 'data-dsh-whale-maid-workspace-font'
 const ATTR_MODEL_EXIT = 'data-dsh-whale-maid-model-exit'
 const ATTR_MODEL = 'data-dsh-whale-model'
 const ATTR_FLASH_GLASSES = 'data-dsh-whale-maid-flash-glasses'
@@ -18,6 +19,65 @@ const ATTR_COMPOSER_MODE = 'data-maid-composer-mode'
 const ATTR_NAV_MODE = 'data-maid-nav-mode'
 /** Navigation layouts the stylesheet implements; anything else falls back to the default. */
 const NAV_MODES = new Set(['corner', 'topbar', 'rail'])
+
+/**
+ * Workspace typography choices. `serif` is the skin's own sidebar stack (the
+ * stylesheet default), `system` takes the host family, and `conversation` mirrors
+ * the conversation font switch so both surfaces move together. Anything else
+ * falls back to the serif default.
+ */
+const WORKSPACE_FONTS = new Set(['serif', 'system', 'conversation'])
+
+/**
+ * Workspace row height control. The 22px default is also the stylesheet's
+ * `--maid-workspace-row-height` fallback, so a skin without a manager renders
+ * the compact row; the range starts there because the title's own line box sets
+ * the floor.
+ */
+const WORKSPACE_ROW_HEIGHT_DEFAULT = 22
+const WORKSPACE_ROW_HEIGHT_MIN = 22
+const WORKSPACE_ROW_HEIGHT_MAX = 44
+const WORKSPACE_ROW_HEIGHT_PROPERTY = '--maid-workspace-row-height'
+
+/**
+ * Style-property twin of {@link SkinAttributeProjector}: a length control cannot
+ * ride an attribute — the stylesheet would need one rule per pixel value — so the
+ * owned custom property is written inline on the same root and released only
+ * while it still holds the value this writer set.
+ */
+class SkinPropertyProjector {
+  private readonly originals = new Map<string, string>()
+  private readonly owned = new Map<string, string>()
+
+  constructor(private readonly root: HTMLElement = document.documentElement) {}
+
+  set(name: string, value: string): void {
+    if (!this.originals.has(name)) this.originals.set(name, this.root.style.getPropertyValue(name))
+    this.root.style.setProperty(name, value)
+    this.owned.set(name, value)
+  }
+
+  release(): void {
+    for (const [name, original] of [...this.originals]) {
+      if (this.root.style.getPropertyValue(name) === this.owned.get(name)) {
+        if (original === '') this.root.style.removeProperty(name)
+        else this.root.style.setProperty(name, original)
+      }
+      this.originals.delete(name)
+      this.owned.delete(name)
+    }
+  }
+}
+
+/**
+ * Normalize the row height: a manager that predates the control, a missing value
+ * or a forged one all mean the skin default, and the result is rounded so the
+ * written length never carries sub-pixel noise.
+ */
+function workspaceRowHeight(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return WORKSPACE_ROW_HEIGHT_DEFAULT
+  return Math.min(WORKSPACE_ROW_HEIGHT_MAX, Math.max(WORKSPACE_ROW_HEIGHT_MIN, Math.round(value)))
+}
 
 /**
  * Percent of the stage's own opacity while a non-conversation main panel owns
@@ -79,6 +139,7 @@ export function modelFamily(name: string): 'pro' | 'flash' | null {
 /** Expose controls and keep every resulting DOM mutation skin-owned. */
 export function installMaidCustomization(root: HTMLElement = document.documentElement): () => void {
   const projector = new SkinAttributeProjector(root)
+  const properties = new SkinPropertyProjector(root)
   let observer: MutationObserver | undefined
   let frame: number | undefined
   let activeState: SkinCustomizationState | null = null
@@ -246,6 +307,7 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
       releasePanelBackdrop()
       releaseMaidScales()
       projector.release()
+      properties.release()
       return
     }
     if (activeState === null) window.addEventListener('resize', onResize)
@@ -255,6 +317,15 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
     const scheduleVisible = state.visibility.sfwMode !== false
     projector.set(ATTR_ART, artwork && scheduleVisible ? 'visible' : 'hidden')
     projector.set(ATTR_FONT, state.values.font === 'serif' ? 'serif' : 'system')
+    const workspaceFont = state.values.workspaceFont
+    projector.set(
+      ATTR_WORKSPACE_FONT,
+      typeof workspaceFont === 'string' && WORKSPACE_FONTS.has(workspaceFont) ? workspaceFont : 'serif',
+    )
+    properties.set(
+      WORKSPACE_ROW_HEIGHT_PROPERTY,
+      `${workspaceRowHeight(state.values.workspaceRowHeight)}px`,
+    )
     projector.set(ATTR_FLASH_GLASSES, state.values.flashGlasses === true ? 'on' : 'off')
     synchronizeModelMode()
     projector.set(ATTR_COMPOSER_MODE, typeof state.values.composerMode === 'string' ? state.values.composerMode : 'persistent')
@@ -377,6 +448,20 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
         ],
       },
       {
+        key: 'workspaceFont',
+        type: 'select',
+        label: '工作区字体',
+        labelEn: 'Workspace font',
+        description: '左侧栏工作区与会话列表的字体；可跟随上面的对话区字体设置。',
+        descriptionEn: 'Typeface of the sidebar Workspace and Session lists; can follow the conversation font setting above.',
+        defaultValue: 'serif',
+        options: [
+          { value: 'serif', label: 'Georgia 衬线（皮肤默认）', labelEn: 'Georgia serif (skin default)' },
+          { value: 'system', label: '系统默认无衬线', labelEn: 'System default sans' },
+          { value: 'conversation', label: '跟随对话区字体', labelEn: 'Follow the conversation font' },
+        ],
+      },
+      {
         key: 'modelExit',
         type: 'boolean',
         label: '桌面端根据所选模型显示立绘',
@@ -460,6 +545,19 @@ export function installMaidCustomization(root: HTMLElement = document.documentEl
           { value: 'topbar', label: '横向顶栏', labelEn: 'Horizontal top bar' },
           { value: 'rail', label: '纵向侧栏（宿主默认）', labelEn: 'Vertical column (host default)' },
         ],
+      },
+      {
+        key: 'workspaceRowHeight',
+        type: 'range',
+        label: '工作区条目行高',
+        labelEn: 'Workspace row height',
+        description: '左侧栏「工作区」分组条目的高度，单位像素；文件夹徽章与当前工作区的缎带按同一比例缩放。',
+        descriptionEn: 'Height of the sidebar Workspace group row in pixels; the folder crest and the active Workspace ribbon scale with it.',
+        defaultValue: WORKSPACE_ROW_HEIGHT_DEFAULT,
+        min: WORKSPACE_ROW_HEIGHT_MIN,
+        max: WORKSPACE_ROW_HEIGHT_MAX,
+        step: 1,
+        unit: 'px',
       },
       {
         key: 'composerMode',

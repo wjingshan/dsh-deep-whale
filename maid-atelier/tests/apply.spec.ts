@@ -1669,6 +1669,24 @@ describe('Maid Atelier skin apply', () => {
     expect(CSS).toMatch(/@media \(prefers-reduced-motion: reduce\) \{[^@]*\[data-chat-running\] > \[class\*='runningContent'\]::after\s*\{\s*display: none;/)
   })
 
+  it('drives the workspace list from one font variable and one row-height length', () => {
+    expect(CSS).toContain("--maid-workspace-font: Georgia, 'Times New Roman', serif;")
+    // Every Workspace surface reads the shared variable, so the manager switch
+    // moves the heading, the search field and both row kinds together.
+    for (const selector of ["[class*='sectionHeader']", "[class*='searchInput']", '[data-maid-workspace-row]', '[data-maid-session-row]']) {
+      const rule = CSS.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{([^}]*)\\}`))?.[1] ?? ''
+      expect(rule).toContain('font-family: var(--maid-workspace-font)')
+    }
+    expect(CSS).toMatch(/html\[data-dsh-whale-maid-workspace-font='system'\]/)
+    expect(CSS).toMatch(/html\[data-dsh-whale-maid-workspace-font='conversation'\]\[data-dsh-whale-maid-font='system'\]/)
+    // The row height is a length, so it rides a custom property: the row, the
+    // crest and the active ribbon all derive from the same 22px fallback.
+    expect(CSS).toMatch(/\[data-maid-workspace-row\]\s*\{[^}]*min-height: var\(--maid-workspace-row-height, 22px\)/)
+    expect(CSS).toMatch(/\[data-maid-workspace-row\]\s*\{[^}]*height: auto/)
+    expect(CSS).toMatch(/\[data-maid-workspace-active\]::before\s*\{[^}]*--maid-workspace-ribbon-box: calc\(var\(--maid-workspace-row-height, 22px\) \* 1\.273\)/)
+    expect(CSS).not.toMatch(/\[data-maid-workspace-active\] > \[class\*='folder'\]\s*\{[^}]*width: 30px/)
+  })
+
   it('keeps the light-theme composer statistics legible over the backdrop', () => {
     const dockRule = CSS.match(
       /:not\(\[data-ds-dark-theme\]\)[\s\S]*?\[data-slot='conversation\.composer\.dock'\] > \*\s*\{([^}]*)\}/s,
@@ -2228,9 +2246,11 @@ describe('Maid Atelier skin apply', () => {
     expect(shieldRule).not.toContain('clip-path')
     expect(ribbonShapeRule).toContain('border-image-source: var(--maid-workspace-ribbon-art)')
     expect(ribbonShapeRule).toContain('border-image-slice: 0 145 0 140 fill')
-    expect(ribbonShapeRule).toContain('border-image-width: 0 36px 0 35px')
+    // The band, side slices and overhang all derive from the row height now, so
+    // the ribbon keeps the artwork's 140/145 roll proportions at any height.
+    expect(ribbonShapeRule).toMatch(/border-image-width: 0 calc\(var\(--maid-workspace-ribbon-box\) \* 0\.604\) 0 calc\(var\(--maid-workspace-ribbon-box\) \* 0\.583\)/)
     expect(ribbonShapeRule).toContain('border-image-repeat: stretch')
-    expect(ribbonShapeRule).toContain('inset: -3px 0 -3px -12px')
+    expect(ribbonShapeRule).toMatch(/inset: calc\(-1 \* var\(--maid-workspace-ribbon-overhang\)\) 0 calc\(-1 \* var\(--maid-workspace-ribbon-overhang\)\) -12px/)
     expect(ribbonShapeRule).toContain('animation: maidAtelierWorkspaceRibbonEnter 420ms')
     expect(ribbonShapeRule).not.toContain('background-size')
     expect(ribbonShapeRule).not.toContain('clip-path')

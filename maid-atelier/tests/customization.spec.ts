@@ -20,6 +20,7 @@ afterEach(() => {
   document.documentElement.style.removeProperty('--maid-panel-backdrop')
   document.documentElement.style.removeProperty('--maid-left-scale')
   document.documentElement.style.removeProperty('--maid-right-scale')
+  document.documentElement.style.removeProperty('--maid-workspace-row-height')
 })
 
 describe('maid customization declaration', () => {
@@ -29,7 +30,22 @@ describe('maid customization declaration', () => {
     window.addEventListener(SKIN_CUSTOMIZATION_REGISTER_EVENT, receive)
     const dispose = installMaidCustomization()
     const definition = registration!.definition
-    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'leftMaidScale', 'rightMaidScale', 'sfwMode', 'font', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'composerMode', 'panelBackdrop'])
+    expect(definition.settings.map(setting => setting.key)).toEqual(['artwork', 'leftMaidScale', 'rightMaidScale', 'sfwMode', 'font', 'workspaceFont', 'modelExit', 'mobileModelExit', 'flashGlasses', 'rightTheme', 'artworkVariant', 'leftStateArtwork', 'leftArtworkVariant', 'stateArtwork', 'mobileNav', 'workspaceRowHeight', 'composerMode', 'panelBackdrop'])
+    // Workspace appearance: the sidebar has its own typography switch and a row
+    // height slider, both independent of the conversation font above.
+    expect(definition.settings.find(setting => setting.key === 'workspaceFont')).toMatchObject({
+      type: 'select',
+      defaultValue: 'serif',
+      options: [{ value: 'serif' }, { value: 'system' }, { value: 'conversation' }],
+    })
+    expect(definition.settings.find(setting => setting.key === 'workspaceRowHeight')).toMatchObject({
+      type: 'range',
+      defaultValue: 22,
+      min: 22,
+      max: 44,
+      step: 1,
+      unit: 'px',
+    })
     // The panel backdrop is the one continuous control: the manager renders it as
     // a slider, and the skin publishes it as a CSS variable because the attribute
     // projector cannot carry a percentage.
@@ -52,6 +68,9 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.getAttribute('data-dsh-whale-maid-font')).toBe('serif')
     expect(document.documentElement.getAttribute('data-maid-composer-mode')).toBe('scroll')
     expect(document.documentElement.getAttribute('data-maid-nav-mode')).toBe('topbar')
+    // Workspace defaults: serif stack and the compact 22px row.
+    expect(document.documentElement.getAttribute('data-dsh-whale-maid-workspace-font')).toBe('serif')
+    expect(document.documentElement.style.getPropertyValue('--maid-workspace-row-height')).toBe('22px')
     // An unset value falls back to the declared default, and a stored number is
     // clamped to the slider's own range at both ends.
     expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('12')
@@ -61,6 +80,14 @@ describe('maid customization declaration', () => {
     expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('60')
     definition.apply({ ...state, values: { ...state.values, panelBackdrop: -5 } })
     expect(document.documentElement.style.getPropertyValue('--maid-panel-backdrop')).toBe('0')
+    // The row height clamps to its slider range and the workspace font accepts
+    // only the three declared choices.
+    definition.apply({ ...state, values: { ...state.values, workspaceRowHeight: 999, workspaceFont: 'conversation' } })
+    expect(document.documentElement.style.getPropertyValue('--maid-workspace-row-height')).toBe('44px')
+    expect(document.documentElement.getAttribute('data-dsh-whale-maid-workspace-font')).toBe('conversation')
+    definition.apply({ ...state, values: { ...state.values, workspaceRowHeight: 4, workspaceFont: 'forged' } })
+    expect(document.documentElement.style.getPropertyValue('--maid-workspace-row-height')).toBe('22px')
+    expect(document.documentElement.getAttribute('data-dsh-whale-maid-workspace-font')).toBe('serif')
     // Both size sliders default to 100, then move independently of each other.
     expect(document.documentElement.style.getPropertyValue('--maid-left-scale')).toBe('100')
     expect(document.documentElement.style.getPropertyValue('--maid-right-scale')).toBe('100')
