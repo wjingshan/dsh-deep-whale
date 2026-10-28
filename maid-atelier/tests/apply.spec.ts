@@ -324,7 +324,6 @@ describe('Maid Atelier skin apply', () => {
     `
     fiber = await mount()
 
-    expect(document.body.hasAttribute('data-maid-chat-active')).toBe(true)
     expect(document.body.hasAttribute('data-maid-conversation-active')).toBe(true)
     expect(document.body.hasAttribute('data-maid-workspace')).toBe(true)
     expect(document.body.hasAttribute('data-maid-cordis-panel-open')).toBe(true)
@@ -336,7 +335,6 @@ describe('Maid Atelier skin apply', () => {
     document.querySelector('[data-slot="sidebar.settings"] [role="dialog"]')!.remove()
     await flushMutations()
 
-    expect(document.body.hasAttribute('data-maid-chat-active')).toBe(false)
     expect(document.body.hasAttribute('data-maid-conversation-active')).toBe(false)
     expect(document.body.hasAttribute('data-maid-workspace')).toBe(false)
     expect(document.body.hasAttribute('data-maid-cordis-panel-open')).toBe(false)
@@ -859,11 +857,11 @@ describe('Maid Atelier skin apply', () => {
     expect(frameRule).toContain('var(--maid-composer-ribbon-right-fill-art)')
     expect(frameRule).toContain('var(--maid-composer-ribbon-right-cap-art)')
     expect(frameRule).not.toContain('var(--maid-composer-lace-art)')
-    expect(frameRule).toContain('left 54px top')
-    expect(frameRule).toContain('right 54px top')
-    expect(frameRule).toContain('left 156px top')
-    expect(frameRule).toContain('right 156px top')
-    expect(frameRule).toContain('max(0px, calc(50% - 186px)) 32px')
+    expect(frameRule).toContain('left 53px top')
+    expect(frameRule).toContain('right 53px top')
+    expect(frameRule).toContain('left 154px top')
+    expect(frameRule).toContain('right 154px top')
+    expect(frameRule).toContain('max(0px, calc(50% - 184px)) 32px')
     expect(frameRule).toContain('background-repeat: no-repeat')
     expect(frameRule).toContain('border-width: 72px 54px 52px')
     expect(frameRule).toContain('border-image-source: var(--maid-composer-frame-art)')
@@ -872,10 +870,10 @@ describe('Maid Atelier skin apply', () => {
     expect(frameRule).toContain('border-image-repeat: stretch')
     expect(frameRule).not.toContain('100% 100%')
     expect(CSS).toMatch(
-      /\[data-skin-chrome='composer-lace'\]::before\s*\{[^}]*left: 54px[^}]*var\(--maid-composer-lace-art\)[^}]*background-position: left top/s,
+      /\[data-skin-chrome='composer-lace'\]::before\s*\{[^}]*left: 53px[^}]*var\(--maid-composer-lace-art\)[^}]*background-position: left -4px top/s,
     )
     expect(CSS).toMatch(
-      /\[data-skin-chrome='composer-lace'\]::after\s*\{[^}]*right: 54px[^}]*var\(--maid-composer-lace-art\)[^}]*background-position: right top/s,
+      /\[data-skin-chrome='composer-lace'\]::after\s*\{[^}]*right: 53px[^}]*var\(--maid-composer-lace-art\)[^}]*background-position: right 1px top/s,
     )
     expect(CSS).toMatch(
       /\[data-skin-chrome='composer-lace'\]::before,[\s\S]*?\[data-skin-chrome='composer-lace'\]::after\s*\{[^}]*width: calc\(50% - 96px\)/s,
@@ -1411,10 +1409,10 @@ describe('Maid Atelier skin apply', () => {
       /\[data-skin-chrome='character-stage'\]\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const chatLeftRule = CSS.match(
-      /\[data-maid-chat-active\]\s*\[data-maid-character='left'\]\s*\{([^}]*)\}/s,
+      /\[data-maid-conversation-active\]\s*\[data-maid-character='left'\]\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const chatRightRule = CSS.match(
-      /\[data-maid-chat-active\]\s*:is\(\[data-maid-character='right'\], \[data-maid-character='vision'\]\)\s*\{([^}]*)\}/s,
+      /\[data-maid-conversation-active\]\s*:is\(\[data-maid-character='right'\], \[data-maid-character='vision'\]\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     const sharedRule = CSS.match(
       /\[data-maid-character\]\s*\{([^}]*)\}/s,
@@ -1470,7 +1468,6 @@ describe('Maid Atelier skin apply', () => {
     expect(chatLeftRule).not.toContain('translate:')
     expect(chatRightRule).not.toContain('translate:')
     expect(CSS).not.toMatch(/\[data-maid-character='(?:left|right)'\]\s*\{[^}]*(?:left|right):\s*-/s)
-    expect(CSS).not.toMatch(/\[data-maid-conversation-active\]\s*\[data-maid-character/s)
     // The better-sidebar fixed-indent adaptation is gone: the artwork follows
     // the chat area, so no panel-state projection survives in the character rules.
     expect(CSS).not.toMatch(/\[data-maid-character='right'\][^{]*\{[^}]*clamp\(-460px/s)
@@ -2348,17 +2345,9 @@ describe('Maid Atelier skin apply', () => {
     expect(reducedMotionRules).toContain('animation: none')
   })
 
-  it('moves the running reasoning sweep on the compositor instead of relayout', () => {
-    const sweepRule = CSS.match(
-      /\[data-variant='think'\]\[data-state='running'\] \[class\*='row'\]::after\s*\{([^}]*)\}/s,
-    )?.[1] ?? ''
-    const sweepKeyframes = CSS.match(
-      /@keyframes maid-atelier-reasoning-sweep\s*\{([\s\S]*?)\n\}/,
-    )?.[1] ?? ''
-    expect(sweepRule).toContain('left: -240px')
-    expect(sweepRule).toContain('will-change: transform, opacity')
-    expect(sweepKeyframes).toContain('transform: translate3d(')
-    expect(sweepKeyframes).not.toMatch(/\bleft\s*:/)
+  it('keeps no running reasoning sweep on the content-less row pseudo element', () => {
+    expect(CSS).not.toContain('maid-atelier-reasoning-sweep')
+    expect(CSS).not.toMatch(/\[data-variant='think'\]\[data-state='running'\] \[class\*='row'\]::after/)
   })
 
   it('keeps the sidebar mascot subordinate to navigation and behind the lower ornament', () => {

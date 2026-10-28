@@ -256,15 +256,15 @@ body[data-dsh-maid-atelier-wj]
   }
 }
 
-/* Chat alone retreats the two figures toward the edges. Inspection views do
-   not expose data-chat-flow, so Trajectory and similar canvases stay put. */
-body[data-dsh-maid-atelier-wj][data-maid-chat-active]
+/* All active conversation views share the same figure size and opacity, so
+   switching between Chat and Trajectory leaves the artwork in place. */
+body[data-dsh-maid-atelier-wj][data-maid-conversation-active]
   [data-maid-character='left'] {
   height: calc(64% * var(--maid-left-scale, 100) / 100);
   opacity: 0.9;
 }
 
-body[data-dsh-maid-atelier-wj][data-maid-chat-active]
+body[data-dsh-maid-atelier-wj][data-maid-conversation-active]
   :is([data-maid-character='right'], [data-maid-character='vision']) {
   height: calc(62% * var(--maid-right-scale, 100) / 100);
   opacity: 0.9;
@@ -284,12 +284,12 @@ body[data-dsh-maid-atelier-wj][data-maid-chat-active]
     max-width: calc(100% - 48px);
   }
 
-  body[data-dsh-maid-atelier-wj][data-maid-chat-active]
+  body[data-dsh-maid-atelier-wj][data-maid-conversation-active]
     [data-maid-character='left'] {
     height: calc(46% * var(--maid-left-scale, 100) / 100);
   }
 
-  body[data-dsh-maid-atelier-wj][data-maid-chat-active]
+  body[data-dsh-maid-atelier-wj][data-maid-conversation-active]
     :is([data-maid-character='right'], [data-maid-character='vision']) {
     height: calc(44% * var(--maid-right-scale, 100) / 100);
   }
@@ -3199,8 +3199,8 @@ body[data-dsh-maid-atelier-wj] [data-composer-card]::before {
   /* The frame stays above the backing plate, but below the live controls and
      their in-place menus. A higher layer traps both selectors under the bow. */
   z-index: 1;
-  /* The shell keeps the fixed corner lace. Rebuild only its transparent center
-     from ribbon slices; the clipped lace strips below join under the bow. */
+  /* Overlap ribbon joins by 1px: fractional display scaling snaps border-image
+     corners separately from backgrounds. Keep the cap sizes and bow gap fixed. */
   background-image:
     var(--maid-bow-art),
     var(--maid-composer-ribbon-left-cap-art),
@@ -3209,16 +3209,16 @@ body[data-dsh-maid-atelier-wj] [data-composer-card]::before {
     var(--maid-composer-ribbon-right-fill-art);
   background-position:
     center top,
-    left 54px top,
-    right 54px top,
-    left 156px top,
-    right 156px top;
+    left 53px top,
+    right 53px top,
+    left 154px top,
+    right 154px top;
   background-size:
     auto 69px,
     102px 32px,
     102px 32px,
-    max(0px, calc(50% - 186px)) 32px,
-    max(0px, calc(50% - 186px)) 32px;
+    max(0px, calc(50% - 184px)) 32px,
+    max(0px, calc(50% - 184px)) 32px;
   background-repeat: no-repeat;
   background-origin: border-box;
   background-clip: border-box;
@@ -3348,17 +3348,17 @@ body[data-dsh-maid-atelier-wj]
 body[data-dsh-maid-atelier-wj]
   [data-composer-card]
   > [data-skin-chrome='composer-lace']::before {
-  left: 54px;
+  left: 53px;
   background-image: var(--maid-composer-lace-art);
-  background-position: left top;
+  background-position: left -4px top;
 }
 
 body[data-dsh-maid-atelier-wj]
   [data-composer-card]
   > [data-skin-chrome='composer-lace']::after {
-  right: 54px;
+  right: 53px;
   background-image: var(--maid-composer-lace-art);
-  background-position: right top;
+  background-position: right 1px top;
 }
 
 body[data-dsh-maid-atelier-wj]
@@ -3745,16 +3745,16 @@ body[data-dsh-maid-atelier-wj] [data-composer-card]
   body[data-dsh-maid-atelier-wj] [data-composer-card]::before {
     background-position:
       center top 4px,
-      left 54px top 8px,
-      right 54px top 8px,
-      left 118px top 8px,
-      right 118px top 8px;
+      left 53px top 8px,
+      right 53px top 8px,
+      left 116px top 8px,
+      right 116px top 8px;
     background-size:
       auto 54px,
       64px 20px,
       64px 20px,
-      max(0px, calc(50% - 148px)) 20px,
-      max(0px, calc(50% - 148px)) 20px;
+      max(0px, calc(50% - 146px)) 20px,
+      max(0px, calc(50% - 146px)) 20px;
   }
 
   /* The compact ribbon ends at the card's +8px edge, while the desktop lace
@@ -3771,6 +3771,14 @@ body[data-dsh-maid-atelier-wj] [data-composer-card]
     > [data-skin-chrome='composer-lace']
     > [data-maid-composer-lace-center] {
     top: 28px;
+  }
+
+  /* The compact strip sits 2px higher; advance its left scallop to meet the
+     unchanged corner contour at the same height. */
+  body[data-dsh-maid-atelier-wj]
+    [data-composer-card]
+    > [data-skin-chrome='composer-lace']::before {
+    background-position: left -6px top;
   }
 
   body[data-dsh-maid-atelier-wj] :is([data-phase='hero'], [data-phase='active'])
@@ -4590,16 +4598,6 @@ body[data-dsh-maid-atelier-wj][data-ds-dark-theme]
   line-height: 1.65;
 }
 
-/* Running reasoning becomes a restrained gold-and-periwinkle service sweep.
-   The data hooks are stable and later assets can replace this CSS-only pass. */
-body[data-dsh-maid-atelier-wj] [data-variant='think'][data-state='running'] [class*='row']::after {
-  left: -240px;
-  width: 240px;
-  background: linear-gradient(90deg, transparent, rgba(225, 207, 170, 0.3) 46%, rgba(142, 165, 218, 0.24) 62%, transparent);
-  animation: maid-atelier-reasoning-sweep 2.8s ease-in-out infinite;
-  will-change: transform, opacity;
-}
-
 /* DSH 0.2 ends a running transcript with a "deep diving for …" line straight
    over the palace art. Seat its whale-and-clock content on a small liquid
    glass capsule: a porcelain tint over a blurred, slightly saturated
@@ -4695,13 +4693,6 @@ body[data-dsh-maid-atelier-wj] [data-chat-running] > [class*='runningContent']:h
   body[data-dsh-maid-atelier-wj] [data-chat-running] > [class*='runningContent']::after {
     display: none;
   }
-}
-
-@keyframes maid-atelier-reasoning-sweep {
-  0% { transform: translate3d(0, 0, 0); opacity: 0; }
-  15% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { transform: translate3d(calc(100vw + 240px), 0, 0); opacity: 0; }
 }
 
 body[data-dsh-maid-atelier-wj] [data-state='running'] :is([class*='runState'], [class*='stateDot']) {
@@ -5741,7 +5732,6 @@ body[data-dsh-maid-atelier-wj] [class*='titlebar'] [class*='button']:hover {
     opacity: 0.4;
   }
 
-  body[data-dsh-maid-atelier-wj] [data-variant='think'][data-state='running'] [class*='row']::after,
   body[data-dsh-maid-atelier-wj] [data-composer-card] button {
     animation: none;
     transition: none;

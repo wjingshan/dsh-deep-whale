@@ -58,7 +58,6 @@ const SETTINGS_TRIGGER_SELECTOR = "[data-slot='sidebar.settings'] > :is(button, 
 const SETTINGS_MASK_SELECTOR = "[role='presentation'] > [class*='mask']"
 const SETTINGS_DIALOG_SELECTOR = "[data-slot='sidebar.settings'] [role='dialog'][aria-modal='true']"
 const ACTIVE_CONVERSATION_SELECTOR = "[data-phase='active']"
-const ACTIVE_CHAT_SELECTOR = `${ACTIVE_CONVERSATION_SELECTOR} [data-chat-flow]`
 const WORKSPACE_SELECTOR = "header [role='tablist']"
 const CORDIS_PANEL_SELECTOR = '[data-cordis-panel]'
 const TERMINAL_SELECTOR = '.xterm'
@@ -119,7 +118,6 @@ function createBodyAttributeLease(body: HTMLElement, attribute: string, value = 
 }
 
 const PROJECTED_STATE_ATTRIBUTES = {
-  activeChat: 'data-maid-chat-active',
   activeConversation: 'data-maid-conversation-active',
   cordisPanelOpen: 'data-maid-cordis-panel-open',
   settingsOpen: 'data-maid-settings-open',
@@ -128,7 +126,6 @@ const PROJECTED_STATE_ATTRIBUTES = {
 
 const PROJECTED_STATE_SELECTOR = [
   ACTIVE_CONVERSATION_SELECTOR,
-  '[data-chat-flow]',
   WORKSPACE_SELECTOR,
   CORDIS_PANEL_SELECTOR,
   "[data-slot='sidebar.settings']",
@@ -775,10 +772,6 @@ export function apply(ctx: PanelContext): void {
       if (body.hasAttribute(attribute) !== active) body.toggleAttribute(attribute, active)
     }
     set(
-      PROJECTED_STATE_ATTRIBUTES.activeChat,
-      document.querySelector(ACTIVE_CHAT_SELECTOR) !== null,
-    )
-    set(
       PROJECTED_STATE_ATTRIBUTES.activeConversation,
       document.querySelector(ACTIVE_CONVERSATION_SELECTOR) !== null,
     )
@@ -994,7 +987,6 @@ export function apply(ctx: PanelContext): void {
           composerChanged = true
         }
         if (conversationPhaseChanged
-          || record.attributeName === 'data-chat-flow'
           || record.attributeName === 'data-cordis-panel'
           || record.attributeName === 'data-slot'
           || record.attributeName === 'role') {
@@ -1050,7 +1042,6 @@ export function apply(ctx: PanelContext): void {
     attributeFilter: [
       'aria-expanded',
       'aria-selected',
-      'data-chat-flow',
       'data-cordis-panel',
       'data-ds-dark-theme',
       'data-phase',
