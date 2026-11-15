@@ -46,12 +46,13 @@ fi
 #     release-claimed-styles 两组共 10 条）。让 fork 用自己的测试验证自己的实现。
 #   * assets/、preview/：fork 自有或二进制素材。
 #   * lib/：构建产物，由 CI 的 build 步骤重建。
+# 重放范围只覆盖 maid-atelier。orca-link 与 skin-manager 保持 fork 原样：
+#   上游 0.1.9 对 orca-link 做了一次跨文件重构（把常量/工厂收进 customization.ts，
+#   composer-collapse/composer-motion 改成从那里 import）。逐文件重放会造出「src 已更新、
+#   入口仍是旧版」的半新状态，10 个 MISSING_EXPORT 让构建直接失败；整体迁移是独立工作。
 UPSTREAM_TREES=(
   maid-atelier/src
   maid-atelier/build
-  orca-link/src
-  orca-link/build
-  skin-manager/src
   shared
   scripts
 )
@@ -60,12 +61,6 @@ UPSTREAM_FILES=(
   maid-atelier/skin.json
   maid-atelier/cordis.patch.yml
   maid-atelier/tsdown.config.ts
-  orca-link/package.json
-  orca-link/skin.json
-  orca-link/cordis.patch.yml
-  orca-link/tsdown.config.ts
-  skin-manager/package.json
-  skin-manager/tsdown.config.ts
 )
 
 # 注意：这里没有「受保护文件」白名单。新策略用「本地内容 != 分叉基线」判断
@@ -81,9 +76,13 @@ EXCLUDE_PATTERNS=(
   'maid-atelier/src/client/asset-url.ts'
   'maid-atelier/src/client/art.ts'
   'maid-atelier/src/client/*-art.generated.ts'
-  'orca-link/src/client/asset-url.ts'
-  'orca-link/src/client/art.ts'
-  'orca-link/src/client/*-art.generated.ts'
+  # Host half：0.1.9 的 src/index.ts import ../assets/runtime/manifest.json 并注册
+  # installSkinAssets，fork 没有该目录（资产方案被跳过），重放会让构建报
+  # UNRESOLVED_IMPORT。保留 fork 版本，等资产方案整体迁移时再换。
+  'maid-atelier/src/index.ts'
+  # 0.1.9 把这个模块重写成基于 visualViewport（发布 --maid-vv-height），配套测试也一起换过；
+  # 只换实现会让 fork 的旧 mock 全红（实测 4 条）。源码与测试要一起迁移，先保留 fork 版本。
+  'maid-atelier/src/client/mobile-viewport.ts'
 )
 
 is_excluded() {
