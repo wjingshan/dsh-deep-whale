@@ -25,7 +25,7 @@
  * the column is docked and must stay open.
  */
 const DRAWER_AUTO_COLLAPSE = 1024
-const SIDEBAR_COLUMN_SELECTOR = ":is([data-pane='sidebar'], [class*='sidebarCol'])"
+const SIDEBAR_COLUMN_SELECTOR = "[class*='sidebarCol']"
 const SESSION_ROW_SELECTOR = '[data-maid-session-row], [role="treeitem"][class*="sessionRow"]'
 const ROW_AFFORDANCE_SELECTOR = '[role="menu"], [role="dialog"], input, textarea, [aria-haspopup]'
 /** Popups own the tap that dismisses them, so the drawer waits its turn. */
@@ -94,9 +94,15 @@ export function installMaidMobileDrawerAutoClose(body: HTMLElement): () => void 
   const onPointerDown = (event: PointerEvent): void => {
     // Secondary buttons and extra touches during a pinch are not dismissals.
     if (event.isPrimary === false || event.button > 0) return
+    // A new gesture must not inherit suppression from a dismissal with no click.
+    releaseSwallow()
     const target = event.target
     if (!(target instanceof Element) || !dismissOutside(target)) return
     armSwallow()
+  }
+
+  const onPointerCancel = (event: PointerEvent): void => {
+    if (event.isPrimary !== false) releaseSwallow()
   }
 
   const onMouseDown = (event: MouseEvent): void => {
@@ -141,10 +147,12 @@ export function installMaidMobileDrawerAutoClose(body: HTMLElement): () => void 
   }
 
   doc.addEventListener('pointerdown', onPointerDown, true)
+  doc.addEventListener('pointercancel', onPointerCancel, true)
   doc.addEventListener('mousedown', onMouseDown, true)
   doc.addEventListener('click', onClick, true)
   return () => {
     doc.removeEventListener('pointerdown', onPointerDown, true)
+    doc.removeEventListener('pointercancel', onPointerCancel, true)
     doc.removeEventListener('mousedown', onMouseDown, true)
     doc.removeEventListener('click', onClick, true)
     if (pendingFrame !== null) view.cancelAnimationFrame(pendingFrame)
