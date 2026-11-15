@@ -8,8 +8,10 @@ name: sync-upstream
 
 on:
   schedule:
-    # 每天 UTC 20:00（北京时间 04:00）
-    - cron: '0 20 * * *'
+    # 每周一次：周日 UTC 20:00（北京时间周一 04:00）。
+    # 改频率只需改 cron：`0 20 * * *` = 每天，`0 20 * * 0` = 每周日，
+    # 最后一位 0=周日 1=周一 … 6=周六。
+    - cron: '0 20 * * 0'
   workflow_dispatch:
 
 permissions:
