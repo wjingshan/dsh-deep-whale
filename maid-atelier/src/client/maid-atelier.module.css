@@ -607,15 +607,24 @@ body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] > heade
   box-shadow: 0 0 0 2px rgba(6, 17, 48, 0.68);
 }
 
-body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] > header > [role='tablist'] > button[role='tab'] {
+/* Since 0.2.2 the tablist sits inside an unmarked tab-row wrapper, so match it
+   by its own marker. The labels cross the trim's hairlines; a tight navy halo
+   lifts the glyphs off them without adding a surface to the band. */
+body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] [data-conversation-tabs][role='tablist'] > button[role='tab'] {
   color: #d7def0;
+  text-shadow:
+    0 0 2px rgba(4, 11, 35, 0.95),
+    0 0 6px rgba(4, 11, 35, 0.75),
+    0 0 12px rgba(4, 11, 35, 0.6);
+  transition: color 0.18s ease;
 }
 
-body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] > header > [role='tablist'] > button[role='tab'][aria-selected='true'] {
+body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] [data-conversation-tabs][role='tablist'] > button[role='tab']:hover,
+body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] [data-conversation-tabs][role='tablist'] > button[role='tab'][aria-selected='true'] {
   color: #fff7e6;
 }
 
-body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] > header > [role='tablist'] > button[role='tab'][aria-selected='true']::after {
+body[data-dsh-maid-atelier-wj] [data-slot='conversation.session.header'] [data-conversation-tabs][role='tablist'] > button[role='tab'][aria-selected='true']::after {
   background: var(--maid-gold);
   box-shadow: 0 0 8px rgba(235, 204, 143, 0.45);
 }
@@ -743,6 +752,16 @@ body[data-dsh-maid-atelier-wj] [data-skin-corner='bottom-left'] {
   bottom: 1px;
   left: 1px;
   transform: scale(-1);
+}
+
+/* Let the active workspace ribbon clear the gold frame (4), without lifting
+   the whole sidebar or trapping native menus in a new stacking context. */
+body[data-dsh-maid-atelier-wj] [class*='sidebarCol'] > div > :has([data-maid-workspace-active]) {
+  z-index: auto;
+}
+
+body[data-dsh-maid-atelier-wj] [data-maid-workspace-row][data-maid-workspace-active] {
+  z-index: 5;
 }
 
 body[data-dsh-maid-atelier-wj] :is([data-pane='sidebar'], [class*='sidebarCol']) [class*='fade'] {
@@ -3045,10 +3064,8 @@ body[data-dsh-maid-atelier-wj] [data-phase='hero']
   border-radius: 50%;
   corner-shape: round;
   color: #405a99;
-  background: rgba(255, 253, 248, 0.62);
-  box-shadow:
-    0 3px 10px rgba(37, 54, 99, 0.12),
-    inset 0 0 0 3px rgba(255, 255, 255, 0.46);
+  background: rgba(255, 253, 248, 0.68);
+  box-shadow: 0 3px 10px rgba(37, 54, 99, 0.12);
 }
 
 body[data-dsh-maid-atelier-wj] [data-phase='hero']
@@ -3064,8 +3081,8 @@ body[data-dsh-maid-atelier-wj] [data-phase='hero']
   border-radius: 50%;
   corner-shape: round;
   color: #405a99;
-  background: rgba(255, 253, 248, 0.52);
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.4);
+  background: rgba(255, 253, 248, 0.68);
+  box-shadow: 0 3px 10px rgba(37, 54, 99, 0.12);
 }
 
 body[data-dsh-maid-atelier-wj] [data-phase='hero']
@@ -3397,7 +3414,7 @@ body[data-dsh-maid-atelier-wj][data-ds-dark-theme] [data-composer-card] [data-co
 
 /* The raster extends below the naturally sized active card. Reserve that
    bleed before the docked statistics line so the gold rim cannot cover it. */
-body[data-dsh-maid-atelier-wj] [data-phase='active'] [data-composer-card]:has(+ *) {
+body[data-dsh-maid-atelier-wj] [data-content-phase='active'] [data-composer-card]:has(+ [data-composer-dock]) {
   margin-block-end: 12px;
 }
 
@@ -3501,9 +3518,7 @@ body[data-dsh-maid-atelier-wj] [data-phase='active'] [data-composer-card]
   corner-shape: round;
   color: #405a99;
   background: rgba(255, 253, 248, 0.68);
-  box-shadow:
-    0 3px 10px rgba(37, 54, 99, 0.12),
-    inset 0 0 0 3px rgba(255, 255, 255, 0.42);
+  box-shadow: 0 3px 10px rgba(37, 54, 99, 0.12);
 }
 
 body[data-dsh-maid-atelier-wj] [data-phase='active'] [data-composer-card]
@@ -3512,7 +3527,10 @@ body[data-dsh-maid-atelier-wj] [data-phase='active'] [data-composer-card]
   display: none;
 }
 
-body[data-dsh-maid-atelier-wj][data-ds-dark-theme] [data-phase='active'] [data-composer-card]
+/* Both composer phases share the dark round controls; the hero's porcelain
+   wash would otherwise read as a grey disc on the navy card. */
+body[data-dsh-maid-atelier-wj][data-ds-dark-theme] :is([data-phase='hero'], [data-phase='active'])
+  [data-composer-card]
   :is(button[class*='add'], [class*='modes'] button[class*='trigger']:has([class*='triggerIcon'])) {
   border-color: rgba(211, 180, 119, 0.72);
   color: #ead39f;
@@ -4566,7 +4584,7 @@ body[data-dsh-maid-atelier-wj]:not([data-ds-dark-theme])
   width: max-content;
   max-width: 100%;
   align-self: flex-start;
-  padding: 8px 12px;
+  padding: 0.25em 0.5em;
   border-radius: 8px;
   background: linear-gradient(
     90deg,
@@ -4585,7 +4603,7 @@ body[data-dsh-maid-atelier-wj][data-ds-dark-theme]
   width: max-content;
   max-width: 100%;
   align-self: flex-start;
-  padding: 8px 12px;
+  padding: 0.25em 0.5em;
   border-radius: 8px;
   background: linear-gradient(
     90deg,
@@ -4596,6 +4614,57 @@ body[data-dsh-maid-atelier-wj][data-ds-dark-theme]
   backdrop-filter: blur(8px) saturate(0.92);
   color: #c7d2e9;
   line-height: 1.65;
+}
+
+/* The host draws this slot anchor with display: contents. Giving plugin rows a
+   reading surface means taking the anchor into flow, but it must keep the full
+   row width: the delivery container opts into container-type: inline-size, and
+   size containment contributes no intrinsic width, so a content-sized anchor
+   collapses to its own padding and squashes the file cards into a sliver. Keep
+   the column gap the host would have supplied. An opaque base keeps text
+   readable without trapping plugin overlays in a blur. */
+body[data-dsh-maid-atelier-wj] [data-slot='conversation.chat.turnTail']:not(:empty) {
+  display: flex !important;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  align-self: stretch;
+}
+
+/* Deliveries already paint their own host cards (the changed-files card and
+   the presented file rows), so an outer reading pane would frame them twice
+   and read as a stray white border. Keep the pane for plugin rows that arrive
+   without a surface of their own, such as the cost meter. */
+body[data-dsh-maid-atelier-wj]
+  [data-slot='conversation.chat.turnTail']:not(:empty):not(:has([data-changed-files], [data-presented-files-row])) {
+  margin-top: 4px;
+  padding: 0.25em 0.5em;
+  border-radius: 10px;
+  line-height: 1.65;
+  color: #34486f;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 255, 0.56),
+    rgba(248, 250, 255, 0.4)
+  );
+  background-color: var(--dsw-alias-bg-layer-2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+  backdrop-filter: none;
+}
+
+body[data-dsh-maid-atelier-wj][data-ds-dark-theme]
+  [data-slot='conversation.chat.turnTail']:not(:empty):not(:has([data-changed-files], [data-presented-files-row])) {
+  color: #c7d2e9;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 20, 48, 0.7),
+    rgba(18, 31, 67, 0.52)
+  );
+  background-color: var(--dsw-alias-bg-layer-2);
+  box-shadow: inset 0 0 0 1px rgba(151, 169, 216, 0.18);
 }
 
 /* DSH 0.2 ends a running transcript with a "deep diving for …" line straight
@@ -5868,11 +5937,11 @@ body[data-dsh-maid-atelier-wj]
    similarly named chrome cannot inherit it. */
 body[data-dsh-maid-atelier-wj]
   [data-phase='active']
-  > :has(> [data-conversation-scroll])
+  [data-conversation-content]
   > [data-width-handle='left'][data-side='left']::after,
 body[data-dsh-maid-atelier-wj]
   [data-phase='active']
-  > :has(> [data-conversation-scroll])
+  [data-conversation-content]
   > [data-width-handle='right'][data-side='right']::after {
   width: 3px;
   background: linear-gradient(
@@ -5894,11 +5963,11 @@ body[data-dsh-maid-atelier-wj]
 
 body[data-dsh-maid-atelier-wj][data-ds-dark-theme]
   [data-phase='active']
-  > :has(> [data-conversation-scroll])
+  [data-conversation-content]
   > [data-width-handle='left'][data-side='left']::after,
 body[data-dsh-maid-atelier-wj][data-ds-dark-theme]
   [data-phase='active']
-  > :has(> [data-conversation-scroll])
+  [data-conversation-content]
   > [data-width-handle='right'][data-side='right']::after {
   background: linear-gradient(
     to bottom,
@@ -5917,11 +5986,11 @@ body[data-dsh-maid-atelier-wj][data-ds-dark-theme]
 
 body[data-dsh-maid-atelier-wj]
   [data-phase='active']
-  > :has(> [data-conversation-scroll])
+  [data-conversation-content]
   > [data-width-handle='left'][data-side='left']:is(:hover, [data-dragging])::after,
 body[data-dsh-maid-atelier-wj]
   [data-phase='active']
-  > :has(> [data-conversation-scroll])
+  [data-conversation-content]
   > [data-width-handle='right'][data-side='right']:is(:hover, [data-dragging])::after {
   transform-origin: center;
   animation: maidAtelierWidthHandlePulse 1.15s ease-in-out infinite;
@@ -5981,11 +6050,11 @@ body[data-dsh-maid-atelier-wj][data-ds-dark-theme] [data-phase='active'] :has(+ 
 
   body[data-dsh-maid-atelier-wj]
     [data-phase='active']
-    > :has(> [data-conversation-scroll])
+    [data-conversation-content]
     > [data-width-handle='left'][data-side='left']::after,
   body[data-dsh-maid-atelier-wj]
     [data-phase='active']
-    > :has(> [data-conversation-scroll])
+    [data-conversation-content]
     > [data-width-handle='right'][data-side='right']::after {
     animation: none;
   }

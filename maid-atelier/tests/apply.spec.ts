@@ -154,7 +154,7 @@ describe('Maid Atelier skin apply', () => {
     expect(CSS).not.toContain("nav[aria-label='轮次导航']")
     expect(CSS).not.toContain("[aria-label^='跳转到第']")
     expect(CSS).toMatch(
-      /\[data-phase='active'\]\s*>\s*:has\(> \[data-conversation-scroll\]\)\s*>\s*\[data-width-handle='left'\]\[data-side='left'\]::after\s*,/s,
+      /\[data-phase='active'\]\s*\[data-conversation-content\]\s*>\s*\[data-width-handle='left'\]\[data-side='left'\]::after\s*,/s,
     )
     expect(CSS).not.toMatch(
       /\[data-phase='active'\]\s*>\s*\[data-width-handle=(?:'left'|'right')\]/,
@@ -1776,7 +1776,7 @@ describe('Maid Atelier skin apply', () => {
     const cardRule = CSS.match(/\[data-composer-card\]\s*\{([^}]*)\}/s)?.[1] ?? ''
     const inputRule = CSS.match(/\[data-composer-card\] \[data-composer-input\]\s*\{([^}]*)\}/s)?.[1] ?? ''
     const footerClearanceRule = CSS.match(
-      /\[data-phase='active'\] \[data-composer-card\]:has\(\+ \*\)\s*\{([^}]*)\}/s,
+      /\[data-content-phase='active'\] \[data-composer-card\]:has\(\+ \[data-composer-dock\]\)\s*\{([^}]*)\}/s,
     )?.[1] ?? ''
     expect(cardRule).toContain('min-height: 0')
     expect(cardRule).not.toContain('min-height: 210px')
